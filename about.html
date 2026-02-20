@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us — Narrow</title>
+  <meta name="description" content="Learn about Narrow, the Breite Family's mission to simplify homebuilding from concept to move-in day.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .verse-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 36px;
+      border-left: 5px solid var(--navy);
+      box-shadow: var(--shadow-sm);
+    }
+    .verse-card.green  { border-left-color: var(--green); }
+    .verse-card.amber  { border-left-color: var(--amber); }
+    .verse-text {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--charcoal);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .verse-ref {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--gray);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .verse-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .team-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(27,58,107,0.08);
+      text-align: center;
+    }
+    .team-card__photo {
+      height: 180px;
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+    }
+    /* Replace with: <img src="images/team-max.jpg" alt="Max Breite"> */
+    .team-card__body { padding: 24px; }
+    .team-card h3 { font-size: 1.2rem; margin-bottom: 4px; }
+    .team-card__title { font-size: 0.8rem; color: var(--green); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+    .team-card p { font-size: 0.875rem; }
+
+    .mission-block {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      border-radius: var(--radius-lg);
+      padding: 64px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .mission-block::before {
+      content: '"';
+      position: absolute;
+      top: -20px;
+      left: 20px;
+      font-family: var(--font-display);
+      font-size: 16rem;
+      color: rgba(255,255,255,0.04);
+      line-height: 1;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .contact-info-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 20px;
+      background: var(--white);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(27,58,107,0.07);
+      margin-bottom: 16px;
+    }
+    .contact-icon {
+      font-size: 1.4rem;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(27,58,107,0.08);
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .contact-grid { grid-template-columns: 1fr; }
+      .mission-block { padding: 40px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">
+      <img src="Narrow Logo.png" alt="Narrow Logo" style="width:40px;height:40px;object-fit:contain">
+      <span class="nav__logo-text">Narrow</span>
+    </a>
+    <ul class="nav__links">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li><a href="how-it-works.html" class="nav__link">How It Works</a></li>
+      <li><a href="architects.html" class="nav__link">Architect Plans</a></li>
+      <li><a href="professionals.html" class="nav__link">Find Pros</a></li>
+      <li><a href="about.html" class="nav__link">About</a></li>
+    </ul>
+    <a href="index.html#start" class="nav__cta">Start Your Journey</a>
+    <button class="nav__hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="padding:140px 0 80px">
+  <div class="container hero__content">
+    <span class="hero__eyebrow">Our Story</span>
+    <h1>Built by a family<br><span style="color:var(--amber)">for families</span></h1>
+    <p>Narrow was born from firsthand experience with the fragmented, confusing home building process. The Breite Family built Narrow to be the platform they wished had existed — a trusted, guided hub from concept to move-in day.</p>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section class="section" id="mission">
+  <div class="container">
+    <div class="mission-block reveal">
+      <div style="position:relative;z-index:1">
+        <span class="section-label section-label--light">Mission Statement</span>
+        <h2 class="text-white" style="margin:16px 0 24px;max-width:700px">
+          Narrow connects homebuilders, architects, contractors, mortgage companies, and real estate agents into one trusted, streamlined platform that simplifies the journey from concept to construction.
+        </h2>
+        <div style="display:flex;gap:32px;flex-wrap:wrap">
+          <div style="text-align:center">
+            <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--amber)">A</div>
+            <div style="font-size:0.8rem;color:rgba(255,255,255,0.6)">Concept</div>
+          </div>
+          <div style="font-size:2rem;color:rgba(255,255,255,0.3);align-self:center">→</div>
+          <div style="font-size:1.2rem;color:rgba(255,255,255,0.5);align-self:center">···</div>
+          <div style="font-size:1.2rem;color:rgba(255,255,255,0.3);align-self:center">···</div>
+          <div style="font-size:1.2rem;color:rgba(255,255,255,0.5);align-self:center">···</div>
+          <div style="font-size:2rem;color:rgba(255,255,255,0.3);align-self:center">→</div>
+          <div style="text-align:center">
+            <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--amber)">Z</div>
+            <div style="font-size:0.8rem;color:rgba(255,255,255,0.6)">Move-In Day</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VISION -->
+<section class="section--cream" style="padding:72px 0">
+  <div class="container">
+    <div class="grid-2" style="gap:64px;align-items:center">
+      <div class="reveal">
+        <span class="section-label">Vision</span>
+        <h2>Become the trusted national hub for building collaboration</h2>
+        <p style="margin:20px 0">Every great home begins with trust. Trust in the architect who designed it. Trust in the contractor who built it. Trust in the agent who found the land. Trust in the lender who funded it.</p>
+        <p>Narrow creates the infrastructure for that trust — one verified professional, one honest review, one completed home at a time.</p>
+      </div>
+      <div class="reveal">
+        <div style="display:grid;gap:16px">
+          <div style="padding:24px;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);display:flex;gap:16px;align-items:center">
+            <span style="font-size:1.6rem">🌐</span>
+            <div>
+              <p style="font-weight:700;color:var(--navy);margin:0">Founded on the World Wide Web</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Serving homebuilders nationwide from day one</p>
+            </div>
+          </div>
+          <div style="padding:24px;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);display:flex;gap:16px;align-items:center">
+            <span style="font-size:1.6rem">🏛️</span>
+            <div>
+              <p style="font-weight:700;color:var(--navy);margin:0">LLC — Breite Family</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Privately held with liability protection and tax flexibility</p>
+            </div>
+          </div>
+          <div style="padding:24px;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);display:flex;gap:16px;align-items:center">
+            <span style="font-size:1.6rem">📱</span>
+            <div>
+              <p style="font-weight:700;color:var(--navy);margin:0">Long-Term Vision</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Mobile app & commercial building expansion coming</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CORE VALUES -->
+<section class="section" id="values">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:56px" class="reveal">
+      <span class="section-label">Foundation</span>
+      <h2>Core Values</h2>
+      <p style="max-width:500px;margin:12px auto 0">Narrow is built on three biblical principles that guide every decision we make — for builders and professionals alike.</p>
+    </div>
+    <div class="grid-3 reveal">
+      <div class="verse-card">
+        <p class="verse-value">🤝 Servanthood</p>
+        <p class="verse-text">"The greatest among you will be your servant."</p>
+        <p class="verse-ref">Matthew 23:11</p>
+        <p style="font-size:0.85rem;margin-top:14px">We exist to serve homebuilders — not the other way around. The platform is free for builders because our success is measured by theirs.</p>
+      </div>
+      <div class="verse-card green">
+        <p class="verse-value">⚖️ Integrity</p>
+        <p class="verse-text">"The integrity of the upright guides them, but the unfaithful are destroyed by their duplicity."</p>
+        <p class="verse-ref">Proverbs 11:3</p>
+        <p style="font-size:0.85rem;margin-top:14px">Every professional on Narrow is verified. Every review is real. Transparency isn't a feature — it's the foundation.</p>
+      </div>
+      <div class="verse-card amber">
+        <p class="verse-value">🔗 Community</p>
+        <p class="verse-text">"As iron sharpens iron, so one person sharpens another."</p>
+        <p class="verse-ref">Proverbs 27:17</p>
+        <p style="font-size:0.85rem;margin-top:14px">When builders, architects, and contractors collaborate on a trusted platform, everyone improves. Every completed home makes the next one better.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section section--cream">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:56px" class="reveal">
+      <span class="section-label">The Team</span>
+      <h2>The people behind Narrow</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px" class="reveal">
+
+      <div class="team-card">
+        <div class="team-card__photo">
+          <!-- Replace with: <img src="images/team-max.jpg" alt="Max Breite" style="width:100%;height:100%;object-fit:cover"> -->
+          👨‍💼
+        </div>
+        <div class="team-card__body">
+          <h3>Max Breite</h3>
+          <p class="team-card__title">Founder & CEO</p>
+          <p>Real Estate Agent (EXP Realty) · Architect (HFA-AE). Years of cross-industry positioning gave Max the connections and vision to build Narrow from the ground up.</p>
+        </div>
+      </div>
+
+      <div class="team-card" style="border:2px dashed var(--gray-light)">
+        <div class="team-card__photo" style="background:var(--cream-dark);color:var(--gray)">
+          💻
+        </div>
+        <div class="team-card__body">
+          <h3>Website Builder / IT</h3>
+          <p class="team-card__title">Platform Development</p>
+          <p>Responsible for HTML, CSS, JavaScript, secure escrow integrations, and keeping the platform automated, stable, and scalable.</p>
+        </div>
+      </div>
+
+      <div class="team-card" style="border:2px dashed var(--gray-light)">
+        <div class="team-card__photo" style="background:var(--cream-dark);color:var(--gray)">
+          📣
+        </div>
+        <div class="team-card__body">
+          <h3>Marketing Team</h3>
+          <p class="team-card__title">Growth & Promotion</p>
+          <p>Spreading the word of the new way to build — social media, SEO, and community building with architects, contractors, and homebuilders.</p>
+        </div>
+      </div>
+
+      <div class="team-card" style="border:2px dashed var(--gray-light)">
+        <div class="team-card__photo" style="background:var(--cream-dark);color:var(--gray)">
+          🧾
+        </div>
+        <div class="team-card__body">
+          <h3>CPA & Legal</h3>
+          <p class="team-card__title">Finance & Compliance</p>
+          <p>Accurate data tracking, tax management, and contract creation for all platform systems, subscriptions, and advertisements.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section" id="contact">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:56px" class="reveal">
+      <span class="section-label">Get in Touch</span>
+      <h2>Ready to connect with Narrow?</h2>
+      <p style="max-width:500px;margin:12px auto 0">Whether you're a homebuilder, architect, contractor, or investor — we'd love to hear from you.</p>
+    </div>
+    <div class="contact-grid reveal">
+      <div>
+        <div class="contact-info-item">
+          <div class="contact-icon">📐</div>
+          <div>
+            <p style="font-weight:700;color:var(--navy);margin:0">Architects</p>
+            <p style="font-size:0.85rem;margin:4px 0 0">List your plans on Narrow. Earn more. Expand nationally. No upfront cost to get started.</p>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">🏗️</div>
+          <div>
+            <p style="font-weight:700;color:var(--navy);margin:0">Contractors</p>
+            <p style="font-size:0.85rem;margin:4px 0 0">Join the verified contractor directory. $70/month or $750/year. One build covers your subscription.</p>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">💰</div>
+          <div>
+            <p style="font-weight:700;color:var(--navy);margin:0">Mortgage Companies</p>
+            <p style="font-size:0.85rem;margin:4px 0 0">Advertise to pre-qualified homebuilders actively seeking financing. Starting at $8,000/year.</p>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">📈</div>
+          <div>
+            <p style="font-weight:700;color:var(--navy);margin:0">Investors</p>
+            <p style="font-size:0.85rem;margin:4px 0 0">Interested in the $913B residential construction market opportunity? Let's talk.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--white);border-radius:var(--radius-md);padding:40px;box-shadow:var(--shadow-md);border:1px solid rgba(27,58,107,0.08)">
+        <h3 style="margin-bottom:24px">Send us a message</h3>
+        <form id="contactForm">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address *</label>
+            <input type="email" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label>I am a...</label>
+            <select>
+              <option value="">Select one</option>
+              <option>Homebuilder</option>
+              <option>Architect</option>
+              <option>General Contractor</option>
+              <option>Real Estate Agent</option>
+              <option>Mortgage Professional</option>
+              <option>Investor</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message *</label>
+            <textarea rows="4" placeholder="Tell us how we can help..." required style="resize:vertical"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a href="index.html" class="nav__logo" style="display:inline-flex">
+          <img src="Narrow Logo.png" alt="Narrow Logo" style="width:36px;height:36px;object-fit:contain">
+          <span class="nav__logo-text" style="margin-left:10px">Narrow</span>
+        </a>
+        <p>Build A to Z with Narrow — the trusted bridge between homeowners and all building professionals.</p>
+      </div>
+      <div>
+        <p class="footer__heading">Platform</p>
+        <ul class="footer__links">
+          <li><a href="how-it-works.html">How It Works</a></li>
+          <li><a href="architects.html">Architect Plans</a></li>
+          <li><a href="professionals.html">Find Pros</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer__heading">Company</p>
+        <ul class="footer__links">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="about.html#mission">Our Mission</a></li>
+          <li><a href="about.html#values">Core Values</a></li>
+          <li><a href="about.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer__heading">For Professionals</p>
+        <ul class="footer__links">
+          <li><a href="#">List Your Plans</a></li>
+          <li><a href="#">Contractor Sign Up</a></li>
+          <li><a href="#">Agent Referrals</a></li>
+          <li><a href="#">Mortgage Advertising</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2025 Narrow. Breite Family. All rights reserved.</span>
+      <span class="footer__tagline">"Build A to Z with Narrow"</span>
+    </div>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
