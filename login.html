@@ -415,8 +415,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Initialize Supabase
-  const supabase = window.supabase.createClient(
+  // Initialize Supabase (standalone - no main.js on this page)
+  const { createClient } = window.supabase;
+  window.narrowSupabase = createClient(
     'https://okalotfqhmwiyckhvcmk.supabase.co',
     'sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ'
   );
@@ -474,7 +475,7 @@
     btn.textContent = 'Signing in…';
     btn.disabled = true;
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await window.narrowSupabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       showMessage(error.message, 'error');
@@ -500,7 +501,7 @@
     btn.textContent = 'Creating account…';
     btn.disabled = true;
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await window.narrowSupabase.auth.signUp({
       email,
       password,
       options: {
@@ -519,21 +520,21 @@
     const userId = data.user?.id;
     if (userId) {
       if (selectedRole === 'contractor') {
-        await supabase.from('contractor_profiles').insert({
+        await window.narrowSupabase.from('contractor_profiles').insert({
           user_id:        userId,
           company_name:   document.getElementById('contractorCompany').value,
           license_number: document.getElementById('contractorLicense').value,
           service_area:   document.getElementById('contractorArea').value,
         });
       } else if (selectedRole === 'architect') {
-        await supabase.from('architect_profiles').insert({
+        await window.narrowSupabase.from('architect_profiles').insert({
           user_id:        userId,
           full_name:      name,
           company_name:   document.getElementById('architectCompany').value,
           license_number: document.getElementById('architectLicense').value,
         });
       } else if (selectedRole === 'mortgage') {
-        await supabase.from('mortgage_profiles').insert({
+        await window.narrowSupabase.from('mortgage_profiles').insert({
           user_id:        userId,
           full_name:      name,
           company_name:   document.getElementById('mortgageCompany').value,
@@ -553,7 +554,7 @@
     const email = document.getElementById('loginEmail').value.trim();
     if (!email) return showMessage('Enter your email above first.', 'error');
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await window.narrowSupabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'https://www.buildnarrow.com/login.html'
     });
 
