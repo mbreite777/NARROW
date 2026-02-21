@@ -1,6 +1,11 @@
 // ─── NARROW — main.js ───────────────────────
-
+// Supabase client
+let supabase;
 document.addEventListener('DOMContentLoaded', () => {
+  supabase = window.supabase.createClient(
+    'https://okalotfqhmwiyckhvcmk.supabase.co',
+    'sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ'
+  );
 
   // ── Active nav link ──────────────────────
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
