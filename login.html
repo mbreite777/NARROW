@@ -416,6 +416,12 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
 <script>
+  // Initialize Supabase
+  const supabase = window.supabase.createClient(
+    'https://okalotfqhmwiyckhvcmk.supabase.co',
+    'sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ'
+  );
+
   let selectedRole = null;
 
   function switchTab(tab) {
