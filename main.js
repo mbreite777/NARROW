@@ -1,8 +1,8 @@
 // ─── NARROW — main.js ───────────────────────
 // Supabase client
-let supabase;
+let narrowSupabase;
 document.addEventListener('DOMContentLoaded', () => {
-  supabase = window.supabase.createClient(
+  narrowSupabase = window.supabase.createClient(
     'https://okalotfqhmwiyckhvcmk.supabase.co',
     'sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ'
   );
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const journeyBtn = document.querySelector('.nav__journey-btn');
     if (!navAuth) return;
 
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await narrowSupabase.auth.getSession();
 
     if (session && session.user) {
       const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
@@ -33,14 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.narrowSignOut = async function() {
-    await supabase.auth.signOut();
+    await narrowSupabase.auth.signOut();
     window.location.href = 'index.html';
   };
 
   updateNavAuth();
 
   // Re-run nav update if auth state changes (e.g. after email confirm)
-  supabase.auth.onAuthStateChange(() => updateNavAuth());
+  narrowSupabase.auth.onAuthStateChange(() => updateNavAuth());
 
   // Inject nav auth styles once
   if (!document.getElementById('nav-auth-styles')) {
