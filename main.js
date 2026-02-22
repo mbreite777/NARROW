@@ -343,22 +343,49 @@ function initFilters() {
 }
 
 // ── CONTACT FORM ──────────────────────────────
-function handleContact(e) {
+async function handleContact(e) {
   e.preventDefault();
   const btn = e.target.querySelector('button[type="submit"]');
   const orig = btn.textContent;
   btn.textContent = 'Sending…';
   btn.disabled = true;
 
-  setTimeout(() => {
-    btn.textContent = '✓ Message Sent!';
-    btn.style.background = '#2D6A4F';
-    e.target.reset();
+  const data = new FormData(e.target);
 
+  try {
+    const res = await fetch(
+      'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/send-contact',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:    data.get('name'),
+          email:   data.get('email'),
+          role:    data.get('role') || 'Not specified',
+          message: data.get('message')
+        })
+      }
+    );
+
+    if (res.ok) {
+      btn.textContent = '✓ Message Sent!';
+      btn.style.background = '#2D6A4F';
+      e.target.reset();
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 4000);
+    } else {
+      throw new Error('Server error');
+    }
+  } catch (err) {
+    btn.textContent = '✗ Failed — try again';
+    btn.style.background = '#DC2626';
+    btn.disabled = false;
     setTimeout(() => {
       btn.textContent = orig;
       btn.style.background = '';
-      btn.disabled = false;
-    }, 4000);
-  }, 1200);
+    }, 3000);
+  }
 }
