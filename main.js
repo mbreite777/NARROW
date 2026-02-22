@@ -7,6 +7,84 @@ document.addEventListener('DOMContentLoaded', () => {
     'sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ'
   );
 
+  // ── Auth state → nav ────────────────────
+  async function updateNavAuth() {
+    const navAuth = document.getElementById('nav-auth');
+    const journeyBtn = document.querySelector('.nav__journey-btn');
+    if (!navAuth) return;
+
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session && session.user) {
+      const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+      const firstName = name.split(' ')[0];
+
+      navAuth.innerHTML = `
+        <div class="nav__user">
+          <span class="nav__welcome">Welcome, ${firstName}</span>
+          <button class="nav__signout" onclick="window.narrowSignOut()">Sign Out</button>
+        </div>
+      `;
+      if (journeyBtn) journeyBtn.style.display = 'none';
+    } else {
+      navAuth.innerHTML = `<a href="login.html" class="nav__signin">Sign In</a>`;
+      if (journeyBtn) journeyBtn.style.display = '';
+    }
+  }
+
+  window.narrowSignOut = async function() {
+    await supabase.auth.signOut();
+    window.location.href = 'index.html';
+  };
+
+  updateNavAuth();
+
+  // Re-run nav update if auth state changes (e.g. after email confirm)
+  supabase.auth.onAuthStateChange(() => updateNavAuth());
+
+  // Inject nav auth styles once
+  if (!document.getElementById('nav-auth-styles')) {
+    const s = document.createElement('style');
+    s.id = 'nav-auth-styles';
+    s.textContent = `
+      .nav__auth { display:flex; align-items:center; }
+      .nav__user { display:flex; align-items:center; gap:12px; }
+      .nav__welcome {
+        color: rgba(255,255,255,0.9);
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: var(--font-body);
+        white-space: nowrap;
+      }
+      .nav__signout {
+        background: rgba(255,255,255,0.12);
+        color: rgba(255,255,255,0.85);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 6px;
+        padding: 6px 14px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        font-family: var(--font-body);
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+        white-space: nowrap;
+      }
+      .nav__signout:hover { background: rgba(255,255,255,0.22); color: #fff; }
+      .nav__signin {
+        color: rgba(255,255,255,0.8);
+        font-size: 0.9rem;
+        font-weight: 500;
+        font-family: var(--font-body);
+        text-decoration: none;
+        padding: 6px 4px;
+        transition: color 0.2s;
+        white-space: nowrap;
+      }
+      .nav__signin:hover { color: #fff; }
+    `;
+    document.head.appendChild(s);
+  }
+
   // ── Active nav link ──────────────────────
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav__link').forEach(link => {
