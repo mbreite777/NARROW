@@ -13,9 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const journeyBtn = document.querySelector('.nav__journey-btn');
     if (!navAuth) return;
 
-    // Show Sign In immediately while Supabase loads
-    navAuth.innerHTML = `<a href="login.html" class="nav__signin">Sign In</a>`;
-
     const { data: { session } } = await narrowSupabase.auth.getSession();
 
     if (session && session.user) {
@@ -41,9 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   updateNavAuth();
+  // Retry after short delay in case session cookie isn't ready yet
+  setTimeout(updateNavAuth, 500);
+  setTimeout(updateNavAuth, 1500);
 
   // Re-run nav update if auth state changes (e.g. after email confirm)
-  narrowSupabase.auth.onAuthStateChange(() => updateNavAuth());
+  narrowSupabase.auth.onAuthStateChange((_event, session) => {
+    updateNavAuth();
+  });
 
   // Inject nav auth styles once
   if (!document.getElementById('nav-auth-styles')) {
