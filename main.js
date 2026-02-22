@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const journeyBtn = document.querySelector('.nav__journey-btn');
     if (!navAuth) return;
 
+    // Show Sign In immediately while Supabase loads
+    navAuth.innerHTML = `<a href="login.html" class="nav__signin">Sign In</a>`;
+
     const { data: { session } } = await narrowSupabase.auth.getSession();
 
     if (session && session.user) {
