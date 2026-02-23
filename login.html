@@ -483,7 +483,10 @@
       btn.disabled = false;
     } else {
       showMessage('Welcome back! Redirecting…', 'success');
-      setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+      setTimeout(() => {
+        const intent = sessionStorage.getItem('narrow_q_intent');
+        window.location.href = intent ? 'index.html' : 'dashboard.html';
+      }, 1200);
     }
   }
 
