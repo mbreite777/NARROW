@@ -357,7 +357,11 @@ async function handleContact(e) {
       'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/send-contact',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ',
+          'Authorization': 'Bearer sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ'
+        },
         body: JSON.stringify({
           name:    data.get('name'),
           email:   data.get('email'),
