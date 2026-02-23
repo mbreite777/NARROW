@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Journey — Narrow</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .dashboard-hero {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      padding: 120px 0 60px;
+    }
+
+    .dashboard-hero h1 { color: var(--white); margin-bottom: 8px; }
+    .dashboard-hero p  { color: rgba(255,255,255,0.65); font-size: 1.05rem; }
+
+    .progress-overview {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius-md);
+      padding: 24px 28px;
+      margin-top: 32px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .progress-overview__count {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--amber);
+      line-height: 1;
+      min-width: 60px;
+    }
+
+    .progress-overview__label {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .progress-bar-wrap {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .progress-bar-track {
+      height: 10px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--amber));
+      border-radius: 10px;
+      transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .progress-pct {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+    }
+
+    /* Steps */
+    .steps-section {
+      padding: 56px 0 80px;
+    }
+
+    .step-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      border: 2px solid var(--gray-light);
+      padding: 28px 32px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-card:hover {
+      border-color: var(--navy-light);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .step-card.completed {
+      border-color: var(--green);
+      background: #F0FBF4;
+    }
+
+    .step-card.current {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px rgba(232,168,56,0.15);
+    }
+
+    .step-card.locked {
+      opacity: 0.5;
+      cursor: default;
+    }
+    .step-card.locked:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: var(--gray-light);
+    }
+
+    .step-card__num {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--cream);
+      border: 2px solid var(--gray-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--navy);
+      flex-shrink: 0;
+      transition: all var(--transition);
+    }
+
+    .step-card.completed .step-card__num {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+      font-size: 1.4rem;
+    }
+
+    .step-card.current .step-card__num {
+      background: var(--amber);
+      border-color: var(--amber);
+      color: var(--navy-dark);
+    }
+
+    .step-card__content { flex: 1; }
+
+    .step-card__title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .step-card.completed .step-card__title {
+      text-decoration: line-through;
+      color: var(--gray);
+    }
+
+    .step-card__desc {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin: 0;
+    }
+
+    .step-card__badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    .badge-current  { background: rgba(232,168,56,0.15); color: var(--amber-dark); }
+    .badge-done     { background: rgba(45,106,79,0.12); color: var(--green); }
+    .badge-next     { background: rgba(27,58,107,0.08); color: var(--navy); }
+
+    .step-card__action {
+      margin-top: 14px;
+    }
+
+    .connector {
+      width: 2px;
+      height: 16px;
+      background: var(--gray-light);
+      margin: 0 auto;
+      margin-left: 51px;
+    }
+
+    .connector.done { background: var(--green); }
+
+    /* Confetti celebration */
+    .celebration {
+      display: none;
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, #f0fbf4, #fff8e7);
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--green);
+      margin-bottom: 32px;
+    }
+
+    .celebration.show { display: block; }
+    .celebration h2 { color: var(--green); margin-bottom: 8px; }
+
+    /* Not logged in state */
+    .auth-prompt {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .auth-prompt h2 { margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────── -->
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">
+      <img src="Narrow Logo.png" alt="Narrow Logo" style="width:40px;height:40px;object-fit:contain">
+      <span class="nav__logo-text">Narrow</span>
+    </a>
+    <ul class="nav__links">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li><a href="how-it-works.html" class="nav__link">How It Works</a></li>
+      <li><a href="architects.html" class="nav__link">Architect Plans</a></li>
+      <li><a href="professionals.html" class="nav__link">Find Pros</a></li>
+      <li><a href="about.html" class="nav__link">About</a></li>
+    </ul>
+    <div id="nav-auth" class="nav__auth"></div>
+    <a href="#start" class="nav__cta nav__journey-btn">Start Your Journey</a>
+    <button class="nav__hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ── DASHBOARD HERO ────────────────────── -->
+<section class="dashboard-hero" id="dashboardHero" style="display:none">
+  <div class="container">
+    <span class="section-label" style="color:rgba(255,255,255,0.5)">Your Building Journey</span>
+    <h1 id="heroGreeting">Welcome back!</h1>
+    <p>Track your progress from idea to front door. Check off each step as you complete it.</p>
+
+    <div class="progress-overview">
+      <div>
+        <div class="progress-overview__count" id="stepsCount">0</div>
+        <div class="progress-overview__label">of 7 steps complete</div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+        </div>
+        <div class="progress-pct" id="progressPct">0% complete — let's get started!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── NOT LOGGED IN ─────────────────────── -->
+<section class="section" id="authPrompt" style="display:none">
+  <div class="container">
+    <div class="auth-prompt">
+      <div style="font-size:3rem;margin-bottom:16px">🏠</div>
+      <h2>Sign in to track your journey</h2>
+      <p style="max-width:400px;margin:0 auto 32px">Create a free account to save your progress and get your personalized A to Z roadmap.</p>
+      <a href="login.html" class="btn btn-primary btn-lg">Sign In / Create Account →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── STEPS ─────────────────────────────── -->
+<section class="steps-section" id="stepsSection" style="display:none">
+  <div class="container" style="max-width:720px">
+
+    <div class="celebration" id="celebration">
+      <div style="font-size:3rem;margin-bottom:12px">🎉</div>
+      <h2>You did it!</h2>
+      <p>All 7 steps complete — congratulations on your new home journey! A Narrow specialist will be in touch for your final walkthrough review.</p>
+    </div>
+
+    <div id="stepsContainer"></div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__bottom" style="justify-content:center">
+      <span>© 2025 Narrow. Breite Family. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="main.js"></script>
+<script>
+const STEPS = [
+  {
+    title: 'Start Your Journey',
+    desc:  'Quick questionnaire builds your personalized path',
+    icon:  '🗺️',
+    action: { label: 'Take the Questionnaire →', href: 'index.html#start' }
+  },
+  {
+    title: 'Financing',
+    desc:  'Connect with verified mortgage partners',
+    icon:  '💰',
+    action: { label: 'Find Mortgage Partners →', href: 'professionals.html' }
+  },
+  {
+    title: 'Find Land',
+    desc:  'EXP Realty agents matched by zip code',
+    icon:  '🗺️',
+    action: { label: 'Find a Real Estate Agent →', href: 'professionals.html' }
+  },
+  {
+    title: 'Architect Plans',
+    desc:  'Browse & purchase verified home plans',
+    icon:  '📐',
+    action: { label: 'Browse Plans →', href: 'architects.html' }
+  },
+  {
+    title: 'Customize',
+    desc:  'Modify plans with real architects',
+    icon:  '✏️',
+    action: { label: 'Find an Architect →', href: 'professionals.html' }
+  },
+  {
+    title: 'Contractor Bids',
+    desc:  'Get 3+ bids from vetted contractors',
+    icon:  '🔨',
+    action: { label: 'Find Contractors →', href: 'professionals.html' }
+  },
+  {
+    title: 'Move In',
+    desc:  'Complete with follow-up and reviews',
+    icon:  '🏠',
+    action: null
+  }
+];
+
+let userSession = null;
+let journeyData = { steps_done: [], current_step: 1 };
+
+async function initDashboard() {
+  const { data: { session } } = await narrowSupabase.auth.getSession();
+
+  if (!session) {
+    document.getElementById('authPrompt').style.display = 'block';
+    return;
+  }
+
+  userSession = session;
+  const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+  const firstName = name.split(' ')[0];
+
+  document.getElementById('heroGreeting').textContent = `Welcome back, ${firstName}!`;
+  document.getElementById('dashboardHero').style.display = 'block';
+  document.getElementById('stepsSection').style.display = 'block';
+
+  // Load journey from Supabase
+  const { data } = await narrowSupabase
+    .from('user_journeys')
+    .select('*')
+    .eq('user_id', session.user.id)
+    .single();
+
+  if (data) journeyData = data;
+
+  renderSteps();
+  updateProgress();
+}
+
+function renderSteps() {
+  const container = document.getElementById('stepsContainer');
+  const done = journeyData.steps_done || [];
+  const current = journeyData.current_step || 1;
+
+  container.innerHTML = STEPS.map((step, i) => {
+    const n = i + 1;
+    const isDone = done.includes(n);
+    const isCurrent = n === current && !isDone;
+    const isLocked = n > current && !isDone;
+    const connector = i < STEPS.length - 1
+      ? `<div class="connector ${isDone ? 'done' : ''}"></div>`
+      : '';
+
+    let badgeHTML = '';
+    if (isDone)     badgeHTML = `<span class="step-card__badge badge-done">✓ Complete</span>`;
+    else if (isCurrent) badgeHTML = `<span class="step-card__badge badge-current">Current Step</span>`;
+    else if (!isLocked) badgeHTML = `<span class="step-card__badge badge-next">Up Next</span>`;
+
+    let actionHTML = '';
+    if (step.action && !isDone) {
+      actionHTML = `<div class="step-card__action">
+        <a href="${step.action.href}" class="btn btn-secondary" style="font-size:0.85rem;padding:8px 18px">${step.action.label}</a>
+      </div>`;
+    }
+
+    return `
+      <div class="step-card ${isDone ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}"
+           onclick="toggleStep(${n})" id="step-card-${n}">
+        <div class="step-card__num">${isDone ? '✓' : step.icon}</div>
+        <div class="step-card__content">
+          <div class="step-card__title">${step.title}</div>
+          <p class="step-card__desc">${step.desc}</p>
+          ${actionHTML}
+        </div>
+        ${badgeHTML}
+      </div>
+      ${connector}
+    `;
+  }).join('');
+}
+
+function updateProgress() {
+  const done = (journeyData.steps_done || []).length;
+  const pct = Math.round((done / 7) * 100);
+
+  document.getElementById('stepsCount').textContent = done;
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  const messages = [
+    "0% complete — let's get started!",
+    "You've taken the first step!",
+    "Great momentum — keep going!",
+    "Halfway there!",
+    "More than halfway — you're doing great!",
+    "Almost there!",
+    "One step away from move-in day!",
+    "🎉 Journey complete — congratulations!"
+  ];
+  document.getElementById('progressPct').textContent = messages[done] || `${pct}% complete`;
+
+  if (done === 7) {
+    document.getElementById('celebration').classList.add('show');
+  }
+}
+
+async function toggleStep(n) {
+  if (!userSession) return;
+
+  const done = [...(journeyData.steps_done || [])];
+  const pos = done.indexOf(n);
+
+  if (pos === -1) {
+    done.push(n);
+  } else {
+    done.splice(pos, 1);
+  }
+
+  // Set current step to lowest incomplete
+  let next = 1;
+  for (let i = 1; i <= 7; i++) {
+    if (!done.includes(i)) { next = i; break; }
+    if (i === 7) next = 7;
+  }
+
+  journeyData.steps_done = done;
+  journeyData.current_step = next;
+
+  // Save to Supabase
+  await narrowSupabase.from('user_journeys').upsert({
+    user_id:      userSession.user.id,
+    current_step: next,
+    steps_done:   done,
+    updated_at:   new Date().toISOString()
+  });
+
+  renderSteps();
+  updateProgress();
+}
+
+// Wait for main.js to init Supabase
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(initDashboard, 300);
+});
+</script>
+</body>
+</html>

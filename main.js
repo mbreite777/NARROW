@@ -19,18 +19,138 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
       const firstName = name.split(' ')[0];
 
+      // Fetch journey progress
+      const { data: journey } = await narrowSupabase
+        .from('user_journeys')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .single();
+
+      const done = journey?.steps_done || [];
+      const currentStep = journey?.current_step || 1;
+      const pct = Math.round((done.length / 7) * 100);
+
+      const STEP_NAMES = [
+        'Start Your Journey', 'Financing', 'Find Land',
+        'Architect Plans', 'Customize', 'Contractor Bids', 'Move In'
+      ];
+
       navAuth.innerHTML = `
-        <div class="nav__user">
-          <span class="nav__welcome">Welcome, ${firstName}</span>
-          <button class="nav__signout" onclick="window.narrowSignOut()">Sign Out</button>
+        <div class="nav__user" style="position:relative">
+          <button class="nav__welcome-btn" onclick="toggleNavJourney(event)" style="
+            background:rgba(255,255,255,0.1);
+            border:1px solid rgba(255,255,255,0.2);
+            color:white;border-radius:8px;padding:7px 14px;cursor:pointer;
+            font-family:var(--font-body);font-size:0.85rem;font-weight:600;
+            display:flex;align-items:center;gap:8px;white-space:nowrap;
+            transition:background 0.2s"
+            onmouseover="this.style.background='rgba(255,255,255,0.18)'"
+            onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+            👋 ${firstName}
+            <span style="font-size:0.7rem;background:var(--amber);color:var(--navy-dark);
+              border-radius:10px;padding:2px 8px;font-weight:700">${done.length}/7</span>
+            <span style="font-size:0.65rem;opacity:0.6">▾</span>
+          </button>
+
+          <div id="navJourneyPanel" style="display:none;position:absolute;top:calc(100% + 12px);
+            right:0;background:white;border-radius:14px;padding:0;width:300px;
+            box-shadow:0 12px 40px rgba(0,0,0,0.2);z-index:500;overflow:hidden;
+            border:1px solid rgba(27,58,107,0.1)">
+
+            <!-- Header -->
+            <div style="background:var(--navy);padding:16px 20px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="color:white;font-weight:700;font-size:0.9rem">Your Journey</span>
+                <a href="dashboard.html" style="color:var(--amber);font-size:0.75rem;font-weight:600">View Full Dashboard →</a>
+              </div>
+              <div style="color:rgba(255,255,255,0.5);font-size:0.72rem;margin-top:6px">${done.length} of 7 steps complete</div>
+            </div>
+
+            <!-- Steps list -->
+            <div style="padding:12px 8px;max-height:320px;overflow-y:auto">
+              ${STEP_NAMES.map((s, i) => {
+                const n = i + 1;
+                const isDone = done.includes(n);
+                const isCurrent = n === currentStep && !isDone;
+                return `
+                  <div onclick="navToggleStep(${n})" style="display:flex;align-items:center;gap:12px;
+                    padding:10px 12px;border-radius:8px;margin-bottom:2px;cursor:pointer;
+                    background:${isCurrent ? '#EEF2FF' : 'transparent'};
+                    transition:background 0.15s"
+                    onmouseover="this.style.background='${isDone ? '#f0fbf4' : '#f5f5f5'}'"
+                    onmouseout="this.style.background='${isCurrent ? '#EEF2FF' : 'transparent'}'">
+                    <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;
+                      background:${isDone ? '#2D6A4F' : isCurrent ? '#E8A838' : '#E5E7EB'};
+                      display:flex;align-items:center;justify-content:center;
+                      font-size:0.72rem;font-weight:700;
+                      color:${isDone || isCurrent ? 'white' : '#9CA3AF'}">
+                      ${isDone ? '✓' : n}
+                    </div>
+                    <span style="font-size:0.83rem;font-weight:${isCurrent ? 700 : 500};
+                      color:${isDone ? '#9CA3AF' : '#111'};
+                      text-decoration:${isDone ? 'line-through' : 'none'};flex:1">${s}</span>
+                    ${isCurrent ? '<span style="font-size:0.65rem;background:#FEF3C7;color:#92400E;padding:2px 7px;border-radius:10px;font-weight:700">NOW</span>' : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Footer -->
+            <div style="border-top:1px solid #E5E7EB;padding:12px 20px;display:flex;justify-content:space-between;align-items:center">
+              <a href="dashboard.html" class="btn btn-primary" style="font-size:0.78rem;padding:7px 16px">Open Dashboard</a>
+              <button onclick="window.narrowSignOut()" style="font-size:0.78rem;color:#6B7280;
+                background:none;border:none;cursor:pointer;font-family:var(--font-body)">Sign Out</button>
+            </div>
+          </div>
         </div>
       `;
+
       if (journeyBtn) journeyBtn.style.display = 'none';
     } else {
       navAuth.innerHTML = `<a href="login.html" class="nav__signin">Sign In</a>`;
       if (journeyBtn) journeyBtn.style.display = '';
     }
   }
+
+  window.toggleNavJourney = function(e) {
+    e.stopPropagation();
+    const panel = document.getElementById('navJourneyPanel');
+    if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  };
+
+  // Close panel when clicking outside
+  document.addEventListener('click', () => {
+    const panel = document.getElementById('navJourneyPanel');
+    if (panel) panel.style.display = 'none';
+  });
+
+  window.navToggleStep = async function(n) {
+    const { data: { session } } = await narrowSupabase.auth.getSession();
+    if (!session) return;
+
+    const { data: j } = await narrowSupabase
+      .from('user_journeys').select('*')
+      .eq('user_id', session.user.id).single();
+
+    const done = [...(j?.steps_done || [])];
+    const pos = done.indexOf(n);
+    if (pos === -1) done.push(n); else done.splice(pos, 1);
+
+    let next = 1;
+    for (let i = 1; i <= 7; i++) {
+      if (!done.includes(i)) { next = i; break; }
+      if (i === 7) next = 7;
+    }
+
+    await narrowSupabase.from('user_journeys').upsert({
+      user_id: session.user.id,
+      current_step: next,
+      steps_done: done,
+      updated_at: new Date().toISOString()
+    });
+
+    updateNavAuth();
+  };
 
   window.narrowSignOut = async function() {
     await narrowSupabase.auth.signOut();
@@ -357,11 +477,7 @@ async function handleContact(e) {
       'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/send-contact',
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name:    data.get('name'),
           email:   data.get('email'),
