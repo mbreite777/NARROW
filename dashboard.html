@@ -8,216 +8,178 @@
   <style>
     .dashboard-hero {
       background: linear-gradient(135deg, var(--navy-dark), var(--navy));
-      padding: 120px 0 60px;
+      padding: 110px 0 48px;
     }
+    .dashboard-hero h1 { color: var(--white); margin-bottom: 6px; font-size: clamp(1.8rem, 3vw, 2.4rem); }
+    .dashboard-hero p  { color: rgba(255,255,255,0.6); font-size: 1rem; }
 
-    .dashboard-hero h1 { color: var(--white); margin-bottom: 8px; }
-    .dashboard-hero p  { color: rgba(255,255,255,0.65); font-size: 1.05rem; }
-
-    .progress-overview {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
+    .progress-wrap {
+      margin-top: 28px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: var(--radius-md);
-      padding: 24px 28px;
-      margin-top: 32px;
+      padding: 20px 24px;
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 24px;
       flex-wrap: wrap;
     }
-
-    .progress-overview__count {
+    .progress-wrap__num {
       font-family: var(--font-display);
-      font-size: 3rem;
+      font-size: 2.8rem;
       font-weight: 700;
       color: var(--amber);
       line-height: 1;
-      min-width: 60px;
+      min-width: 48px;
     }
-
-    .progress-overview__label {
-      color: rgba(255,255,255,0.6);
-      font-size: 0.85rem;
-      margin-top: 4px;
-    }
-
-    .progress-bar-wrap {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .progress-bar-track {
+    .progress-wrap__right { flex: 1; min-width: 180px; }
+    .progress-track {
       height: 10px;
       background: rgba(255,255,255,0.12);
       border-radius: 10px;
       overflow: hidden;
       margin-bottom: 8px;
     }
-
-    .progress-bar-fill {
+    .progress-track__fill {
       height: 100%;
       background: linear-gradient(90deg, var(--green), var(--amber));
       border-radius: 10px;
-      transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+      transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+    }
+    .progress-label { color: rgba(255,255,255,0.45); font-size: 0.78rem; }
+
+    .steps-grid {
+      display: flex;
+      flex-direction: column;
+      padding: 48px 0 80px;
     }
 
-    .progress-pct {
-      color: rgba(255,255,255,0.5);
-      font-size: 0.8rem;
+    .step-row {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 0 20px;
+      position: relative;
     }
 
-    /* Steps */
-    .steps-section {
-      padding: 56px 0 80px;
+    .step-row__line {
+      position: absolute;
+      left: 27px;
+      top: 72px;
+      bottom: -20px;
+      width: 2px;
+      background: var(--gray-light);
     }
+    .step-row:last-child .step-row__line { display: none; }
+    .step-row.completed .step-row__line { background: var(--green); }
+
+    .step-row__num-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      border: 2px solid var(--gray-light);
+      background: var(--white);
+      color: var(--gray);
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+    .step-row.completed .step-num { background: var(--green); border-color: var(--green); color: white; }
+    .step-row.current .step-num { background: var(--amber); border-color: var(--amber); color: var(--navy-dark); box-shadow: 0 0 0 4px rgba(232,168,56,0.2); }
 
     .step-card {
       background: var(--white);
+      border: 2px solid var(--gray-light);
       border-radius: var(--radius-md);
-      border: 2px solid var(--gray-light);
-      padding: 28px 32px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: flex-start;
-      gap: 24px;
-      cursor: pointer;
-      transition: all var(--transition);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .step-card:hover {
-      border-color: var(--navy-light);
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
-    }
-
-    .step-card.completed {
-      border-color: var(--green);
-      background: #F0FBF4;
-    }
-
-    .step-card.current {
-      border-color: var(--amber);
-      box-shadow: 0 0 0 3px rgba(232,168,56,0.15);
-    }
-
-    .step-card.locked {
-      opacity: 0.5;
-      cursor: default;
-    }
-    .step-card.locked:hover {
-      transform: none;
-      box-shadow: none;
-      border-color: var(--gray-light);
-    }
-
-    .step-card__num {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: var(--cream);
-      border: 2px solid var(--gray-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-display);
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--navy);
-      flex-shrink: 0;
+      padding: 22px 26px;
+      margin-bottom: 20px;
       transition: all var(--transition);
     }
+    .step-card:hover { border-color: var(--navy-light); box-shadow: var(--shadow-md); }
+    .step-row.completed .step-card { border-color: var(--green); background: #f4fbf6; }
+    .step-row.current .step-card { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,168,56,0.12); }
 
-    .step-card.completed .step-card__num {
-      background: var(--green);
-      border-color: var(--green);
-      color: white;
-      font-size: 1.4rem;
+    .step-card__top {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 12px; margin-bottom: 6px;
     }
-
-    .step-card.current .step-card__num {
-      background: var(--amber);
-      border-color: var(--amber);
-      color: var(--navy-dark);
-    }
-
-    .step-card__content { flex: 1; }
-
     .step-card__title {
       font-family: var(--font-display);
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: var(--navy);
-      margin-bottom: 4px;
+      font-size: 1.1rem; font-weight: 600; color: var(--navy);
     }
+    .step-row.completed .step-card__title { color: var(--gray); text-decoration: line-through; }
 
-    .step-card.completed .step-card__title {
-      text-decoration: line-through;
-      color: var(--gray);
+    .step-badge {
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;
     }
+    .badge-current  { background: #FEF3C7; color: #92400E; }
+    .badge-done     { background: #D1FAE5; color: #065F46; }
+    .badge-upcoming { background: #F3F4F6; color: #6B7280; }
 
     .step-card__desc {
-      font-size: 0.85rem;
-      color: var(--gray);
-      margin: 0;
+      font-size: 0.85rem; color: var(--gray); margin: 0 0 14px;
     }
+    .step-row.completed .step-card__desc { display: none; }
 
-    .step-card__badge {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 4px 12px;
-      border-radius: 20px;
-      flex-shrink: 0;
-      align-self: center;
+    .step-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .step-row.completed .step-actions { display: none; }
+
+    .action-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 16px; border-radius: var(--radius-sm);
+      font-family: var(--font-body); font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all var(--transition); border: none;
     }
+    .action-btn--primary   { background: var(--navy); color: white; }
+    .action-btn--primary:hover { background: var(--navy-light); }
+    .action-btn--secondary { background: var(--cream); color: var(--navy); border: 1px solid var(--gray-light); }
+    .action-btn--secondary:hover { background: var(--cream-dark); border-color: var(--navy); }
+    .action-btn--amber     { background: var(--amber); color: var(--navy-dark); }
+    .action-btn--amber:hover { background: var(--amber-dark); }
 
-    .badge-current  { background: rgba(232,168,56,0.15); color: var(--amber-dark); }
-    .badge-done     { background: rgba(45,106,79,0.12); color: var(--green); }
-    .badge-next     { background: rgba(27,58,107,0.08); color: var(--navy); }
-
-    .step-card__action {
-      margin-top: 14px;
+    .check-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.78rem; color: var(--gray);
+      background: none; border: none; cursor: pointer;
+      font-family: var(--font-body); padding: 0; margin-top: 14px; transition: color 0.2s;
     }
+    .check-btn:hover { color: var(--green); }
+    .step-row.completed .check-btn { color: var(--green); }
 
-    .connector {
-      width: 2px;
-      height: 16px;
-      background: var(--gray-light);
-      margin: 0 auto;
-      margin-left: 51px;
-    }
-
-    .connector.done { background: var(--green); }
-
-    /* Confetti celebration */
     .celebration {
-      display: none;
-      text-align: center;
-      padding: 40px;
-      background: linear-gradient(135deg, #f0fbf4, #fff8e7);
-      border-radius: var(--radius-lg);
-      border: 2px solid var(--green);
-      margin-bottom: 32px;
+      display: none; text-align: center; padding: 48px 32px;
+      background: linear-gradient(135deg, #f0fbf4, #fffbeb);
+      border-radius: var(--radius-lg); border: 2px solid var(--green); margin-bottom: 40px;
     }
-
     .celebration.show { display: block; }
-    .celebration h2 { color: var(--green); margin-bottom: 8px; }
+    .celebration h2 { color: var(--green); margin-bottom: 12px; }
 
-    /* Not logged in state */
     .auth-prompt {
-      text-align: center;
-      padding: 80px 24px;
+      min-height: 70vh; display: flex; align-items: center;
+      justify-content: center; text-align: center; padding: 80px 24px;
     }
 
-    .auth-prompt h2 { margin-bottom: 16px; }
+    @media (max-width: 600px) {
+      .step-card { padding: 16px 14px; }
+      .step-actions { flex-direction: column; }
+      .action-btn { width: 100%; justify-content: center; }
+    }
   </style>
 </head>
 <body>
 
-<!-- ── NAV ─────────────────────────────────── -->
 <nav class="nav">
   <div class="nav__inner">
     <a href="index.html" class="nav__logo">
@@ -233,60 +195,47 @@
     </ul>
     <div id="nav-auth" class="nav__auth"></div>
     <a href="#start" class="nav__cta nav__journey-btn">Start Your Journey</a>
-    <button class="nav__hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="nav__hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
-<!-- ── DASHBOARD HERO ────────────────────── -->
-<section class="dashboard-hero" id="dashboardHero" style="display:none">
-  <div class="container">
-    <span class="section-label" style="color:rgba(255,255,255,0.5)">Your Building Journey</span>
-    <h1 id="heroGreeting">Welcome back!</h1>
-    <p>Track your progress from idea to front door. Check off each step as you complete it.</p>
-
-    <div class="progress-overview">
-      <div>
-        <div class="progress-overview__count" id="stepsCount">0</div>
-        <div class="progress-overview__label">of 7 steps complete</div>
-      </div>
-      <div class="progress-bar-wrap">
-        <div class="progress-bar-track">
-          <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
-        </div>
-        <div class="progress-pct" id="progressPct">0% complete — let's get started!</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── NOT LOGGED IN ─────────────────────── -->
-<section class="section" id="authPrompt" style="display:none">
-  <div class="container">
-    <div class="auth-prompt">
-      <div style="font-size:3rem;margin-bottom:16px">🏠</div>
-      <h2>Sign in to track your journey</h2>
-      <p style="max-width:400px;margin:0 auto 32px">Create a free account to save your progress and get your personalized A to Z roadmap.</p>
+<!-- Not logged in -->
+<div id="authPrompt" style="display:none">
+  <div class="auth-prompt">
+    <div>
+      <div style="font-size:3.5rem;margin-bottom:20px">🏠</div>
+      <h2 style="margin-bottom:12px">Sign in to track your journey</h2>
+      <p style="max-width:420px;margin:0 auto 32px">Create a free account to save your progress and access your personalized A to Z roadmap.</p>
       <a href="login.html" class="btn btn-primary btn-lg">Sign In / Create Account →</a>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ── STEPS ─────────────────────────────── -->
-<section class="steps-section" id="stepsSection" style="display:none">
-  <div class="container" style="max-width:720px">
-
-    <div class="celebration" id="celebration">
-      <div style="font-size:3rem;margin-bottom:12px">🎉</div>
-      <h2>You did it!</h2>
-      <p>All 7 steps complete — congratulations on your new home journey! A Narrow specialist will be in touch for your final walkthrough review.</p>
+<!-- Dashboard -->
+<div id="dashboardWrap" style="display:none">
+  <section class="dashboard-hero">
+    <div class="container">
+      <span class="section-label" style="color:rgba(255,255,255,0.45);margin-bottom:8px;display:block">Your Building Journey</span>
+      <h1 id="heroGreeting">Welcome back!</h1>
+      <p id="heroSubtitle">Track your progress from idea to front door.</p>
+      <div class="progress-wrap">
+        <div class="progress-wrap__num" id="stepsCount">0</div>
+        <div class="progress-wrap__right">
+          <div class="progress-track">
+            <div class="progress-track__fill" id="progressFill" style="width:0%"></div>
+          </div>
+          <div class="progress-label">of 7 steps complete</div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div id="stepsContainer"></div>
-
-  </div>
-</section>
+  <section>
+    <div class="container" style="max-width:740px">
+      <div class="steps-grid" id="stepsContainer"></div>
+    </div>
+  </section>
+</div>
 
 <footer class="footer">
   <div class="container">
@@ -302,45 +251,65 @@
 const STEPS = [
   {
     title: 'Start Your Journey',
-    desc:  'Quick questionnaire builds your personalized path',
-    icon:  '🗺️',
-    action: { label: 'Take the Questionnaire →', href: 'index.html#start' }
+    desc: 'Complete the quick questionnaire to get your personalized path from concept to move-in day.',
+    icon: '🗺️',
+    actions: [
+      { label: '→ Take the Questionnaire', href: 'index.html#start', style: 'amber' }
+    ]
   },
   {
     title: 'Financing',
-    desc:  'Connect with verified mortgage partners',
-    icon:  '💰',
-    action: { label: 'Find Mortgage Partners →', href: 'professionals.html' }
+    desc: 'Connect with our verified mortgage partners to get pre-approved before you start shopping for land.',
+    icon: '💰',
+    actions: [
+      { label: '→ Find Mortgage Partners', href: 'professionals.html', style: 'primary' },
+      { label: '✉ Contact Narrow', href: 'mailto:info@buildnarrow.com?subject=Mortgage%20Inquiry', style: 'secondary' }
+    ]
   },
   {
     title: 'Find Land',
-    desc:  'EXP Realty agents matched by zip code',
-    icon:  '🗺️',
-    action: { label: 'Find a Real Estate Agent →', href: 'professionals.html' }
+    desc: 'Our EXP Realty agents are matched by zip code and specialize in finding buildable lots.',
+    icon: '🗺️',
+    actions: [
+      { label: '→ Find a Real Estate Agent', href: 'professionals.html', style: 'primary' },
+      { label: '✉ Email Narrow', href: 'mailto:info@buildnarrow.com?subject=Land%20Search%20Inquiry', style: 'secondary' },
+      { label: '💬 Inquire via Contact Form', href: 'about.html#contact', style: 'secondary' }
+    ]
   },
   {
     title: 'Architect Plans',
-    desc:  'Browse & purchase verified home plans',
-    icon:  '📐',
-    action: { label: 'Browse Plans →', href: 'architects.html' }
+    desc: 'Browse and purchase verified home plans from our architect marketplace.',
+    icon: '📐',
+    actions: [
+      { label: '→ Browse Plans', href: 'architects.html', style: 'amber' },
+      { label: '→ Find an Architect', href: 'professionals.html', style: 'secondary' }
+    ]
   },
   {
     title: 'Customize',
-    desc:  'Modify plans with real architects',
-    icon:  '✏️',
-    action: { label: 'Find an Architect →', href: 'professionals.html' }
+    desc: 'Work directly with a licensed architect to modify your plans to fit your vision and lot.',
+    icon: '✏️',
+    actions: [
+      { label: '→ Find an Architect', href: 'professionals.html', style: 'primary' },
+      { label: '✉ Ask Narrow', href: 'mailto:info@buildnarrow.com?subject=Plan%20Customization%20Question', style: 'secondary' }
+    ]
   },
   {
     title: 'Contractor Bids',
-    desc:  'Get 3+ bids from vetted contractors',
-    icon:  '🔨',
-    action: { label: 'Find Contractors →', href: 'professionals.html' }
+    desc: 'Get 3+ competitive bids from our vetted, licensed general contractors in your area.',
+    icon: '🔨',
+    actions: [
+      { label: '→ Find Contractors', href: 'professionals.html', style: 'primary' },
+      { label: '✉ Get Help Matching', href: 'mailto:info@buildnarrow.com?subject=Contractor%20Matching%20Request', style: 'secondary' }
+    ]
   },
   {
     title: 'Move In',
-    desc:  'Complete with follow-up and reviews',
-    icon:  '🏠',
-    action: null
+    desc: "You're almost there! Complete final walkthrough, reviews, and move-in day coordination.",
+    icon: '🏠',
+    actions: [
+      { label: '✉ Contact Your Narrow Specialist', href: 'mailto:info@buildnarrow.com?subject=Move-In%20Coordination', style: 'amber' }
+    ]
   }
 ];
 
@@ -349,136 +318,122 @@ let journeyData = { steps_done: [], current_step: 1 };
 
 async function initDashboard() {
   const { data: { session } } = await narrowSupabase.auth.getSession();
-
   if (!session) {
-    document.getElementById('authPrompt').style.display = 'block';
+    document.getElementById('authPrompt').style.display = 'flex';
     return;
   }
 
   userSession = session;
   const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
   const firstName = name.split(' ')[0];
-
   document.getElementById('heroGreeting').textContent = `Welcome back, ${firstName}!`;
-  document.getElementById('dashboardHero').style.display = 'block';
-  document.getElementById('stepsSection').style.display = 'block';
+  document.getElementById('dashboardWrap').style.display = 'block';
 
-  // Load journey from Supabase
   const { data } = await narrowSupabase
-    .from('user_journeys')
-    .select('*')
-    .eq('user_id', session.user.id)
-    .single();
+    .from('user_journeys').select('*')
+    .eq('user_id', session.user.id).single();
 
   if (data) journeyData = data;
-
   renderSteps();
   updateProgress();
 }
 
 function renderSteps() {
-  const container = document.getElementById('stepsContainer');
   const done = journeyData.steps_done || [];
   const current = journeyData.current_step || 1;
+  const allDone = done.length === 7;
 
-  container.innerHTML = STEPS.map((step, i) => {
-    const n = i + 1;
-    const isDone = done.includes(n);
-    const isCurrent = n === current && !isDone;
-    const isLocked = n > current && !isDone;
-    const connector = i < STEPS.length - 1
-      ? `<div class="connector ${isDone ? 'done' : ''}"></div>`
-      : '';
-
-    let badgeHTML = '';
-    if (isDone)     badgeHTML = `<span class="step-card__badge badge-done">✓ Complete</span>`;
-    else if (isCurrent) badgeHTML = `<span class="step-card__badge badge-current">Current Step</span>`;
-    else if (!isLocked) badgeHTML = `<span class="step-card__badge badge-next">Up Next</span>`;
-
-    let actionHTML = '';
-    if (step.action && !isDone) {
-      actionHTML = `<div class="step-card__action">
-        <a href="${step.action.href}" class="btn btn-secondary" style="font-size:0.85rem;padding:8px 18px">${step.action.label}</a>
-      </div>`;
-    }
-
-    return `
-      <div class="step-card ${isDone ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}"
-           onclick="toggleStep(${n})" id="step-card-${n}">
-        <div class="step-card__num">${isDone ? '✓' : step.icon}</div>
-        <div class="step-card__content">
-          <div class="step-card__title">${step.title}</div>
-          <p class="step-card__desc">${step.desc}</p>
-          ${actionHTML}
-        </div>
-        ${badgeHTML}
+  document.getElementById('stepsContainer').innerHTML =
+    (allDone ? `
+      <div class="celebration show">
+        <div style="font-size:3rem;margin-bottom:16px">🎉</div>
+        <h2>Congratulations — Journey Complete!</h2>
+        <p style="max-width:460px;margin:0 auto 24px">You've completed all 7 steps. A Narrow specialist will be in touch to coordinate your final walkthrough and move-in review.</p>
+        <a href="mailto:info@buildnarrow.com?subject=Journey%20Complete" class="btn btn-primary">Contact Your Specialist →</a>
       </div>
-      ${connector}
-    `;
-  }).join('');
+    ` : '') +
+    STEPS.map((step, i) => {
+      const n = i + 1;
+      const isDone = done.includes(n);
+      const isCurrent = n === current && !isDone;
+
+      const badge = isDone
+        ? `<span class="step-badge badge-done">✓ Complete</span>`
+        : isCurrent
+          ? `<span class="step-badge badge-current">Current Step</span>`
+          : `<span class="step-badge badge-upcoming">Upcoming</span>`;
+
+      const actions = step.actions.map(a =>
+        `<a href="${a.href}" class="action-btn action-btn--${a.style}">${a.label}</a>`
+      ).join('');
+
+      return `
+        <div class="step-row ${isDone ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
+          <div class="step-row__line"></div>
+          <div class="step-row__num-col">
+            <div class="step-num">${isDone ? '✓' : step.icon}</div>
+          </div>
+          <div class="step-card">
+            <div class="step-card__top">
+              <div class="step-card__title">${step.title}</div>
+              ${badge}
+            </div>
+            <p class="step-card__desc">${step.desc}</p>
+            <div class="step-actions">${actions}</div>
+            <button class="check-btn" onclick="toggleStep(${n})">
+              ${isDone ? '↩ Mark as incomplete' : '☐ Mark as complete'}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
 }
 
 function updateProgress() {
   const done = (journeyData.steps_done || []).length;
   const pct = Math.round((done / 7) * 100);
-
   document.getElementById('stepsCount').textContent = done;
   document.getElementById('progressFill').style.width = pct + '%';
-
-  const messages = [
-    "0% complete — let's get started!",
-    "You've taken the first step!",
-    "Great momentum — keep going!",
-    "Halfway there!",
-    "More than halfway — you're doing great!",
-    "Almost there!",
+  const subtitles = [
+    "Let's get your home built. Start with Step 1 below.",
+    "Great start — you've taken the first step!",
+    "You're building momentum. Keep going!",
+    "Halfway there — you're doing great!",
+    "More than halfway — the finish line is in sight!",
+    "Almost there — just a couple steps left!",
     "One step away from move-in day!",
-    "🎉 Journey complete — congratulations!"
+    "🎉 All 7 steps complete — congratulations!"
   ];
-  document.getElementById('progressPct').textContent = messages[done] || `${pct}% complete`;
-
-  if (done === 7) {
-    document.getElementById('celebration').classList.add('show');
-  }
+  document.getElementById('heroSubtitle').textContent = subtitles[done] || '';
 }
 
 async function toggleStep(n) {
   if (!userSession) return;
-
   const done = [...(journeyData.steps_done || [])];
   const pos = done.indexOf(n);
+  if (pos === -1) done.push(n); else done.splice(pos, 1);
 
-  if (pos === -1) {
-    done.push(n);
-  } else {
-    done.splice(pos, 1);
-  }
-
-  // Set current step to lowest incomplete
-  let next = 1;
+  let next = 7;
   for (let i = 1; i <= 7; i++) {
     if (!done.includes(i)) { next = i; break; }
-    if (i === 7) next = 7;
   }
 
   journeyData.steps_done = done;
   journeyData.current_step = next;
 
-  // Save to Supabase
   await narrowSupabase.from('user_journeys').upsert({
-    user_id:      userSession.user.id,
+    user_id: userSession.user.id,
     current_step: next,
-    steps_done:   done,
-    updated_at:   new Date().toISOString()
+    steps_done: done,
+    updated_at: new Date().toISOString()
   });
 
   renderSteps();
   updateProgress();
 }
 
-// Wait for main.js to init Supabase
 document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(initDashboard, 300);
+  setTimeout(initDashboard, 350);
 });
 </script>
 </body>
