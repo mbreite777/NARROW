@@ -317,7 +317,7 @@ let userSession = null;
 let journeyData = { steps_done: [], current_step: 1 };
 
 async function initDashboard() {
-  const { data: { session } } = await window.narrowSupabase.auth.getSession();
+  const { data: { session } } = await narrowSupabase.auth.getSession();
   if (!session) {
     document.getElementById('authPrompt').style.display = 'flex';
     return;
@@ -329,7 +329,7 @@ async function initDashboard() {
   document.getElementById('heroGreeting').textContent = `Welcome back, ${firstName}!`;
   document.getElementById('dashboardWrap').style.display = 'block';
 
-  const { data } = await window.narrowSupabase
+  const { data } = await narrowSupabase
     .from('user_journeys').select('*')
     .eq('user_id', session.user.id).single();
 
@@ -408,7 +408,7 @@ function updateProgress() {
 }
 
 async function toggleStep(n) {
-  if (!userSession || !window.narrowSupabase) return;
+  if (!userSession) return;
   const done = [...(journeyData.steps_done || [])];
   const pos = done.indexOf(n);
   if (pos === -1) done.push(n); else done.splice(pos, 1);
@@ -421,7 +421,7 @@ async function toggleStep(n) {
   journeyData.steps_done = done;
   journeyData.current_step = next;
 
-  await window.narrowSupabase.from('user_journeys').upsert({
+  await narrowSupabase.from('user_journeys').upsert({
     user_id: userSession.user.id,
     current_step: next,
     steps_done: done,
@@ -432,16 +432,8 @@ async function toggleStep(n) {
   updateProgress();
 }
 
-// Wait for narrowSupabase to be initialised by main.js (it's set on window)
-function waitForSupabase(cb, attempts) {
-  attempts = attempts || 0;
-  if (window.narrowSupabase) { cb(); return; }
-  if (attempts > 30) { document.getElementById('authPrompt').style.display = 'flex'; return; }
-  setTimeout(() => waitForSupabase(cb, attempts + 1), 100);
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-  waitForSupabase(initDashboard);
+  setTimeout(initDashboard, 350);
 });
 </script>
 </body>
