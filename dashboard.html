@@ -364,13 +364,37 @@ async function loadBuilds() {
 function renderBuildSelector() {
   const selector = document.getElementById('buildSelector');
   selector.innerHTML = allBuilds.map((b, i) =>
-    `<button class="build-tab ${i === activeBuildIdx ? 'active' : ''}" onclick="switchBuild(${i})">${b.name}</button>`
+    `<button class="build-tab ${i === activeBuildIdx ? 'active' : ''}" onclick="switchBuild(${i})">
+      ${b.name}
+      ${allBuilds.length > 1 ? `<span class="build-tab__delete" onclick="event.stopPropagation();deleteBuild(${i})" title="Delete build">✕</span>` : ''}
+    </button>`
   ).join('') +
   `<button class="build-tab build-tab--add" onclick="addNewBuild()">+ New Build</button>`;
 }
 
 window.switchBuild = function(idx) {
   activeBuildIdx = idx;
+  renderBuildSelector();
+  renderSteps();
+  updateProgress();
+};
+
+window.deleteBuild = async function(idx) {
+  const build = allBuilds[idx];
+  if (!confirm(`Delete "${build.name}"? This cannot be undone.`)) return;
+
+  if (build.id) {
+    await narrowSupabase.from('user_builds').delete().eq('id', build.id);
+  }
+
+  allBuilds.splice(idx, 1);
+  if (activeBuildIdx >= allBuilds.length) activeBuildIdx = allBuilds.length - 1;
+
+  if (allBuilds.length === 0) {
+    allBuilds = [{ name: 'My First Build', current_step: 1, steps_done: [], id: null }];
+    activeBuildIdx = 0;
+  }
+
   renderBuildSelector();
   renderSteps();
   updateProgress();

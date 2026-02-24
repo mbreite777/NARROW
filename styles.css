@@ -1008,6 +1008,23 @@ p { color: var(--gray); line-height: 1.75; }
   opacity: 0.6;
 }
 .build-tab--add:hover { opacity: 1; }
+.build-tab__delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 8px;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  color: var(--gray);
+  background: rgba(0,0,0,0.06);
+  transition: all 0.15s;
+}
+.build-tab__delete:hover {
+  background: #FEE2E2;
+  color: #DC2626;
+}
 
 /* Step rows */
 .steps-grid {
