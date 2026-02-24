@@ -295,31 +295,35 @@ let allBuilds = [];
 let activeBuildIdx = 0;
 
 async function initDashboard() {
-  const { data: { session } } = await narrowSupabase.auth.getSession();
-  if (!session) {
-    document.getElementById('authPrompt').style.display = 'flex';
-    return;
-  }
+  try {
+    const { data: { session } } = await narrowSupabase.auth.getSession();
+    if (!session) {
+      document.getElementById('authPrompt').style.display = 'flex';
+      return;
+    }
 
-  userSession = session;
-  const meta = session.user.user_metadata || {};
-  const name = meta.full_name || session.user.email.split('@')[0];
-  const firstName = name.split(' ')[0];
-  const role = meta.role || 'homebuilder';
+    userSession = session;
+    const meta = session.user.user_metadata || {};
+    const name = meta.full_name || session.user.email.split('@')[0];
+    const firstName = name.split(' ')[0];
+    const role = meta.role || 'homebuilder';
 
-  if (role === 'architect') {
-    document.getElementById('architectDash').style.display = 'block';
-    document.getElementById('archGreeting').textContent = `Welcome back, ${firstName}!`;
-    loadArchitectProfile();
-  } else if (role === 'contractor') {
-    document.getElementById('contractorDash').style.display = 'block';
-    document.getElementById('contGreeting').textContent = `Welcome back, ${firstName}!`;
-    loadContractorProfile();
-  } else {
-    // Homebuilder
-    document.getElementById('homebuilderDash').style.display = 'block';
-    document.getElementById('heroGreeting').textContent = `Welcome back, ${firstName}!`;
-    await loadBuilds();
+    if (role === 'architect') {
+      document.getElementById('architectDash').style.display = 'block';
+      document.getElementById('archGreeting').textContent = `Welcome back, ${firstName}!`;
+      await loadArchitectProfile();
+    } else if (role === 'contractor') {
+      document.getElementById('contractorDash').style.display = 'block';
+      document.getElementById('contGreeting').textContent = `Welcome back, ${firstName}!`;
+      await loadContractorProfile();
+    } else {
+      // Homebuilder
+      document.getElementById('homebuilderDash').style.display = 'block';
+      document.getElementById('heroGreeting').textContent = `Welcome back, ${firstName}!`;
+      await loadBuilds();
+    }
+  } catch (err) {
+    console.error('Dashboard init error:', err);
   }
 }
 
@@ -327,22 +331,34 @@ async function initDashboard() {
 // HOMEBUILDER — Build management
 // ═══════════════════════════════════════════
 async function loadBuilds() {
-  const { data } = await narrowSupabase
-    .from('user_builds')
-    .select('*')
-    .eq('user_id', userSession.user.id)
-    .order('created_at', { ascending: true });
+  try {
+    const { data, error } = await narrowSupabase
+      .from('user_builds')
+      .select('*')
+      .eq('user_id', userSession.user.id)
+      .order('created_at', { ascending: true });
 
-  allBuilds = data || [];
+    if (error) {
+      console.warn('Could not load builds:', error.message);
+    }
 
-  if (allBuilds.length === 0) {
-    // No builds yet — prompt questionnaire
+    allBuilds = data || [];
+
+    if (allBuilds.length === 0) {
+      // No builds yet — prompt questionnaire
+      allBuilds = [{ name: 'My First Build', current_step: 1, steps_done: [], id: null }];
+    }
+
+    renderBuildSelector();
+    renderSteps();
+    updateProgress();
+  } catch (err) {
+    console.error('loadBuilds error:', err);
     allBuilds = [{ name: 'My First Build', current_step: 1, steps_done: [], id: null }];
+    renderBuildSelector();
+    renderSteps();
+    updateProgress();
   }
-
-  renderBuildSelector();
-  renderSteps();
-  updateProgress();
 }
 
 function renderBuildSelector() {
@@ -591,23 +607,38 @@ window.openBidPortal = function() {
 // ARCHITECT — Profile management
 // ═══════════════════════════════════════════
 async function loadArchitectProfile() {
-  const { data } = await narrowSupabase
-    .from('architect_profiles')
-    .select('*')
-    .eq('user_id', userSession.user.id)
-    .single();
+  try {
+    const { data, error } = await narrowSupabase
+      .from('architect_profiles')
+      .select('*')
+      .eq('user_id', userSession.user.id)
+      .single();
 
-  if (data) {
-    document.getElementById('archCompany').value = data.company_name || '';
-    document.getElementById('archLicense').value = data.license_number || '';
-    document.getElementById('archSpecialties').value = data.specialties || '';
-    document.getElementById('archWebsite').value = data.website || '';
-    document.getElementById('archBio').value = data.bio || '';
+    if (error && error.code === 'PGRST116') {
+      // No profile row exists — create one (catch-up for signup failures)
+      const meta = userSession.user.user_metadata || {};
+      await narrowSupabase.from('architect_profiles').insert({
+        user_id: userSession.user.id,
+        full_name: meta.full_name || '',
+      });
+      console.log('Architect profile created on first dashboard visit');
+      return;
+    }
+
+    if (data) {
+      document.getElementById('archCompany').value = data.company_name || '';
+      document.getElementById('archLicense').value = data.license_number || '';
+      document.getElementById('archSpecialties').value = data.specialties || '';
+      document.getElementById('archWebsite').value = data.website || '';
+      document.getElementById('archBio').value = data.bio || '';
+    }
+  } catch (err) {
+    console.warn('Could not load architect profile:', err);
   }
 }
 
 window.saveArchProfile = async function() {
-  await narrowSupabase.from('architect_profiles').upsert({
+  const { error } = await narrowSupabase.from('architect_profiles').upsert({
     user_id: userSession.user.id,
     company_name: document.getElementById('archCompany').value,
     license_number: document.getElementById('archLicense').value,
@@ -616,7 +647,12 @@ window.saveArchProfile = async function() {
     bio: document.getElementById('archBio').value,
     updated_at: new Date().toISOString()
   });
-  alert('Profile saved!');
+  if (error) {
+    console.error('Save error:', error);
+    alert('Error saving profile. Check console for details.');
+  } else {
+    alert('Profile saved!');
+  }
 };
 
 window.showUploadPlan = function() {
@@ -627,25 +663,40 @@ window.showUploadPlan = function() {
 // CONTRACTOR — Profile management
 // ═══════════════════════════════════════════
 async function loadContractorProfile() {
-  const { data } = await narrowSupabase
-    .from('contractor_profiles')
-    .select('*')
-    .eq('user_id', userSession.user.id)
-    .single();
+  try {
+    const { data, error } = await narrowSupabase
+      .from('contractor_profiles')
+      .select('*')
+      .eq('user_id', userSession.user.id)
+      .single();
 
-  if (data) {
-    document.getElementById('contCompany').value = data.company_name || '';
-    document.getElementById('contLicense').value = data.license_number || '';
-    document.getElementById('contRadius').value = data.service_radius || '';
-    document.getElementById('contArea').value = data.service_area || '';
-    document.getElementById('contExperience').value = data.experience_years || '';
-    document.getElementById('contEmail').value = data.contact_email || '';
-    document.getElementById('contBio').value = data.bio || '';
+    if (error && error.code === 'PGRST116') {
+      // No profile row exists — create one (catch-up for signup failures)
+      const meta = userSession.user.user_metadata || {};
+      await narrowSupabase.from('contractor_profiles').insert({
+        user_id: userSession.user.id,
+        company_name: '',
+      });
+      console.log('Contractor profile created on first dashboard visit');
+      return;
+    }
+
+    if (data) {
+      document.getElementById('contCompany').value = data.company_name || '';
+      document.getElementById('contLicense').value = data.license_number || '';
+      document.getElementById('contRadius').value = data.service_radius || '';
+      document.getElementById('contArea').value = data.service_area || '';
+      document.getElementById('contExperience').value = data.experience_years || '';
+      document.getElementById('contEmail').value = data.contact_email || '';
+      document.getElementById('contBio').value = data.bio || '';
+    }
+  } catch (err) {
+    console.warn('Could not load contractor profile:', err);
   }
 }
 
 window.saveContProfile = async function() {
-  await narrowSupabase.from('contractor_profiles').upsert({
+  const { error } = await narrowSupabase.from('contractor_profiles').upsert({
     user_id: userSession.user.id,
     company_name: document.getElementById('contCompany').value,
     license_number: document.getElementById('contLicense').value,
@@ -656,7 +707,12 @@ window.saveContProfile = async function() {
     bio: document.getElementById('contBio').value,
     updated_at: new Date().toISOString()
   });
-  alert('Profile saved!');
+  if (error) {
+    console.error('Save error:', error);
+    alert('Error saving profile. Check console for details.');
+  } else {
+    alert('Profile saved!');
+  }
 };
 
 // ── Mortgage Lenders page (simple redirect) ──

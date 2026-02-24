@@ -239,21 +239,29 @@
 
     const userId = data.user?.id;
     if (userId) {
-      if (selectedRole === 'contractor') {
-        await window.narrowSupabase.from('contractor_profiles').insert({
-          user_id:        userId,
-          full_name:      name,
-          company_name:   document.getElementById('contractorCompany').value,
-          license_number: document.getElementById('contractorLicense').value,
-          service_area:   document.getElementById('contractorArea').value,
-        });
-      } else if (selectedRole === 'architect') {
-        await window.narrowSupabase.from('architect_profiles').insert({
-          user_id:        userId,
-          full_name:      name,
-          company_name:   document.getElementById('architectCompany').value,
-          license_number: document.getElementById('architectLicense').value,
-        });
+      // Profile inserts may fail if email confirmation is required (no session yet)
+      // or if tables/columns don't exist. This is non-blocking — profile can be
+      // created later on first dashboard visit (catch-up mechanism).
+      try {
+        if (selectedRole === 'contractor') {
+          const { error: profileErr } = await window.narrowSupabase.from('contractor_profiles').insert({
+            user_id:        userId,
+            company_name:   document.getElementById('contractorCompany').value,
+            license_number: document.getElementById('contractorLicense').value,
+            service_area:   document.getElementById('contractorArea').value,
+          });
+          if (profileErr) console.warn('Profile insert deferred:', profileErr.message);
+        } else if (selectedRole === 'architect') {
+          const { error: profileErr } = await window.narrowSupabase.from('architect_profiles').insert({
+            user_id:        userId,
+            full_name:      name,
+            company_name:   document.getElementById('architectCompany').value,
+            license_number: document.getElementById('architectLicense').value,
+          });
+          if (profileErr) console.warn('Profile insert deferred:', profileErr.message);
+        }
+      } catch (profileCatchErr) {
+        console.warn('Profile creation deferred to first login:', profileCatchErr);
       }
       // homebuilder profile stored via auth metadata
     }

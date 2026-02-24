@@ -303,31 +303,37 @@ window.submitQuestionnaire = async function() {
   const { data: { session } } = await narrowSupabase.auth.getSession();
   if (!session) return;
 
-  // Save questionnaire to Supabase
-  await narrowSupabase.from('questionnaire_responses').upsert({
-    user_id: session.user.id,
-    answers: qAnswers,
-    created_at: new Date().toISOString()
-  });
-
-  // Create initial build + journey
-  const { data: existingBuilds } = await narrowSupabase
-    .from('user_builds')
-    .select('id')
-    .eq('user_id', session.user.id);
-
-  if (!existingBuilds || existingBuilds.length === 0) {
-    await narrowSupabase.from('user_builds').insert({
+  try {
+    // Save questionnaire to Supabase
+    const { error: qErr } = await narrowSupabase.from('questionnaire_responses').upsert({
       user_id: session.user.id,
-      name: 'My First Build',
-      current_step: 2,
-      steps_done: [1],
-      questionnaire: qAnswers,
+      answers: qAnswers,
       created_at: new Date().toISOString()
     });
+    if (qErr) console.warn('Questionnaire save error:', qErr.message);
+
+    // Create initial build + journey
+    const { data: existingBuilds } = await narrowSupabase
+      .from('user_builds')
+      .select('id')
+      .eq('user_id', session.user.id);
+
+    if (!existingBuilds || existingBuilds.length === 0) {
+      const { error: buildErr } = await narrowSupabase.from('user_builds').insert({
+        user_id: session.user.id,
+        name: 'My First Build',
+        current_step: 2,
+        steps_done: [1],
+        questionnaire: qAnswers,
+        created_at: new Date().toISOString()
+      });
+      if (buildErr) console.warn('Build create error:', buildErr.message);
+    }
+  } catch (err) {
+    console.error('Questionnaire submit error:', err);
   }
 
-  // Show success
+  // Show success regardless — user can still proceed to dashboard
   document.getElementById('q-step-4').classList.remove('active');
   document.getElementById('q-success').classList.add('active');
 };
@@ -389,9 +395,13 @@ async function handleContact(e) {
       e.target.reset();
       setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.disabled = false; }, 4000);
     } else {
-      throw new Error('Server error');
+      // Log actual server response for debugging
+      const errBody = await res.text().catch(() => 'No response body');
+      console.error(`Contact form error: HTTP ${res.status}`, errBody);
+      throw new Error(`Server returned ${res.status}`);
     }
   } catch (err) {
+    console.error('Contact form failed:', err);
     btn.textContent = '✗ Failed — try again';
     btn.style.background = '#DC2626';
     btn.disabled = false;
