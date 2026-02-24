@@ -3,145 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Find Professionals — Contractors & Agents | Narrow</title>
-  <meta name="description" content="Find verified contractors, real estate agents, and mortgage partners through Narrow's trusted marketplace.">
+  <title>For Professionals — Narrow</title>
+  <meta name="description" content="Architects, mortgage agents, and contractors — grow your business with Narrow's trusted homebuilder network.">
   <link rel="stylesheet" href="styles.css">
-  <style>
-    .tab-bar {
-      display: flex;
-      gap: 0;
-      background: var(--cream-dark);
-      border-radius: var(--radius-sm);
-      padding: 4px;
-      margin-bottom: 40px;
-      width: fit-content;
-    }
-    .tab-btn {
-      padding: 12px 28px;
-      border-radius: calc(var(--radius-sm) - 2px);
-      border: none;
-      background: none;
-      font-family: var(--font-body);
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--gray);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    .tab-btn.active {
-      background: var(--navy);
-      color: var(--white);
-    }
-
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    .pro-card {
-      background: var(--white);
-      border-radius: var(--radius-md);
-      padding: 28px;
-      border: 1px solid rgba(27,58,107,0.08);
-      box-shadow: var(--shadow-sm);
-      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
-    }
-    .pro-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-      border-color: rgba(27,58,107,0.2);
-    }
-    .pro-card__header {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      margin-bottom: 16px;
-    }
-    .pro-avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--navy), var(--navy-light));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      flex-shrink: 0;
-    }
-    .pro-avatar--green { background: linear-gradient(135deg, var(--green), var(--green-light)); }
-    .pro-avatar--amber { background: linear-gradient(135deg, var(--amber-dark), var(--amber)); }
-    .pro-card__name { font-size: 1.05rem; margin-bottom: 2px; font-family: var(--font-display); }
-    .pro-card__type { font-size: 0.78rem; color: var(--green); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-    .pro-card__verified {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.75rem;
-      color: var(--green);
-      font-weight: 600;
-      background: rgba(45,106,79,0.1);
-      padding: 4px 10px;
-      border-radius: 99px;
-    }
-    .pro-card__stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      padding: 16px 0;
-      border-top: 1px solid var(--cream-dark);
-      border-bottom: 1px solid var(--cream-dark);
-      margin-bottom: 16px;
-      text-align: center;
-    }
-    .pro-stat__num {
-      font-family: var(--font-display);
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--navy);
-    }
-    .pro-stat__label { font-size: 0.72rem; color: var(--gray); }
-    .pro-card__tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
-    .pro-tag {
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 99px;
-      background: rgba(27,58,107,0.08);
-      color: var(--navy);
-    }
-    .pro-card__footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .pro-card__rate { font-size: 0.85rem; color: var(--gray); }
-    .pro-card__rate strong { color: var(--navy); font-size: 1rem; }
-
-    .search-form {
-      background: var(--white);
-      border-radius: var(--radius-md);
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid rgba(27,58,107,0.08);
-      display: flex;
-      gap: 12px;
-      align-items: flex-end;
-      flex-wrap: wrap;
-      margin-bottom: 36px;
-    }
-    .search-form .form-group { margin-bottom: 0; flex: 1; min-width: 160px; }
-
-    .agent-cta-box {
-      background: linear-gradient(135deg, var(--navy), var(--navy-light));
-      border-radius: var(--radius-lg);
-      padding: 48px;
-      color: white;
-      text-align: center;
-    }
-    .agent-cta-box h2 { color: white; margin-bottom: 12px; }
-    .agent-cta-box p { color: rgba(255,255,255,0.75); margin-bottom: 28px; }
-  </style>
 </head>
 <body>
 
@@ -151,337 +15,236 @@
       <img src="Narrow Logo.png" alt="Narrow Logo" style="width:40px;height:40px;object-fit:contain">
       <span class="nav__logo-text">Narrow</span>
     </a>
-    <ul class="nav__links">
+    <ul class="nav__links" id="nav-links">
       <li><a href="index.html" class="nav__link">Home</a></li>
-      <li><a href="how-it-works.html" class="nav__link">How It Works</a></li>
-      <li><a href="architects.html" class="nav__link">Architect Plans</a></li>
-      <li><a href="professionals.html" class="nav__link">Find Pros</a></li>
-      <li><a href="about.html" class="nav__link">About</a></li>
+      <li><a href="marketplace.html" class="nav__link">Plan Marketplace</a></li>
+      <li><a href="professionals.html" class="nav__link">For Professionals</a></li>
     </ul>
-    <div id="nav-auth" class="nav__auth"></div>
-    <a href="index.html#start" class="nav__cta nav__journey-btn">Start Your Journey</a>
+    <div id="nav-auth" class="nav__auth">
+      <a href="login.html" class="nav__signin">Login</a>
+    </div>
     <button class="nav__hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
+<div id="mobileMenu" class="nav__mobile-menu"></div>
 
 <!-- HERO -->
-<section class="hero" style="padding:140px 0 72px">
+<section class="hero" style="padding:140px 0 80px">
   <div class="container hero__content">
-    <span class="hero__eyebrow">Steps 2, 3 & 6 of Your Journey</span>
-    <h1>Find Verified<br><span style="color:var(--amber)">Professionals</span></h1>
-    <p>Every contractor, agent, and mortgage partner on Narrow is verified, rated, and regionally matched. Get competing bids and make informed decisions with real data.</p>
-    <div style="display:flex;gap:24px;margin-top:28px;flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.75);font-size:0.85rem">
-        <span>✅</span> Verified credentials
+    <span class="hero__eyebrow">Grow With Narrow</span>
+    <h1>For<br><span style="color:var(--amber)">Professionals</span></h1>
+    <p>Architects, mortgage agents, and general contractors — Narrow connects you with pre-qualified homebuilders actively seeking your services. Grow your business on the platform that simplifies home building from A to Z.</p>
+  </div>
+</section>
+
+<!-- ── QUICK NAV ──────────────────────────── -->
+<div style="background:var(--white);border-bottom:1px solid var(--cream-dark);padding:16px 0;position:sticky;top:72px;z-index:50">
+  <div class="container" style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap">
+    <a href="#architects" class="btn btn-outline" style="padding:10px 24px;font-size:0.88rem">📐 Architects</a>
+    <a href="#mortgage" class="btn btn-outline" style="padding:10px 24px;font-size:0.88rem">💰 Mortgage Agents</a>
+    <a href="#contractors" class="btn btn-outline" style="padding:10px 24px;font-size:0.88rem">🏗️ General Contractors</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- ── ARCHITECTS ─────────────────────────── -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="architects">
+  <div class="container">
+    <div class="grid-2" style="gap:64px">
+      <div>
+        <span class="section-label">📐 Architects</span>
+        <h2>Sell your plans. Grow your reach. Keep your business.</h2>
+        <p style="margin:20px 0">Narrow is built for architects who want to expand their market — not lose control of their work. You set your prices, maintain your brand, and reach homebuilders nationwide. Narrow takes a 12% commission on plan sales.</p>
+
+        <div style="display:grid;gap:16px;margin-top:28px">
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:rgba(45,106,79,0.06);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.3rem">🔐</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Account setup after login</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Create your architect account, build your public profile, and start listing plans immediately.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:rgba(45,106,79,0.06);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.3rem">📤</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Upload & manage plans</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Upload your plan library with images, specs, and descriptions. Update anytime from your dashboard.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:rgba(45,106,79,0.06);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.3rem">💰</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Set your own prices</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Your plans. Your pricing. Narrow takes 12% commission — you keep 88% of every sale.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:rgba(45,106,79,0.06);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.3rem">🏢</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Maintain business autonomy</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">You list under your own business name. Your brand. Your identity. Not a faceless listing.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:rgba(232,168,56,0.08);border-radius:10px;border-left:4px solid var(--amber)">
+            <span style="font-size:1.3rem">✏️</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Offer extra services</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Plan customization, code adaptation, permit-ready drawings — offer add-on services purchasable through the site or directly after plan purchase.</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.75);font-size:0.85rem">
-        <span>📍</span> Regional matching
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.75);font-size:0.85rem">
-        <span>⭐</span> Real ratings & reviews
+      <div>
+        <div style="background:var(--white);border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-md);border:1px solid rgba(27,58,107,0.08)">
+          <h3 style="margin-bottom:8px">Architect Pricing</h3>
+          <p style="font-size:0.9rem;margin-bottom:24px">Free to list. Narrow earns when you earn.</p>
+          <div style="padding:20px;background:rgba(45,106,79,0.06);border-radius:var(--radius-md);margin-bottom:16px">
+            <p style="font-weight:700;color:var(--navy);margin:0;font-size:1.1rem">Plan Sales Commission</p>
+            <p style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--green);margin:8px 0 4px">12%</p>
+            <p style="font-size:0.85rem;margin:0">You keep 88% of every plan sale</p>
+          </div>
+          <div style="padding:20px;background:rgba(232,168,56,0.08);border-radius:var(--radius-md);margin-bottom:24px">
+            <p style="font-weight:700;color:var(--navy);margin:0;font-size:1.1rem">Ad Promotions (optional)</p>
+            <p style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--amber-dark);margin:8px 0 4px">$30/mo</p>
+            <p style="font-size:0.85rem;margin:0">Featured placement in search results</p>
+          </div>
+          <a href="login.html" class="btn btn-green" style="width:100%;justify-content:center">Create Architect Account →</a>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- MAIN CONTENT -->
-<section class="section">
+<!-- ══════════════════════════════════════════ -->
+<!-- ── MORTGAGE AGENTS ────────────────────── -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section section--cream" id="mortgage">
   <div class="container">
-
-    <!-- Tabs -->
-    <div class="tab-bar reveal">
-      <button class="tab-btn active" onclick="switchTab('contractors', this)">🏗️ Contractors</button>
-      <button class="tab-btn" onclick="switchTab('agents', this)">🏡 Real Estate Agents</button>
-      <button class="tab-btn" onclick="switchTab('mortgage', this)">💰 Mortgage Partners</button>
-    </div>
-
-    <!-- CONTRACTORS TAB -->
-    <div class="tab-panel active" id="tab-contractors">
-      <div class="reveal" style="margin-bottom:8px">
-        <span class="section-label">Step 6 of Your Journey</span>
-        <h2 style="margin-bottom:8px">Verified General Contractors</h2>
-        <p>Narrow recommends getting a minimum of 3 competitive bids. All contractors are licensed, verified, and subject to Narrow's rating system. Contractors only appear here through an active platform subscription — ensuring committed, professional partners.</p>
-      </div>
-
-      <!-- Search -->
-      <div class="search-form reveal">
-        <div class="form-group"><label>ZIP Code</label><input type="text" placeholder="Enter your ZIP code" maxlength="5"></div>
-        <div class="form-group"><label>Project Type</label>
-          <select>
-            <option>New Custom Home</option>
-            <option>Addition / Renovation</option>
-            <option>Spec Home</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Budget Range</label>
-          <select>
-            <option>Under $300K</option>
-            <option>$300K – $600K</option>
-            <option>$600K – $1M</option>
-            <option>$1M+</option>
-          </select>
-        </div>
-        <button class="btn btn-primary">Find Contractors</button>
-      </div>
-
-      <div class="grid-3">
-        <div class="pro-card reveal">
-          <div class="pro-card__header">
-            <div class="pro-avatar">🏗️</div>
-            <div>
-              <h3 class="pro-card__name">Meridian Build Group</h3>
-              <p class="pro-card__type">General Contractor</p>
-            </div>
-            <div class="pro-card__verified">✓ Verified</div>
+    <div class="grid-2" style="gap:64px">
+      <div>
+        <div style="background:var(--white);border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-md);border:1px solid rgba(27,58,107,0.08)">
+          <h3 style="margin-bottom:8px">Mortgage Advertising</h3>
+          <p style="font-size:0.9rem;margin-bottom:24px">Reach homebuilders actively seeking construction financing.</p>
+          <div style="padding:20px;background:rgba(27,58,107,0.06);border-radius:var(--radius-md);margin-bottom:16px">
+            <p style="font-weight:700;color:var(--navy);margin:0;font-size:1.1rem">Standard Placement</p>
+            <p style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy);margin:8px 0 4px">$8,000 – $15,000/yr</p>
+            <p style="font-size:0.85rem;margin:0">Visible to all homebuilders during the financing step</p>
           </div>
-          <div style="margin-bottom:12px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">4.9 (87 reviews)</span></div>
-          <div class="pro-card__stats">
-            <div><div class="pro-stat__num">143</div><div class="pro-stat__label">Homes Built</div></div>
-            <div><div class="pro-stat__num">12yr</div><div class="pro-stat__label">Experience</div></div>
-            <div><div class="pro-stat__num">100%</div><div class="pro-stat__label">Licensed</div></div>
+          <div style="padding:20px;background:rgba(232,168,56,0.08);border-radius:var(--radius-md);margin-bottom:24px">
+            <p style="font-weight:700;color:var(--navy);margin:0;font-size:1.1rem">Promoted Vendor (High Volume)</p>
+            <p style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--amber-dark);margin:8px 0 4px">$250,000/yr</p>
+            <p style="font-size:0.85rem;margin:0">Premium "next step" button placement (higher traffic)</p>
           </div>
-          <div class="pro-card__tags">
-            <span class="pro-tag">Custom Homes</span>
-            <span class="pro-tag">Energy Efficient</span>
-            <span class="pro-tag">New Construction</span>
-          </div>
-          <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px">📍 Serving greater metro area · Available for bids</p>
-          <div class="pro-card__footer">
-            <div class="pro-card__rate">Avg. project: <strong>$420K–$850K</strong></div>
-            <a href="#" class="btn btn-primary" style="padding:10px 18px;font-size:0.85rem">Request Bid</a>
-          </div>
-        </div>
-
-        <div class="pro-card reveal">
-          <div class="pro-card__header">
-            <div class="pro-avatar pro-avatar--green">🔨</div>
-            <div>
-              <h3 class="pro-card__name">Stonegate Construction</h3>
-              <p class="pro-card__type">General Contractor</p>
-            </div>
-            <div class="pro-card__verified">✓ Verified</div>
-          </div>
-          <div style="margin-bottom:12px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">4.8 (62 reviews)</span></div>
-          <div class="pro-card__stats">
-            <div><div class="pro-stat__num">98</div><div class="pro-stat__label">Homes Built</div></div>
-            <div><div class="pro-stat__num">9yr</div><div class="pro-stat__label">Experience</div></div>
-            <div><div class="pro-stat__num">100%</div><div class="pro-stat__label">Licensed</div></div>
-          </div>
-          <div class="pro-card__tags">
-            <span class="pro-tag">Craftsman Style</span>
-            <span class="pro-tag">Custom Homes</span>
-            <span class="pro-tag">Under $600K</span>
-          </div>
-          <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px">📍 Regional coverage · Available Q2 2026</p>
-          <div class="pro-card__footer">
-            <div class="pro-card__rate">Avg. project: <strong>$280K–$550K</strong></div>
-            <a href="#" class="btn btn-primary" style="padding:10px 18px;font-size:0.85rem">Request Bid</a>
-          </div>
-        </div>
-
-        <div class="pro-card reveal">
-          <div class="pro-card__header">
-            <div class="pro-avatar" style="background:linear-gradient(135deg,#374151,#1F2937)">🏠</div>
-            <div>
-              <h3 class="pro-card__name">Cornerstone Group LLC</h3>
-              <p class="pro-card__type">General Contractor</p>
-            </div>
-            <div class="pro-card__verified">✓ Verified</div>
-          </div>
-          <div style="margin-bottom:12px"><span class="stars">★★★★☆</span> <span style="font-size:0.8rem;color:var(--gray)">4.6 (44 reviews)</span></div>
-          <div class="pro-card__stats">
-            <div><div class="pro-stat__num">71</div><div class="pro-stat__label">Homes Built</div></div>
-            <div><div class="pro-stat__num">7yr</div><div class="pro-stat__label">Experience</div></div>
-            <div><div class="pro-stat__num">100%</div><div class="pro-stat__label">Licensed</div></div>
-          </div>
-          <div class="pro-card__tags">
-            <span class="pro-tag">First-Time Friendly</span>
-            <span class="pro-tag">Budget Focused</span>
-          </div>
-          <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px">📍 Within 50 miles · Immediate availability</p>
-          <div class="pro-card__footer">
-            <div class="pro-card__rate">Avg. project: <strong>$200K–$400K</strong></div>
-            <a href="#" class="btn btn-primary" style="padding:10px 18px;font-size:0.85rem">Request Bid</a>
-          </div>
+          <a href="index.html#contact" class="btn btn-primary" style="width:100%;justify-content:center">Contact for Advertising →</a>
         </div>
       </div>
+      <div>
+        <span class="section-label">💰 Mortgage Agents</span>
+        <h2>Advertise to homebuilders who are ready to borrow</h2>
+        <p style="margin:20px 0">Narrow's homebuilders are pre-qualified, actively building, and searching for construction financing. Your advertisement reaches them at the exact moment they need a lender.</p>
 
-      <div style="margin-top:32px;padding:20px 24px;background:rgba(232,168,56,0.1);border:1px solid rgba(232,168,56,0.3);border-radius:var(--radius-sm)" class="reveal">
-        <p style="color:var(--charcoal);margin:0">💡 <strong>Narrow recommends:</strong> Always get a minimum of 3 contractor bids before signing. Each bid submission through the platform is free.</p>
-      </div>
-    </div>
-
-    <!-- AGENTS TAB -->
-    <div class="tab-panel" id="tab-agents">
-      <div class="reveal" style="margin-bottom:8px">
-        <span class="section-label">Step 3 of Your Journey</span>
-        <h2 style="margin-bottom:8px">EXP Realty Agent Network</h2>
-        <p>Once pre-approved for financing, Narrow connects you with a qualified EXP Realty agent in your zip code. EXP is nationwide — meaning coverage in all 50 states. These agents specialize in land and new construction, not just existing homes.</p>
-      </div>
-
-      <div class="agent-cta-box reveal" style="margin-bottom:40px">
-        <div style="font-size:2.5rem;margin-bottom:16px">🏡</div>
-        <h2>Get matched with a land specialist</h2>
-        <p>Enter your zip code and we'll connect you with a qualified EXP agent in your area — typically within 24 hours.</p>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-          <input type="text" placeholder="Your ZIP code" maxlength="5" style="padding:14px 20px;border:none;border-radius:var(--radius-sm);font-size:1rem;font-family:var(--font-body);width:200px">
-          <button class="btn btn-primary btn-lg">Find My Agent →</button>
-        </div>
-        <p style="color:rgba(255,255,255,0.5);font-size:0.8rem;margin-top:12px">Powered by EXP Realty · Nationwide Network</p>
-      </div>
-
-      <div class="grid-3">
-        <div class="pro-card reveal">
-          <div class="pro-card__header">
-            <div class="pro-avatar pro-avatar--green">🏡</div>
+        <div style="display:grid;gap:16px;margin-top:28px">
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:var(--white);border-radius:10px;border-left:4px solid var(--navy)">
+            <span style="font-size:1.3rem">🎯</span>
             <div>
-              <h3 class="pro-card__name">Sarah M.</h3>
-              <p class="pro-card__type">EXP Realty · Land Specialist</p>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Targeted placement</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Your listing appears during the financing step of every homebuilder's journey — when they're actively looking.</p>
             </div>
-            <div class="pro-card__verified">✓ Verified</div>
           </div>
-          <div style="margin-bottom:12px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">4.9 (103 reviews)</span></div>
-          <div class="pro-card__stats">
-            <div><div class="pro-stat__num">212</div><div class="pro-stat__label">Transactions</div></div>
-            <div><div class="pro-stat__num">11yr</div><div class="pro-stat__label">Experience</div></div>
-            <div><div class="pro-stat__num">68%</div><div class="pro-stat__label">Land Sales</div></div>
-          </div>
-          <div class="pro-card__tags">
-            <span class="pro-tag">Land Acquisition</span>
-            <span class="pro-tag">New Construction</span>
-          </div>
-          <div class="pro-card__footer">
-            <span style="font-size:0.85rem;color:var(--gray)">📍 Available in your area</span>
-            <a href="#" class="btn btn-green" style="padding:10px 18px;font-size:0.85rem">Connect</a>
-          </div>
-        </div>
-
-        <div class="pro-card reveal">
-          <div class="pro-card__header">
-            <div class="pro-avatar">🏘️</div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:var(--white);border-radius:10px;border-left:4px solid var(--navy)">
+            <span style="font-size:1.3rem">📊</span>
             <div>
-              <h3 class="pro-card__name">James T.</h3>
-              <p class="pro-card__type">EXP Realty · Land Specialist</p>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">What's included</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Company profile page, direct "Get Pre-Approved" button, visibility in the mortgage lenders section, and external link to your application.</p>
             </div>
-            <div class="pro-card__verified">✓ Verified</div>
           </div>
-          <div style="margin-bottom:12px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">4.8 (78 reviews)</span></div>
-          <div class="pro-card__stats">
-            <div><div class="pro-stat__num">156</div><div class="pro-stat__label">Transactions</div></div>
-            <div><div class="pro-stat__num">8yr</div><div class="pro-stat__label">Experience</div></div>
-            <div><div class="pro-stat__num">55%</div><div class="pro-stat__label">Land Sales</div></div>
-          </div>
-          <div class="pro-card__tags">
-            <span class="pro-tag">Rural Land</span>
-            <span class="pro-tag">Subdivisions</span>
-          </div>
-          <div class="pro-card__footer">
-            <span style="font-size:0.85rem;color:var(--gray)">📍 Available in your area</span>
-            <a href="#" class="btn btn-green" style="padding:10px 18px;font-size:0.85rem">Connect</a>
-          </div>
-        </div>
-
-        <div class="pro-card reveal">
-          <div class="pro-card__header">
-            <div class="pro-avatar pro-avatar--amber">🗺️</div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:var(--white);border-radius:10px;border-left:4px solid var(--navy)">
+            <span style="font-size:1.3rem">📈</span>
             <div>
-              <h3 class="pro-card__name">Renee K.</h3>
-              <p class="pro-card__type">EXP Realty · Buyer Agent</p>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">ROI-focused</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">At $8,000/year, a single mortgage origination from the platform covers your cost. Everything else is profit.</p>
             </div>
-            <div class="pro-card__verified">✓ Verified</div>
-          </div>
-          <div style="margin-bottom:12px"><span class="stars">★★★★☆</span> <span style="font-size:0.8rem;color:var(--gray)">4.7 (52 reviews)</span></div>
-          <div class="pro-card__stats">
-            <div><div class="pro-stat__num">94</div><div class="pro-stat__label">Transactions</div></div>
-            <div><div class="pro-stat__num">5yr</div><div class="pro-stat__label">Experience</div></div>
-            <div><div class="pro-stat__num">40%</div><div class="pro-stat__label">Land Sales</div></div>
-          </div>
-          <div class="pro-card__tags">
-            <span class="pro-tag">First-Time Buyers</span>
-            <span class="pro-tag">New Build Lots</span>
-          </div>
-          <div class="pro-card__footer">
-            <span style="font-size:0.85rem;color:var(--gray)">📍 Available in your area</span>
-            <a href="#" class="btn btn-green" style="padding:10px 18px;font-size:0.85rem">Connect</a>
           </div>
         </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- MORTGAGE TAB -->
-    <div class="tab-panel" id="tab-mortgage">
-      <div class="reveal" style="margin-bottom:8px">
-        <span class="section-label">Step 2 of Your Journey</span>
-        <h2 style="margin-bottom:8px">Mortgage & Construction Loan Partners</h2>
-        <p>Getting pre-approved from multiple lenders puts you in the strongest position when you're ready to purchase land and break ground. Narrow connects you with verified mortgage partners who specialize in construction financing.</p>
+<!-- ══════════════════════════════════════════ -->
+<!-- ── GENERAL CONTRACTORS ────────────────── -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="contractors">
+  <div class="container">
+    <div class="grid-2" style="gap:64px">
+      <div>
+        <span class="section-label">🏗️ General Contractors</span>
+        <h2>Get matched with homebuilders in your region</h2>
+        <p style="margin:20px 0">Narrow's verified contractor directory connects you with homebuilders who already have financing, land, and plans — they're ready to build and looking for competitive bids. One build covers your annual subscription.</p>
+
+        <div style="display:grid;gap:16px;margin-top:28px">
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:rgba(45,106,79,0.06);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.3rem">👤</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Public profile management</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Manage your contact info, experience, past projects, and credentials. Homebuilders see your profile before requesting a bid.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:rgba(45,106,79,0.06);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.3rem">📍</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Service regions</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Define your service radius in miles. Homebuilders in your coverage area can filter and find you by city or region.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:rgba(45,106,79,0.06);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.3rem">⭐</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Ratings & reviews</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Completed builds earn real reviews. A strong rating puts you at the top of homebuilder searches.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:rgba(45,106,79,0.06);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.3rem">📋</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Receive plans & bid requests</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Homebuilders upload their architectural plans and select vetted contractors to receive them. You review and submit your bid.</p>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div class="grid-3" style="margin-top:32px">
-        <div class="pro-card reveal">
-          <div class="pro-card__header">
-            <div class="pro-avatar pro-avatar--amber">💰</div>
-            <div>
-              <h3 class="pro-card__name">First Build Lending</h3>
-              <p class="pro-card__type">Construction Loan Specialist</p>
-            </div>
-            <div class="pro-card__verified">✓ Verified</div>
+      <div>
+        <div style="background:var(--white);border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-md);border:1px solid rgba(27,58,107,0.08)">
+          <h3 style="margin-bottom:8px">Contractor Subscription</h3>
+          <p style="font-size:0.9rem;margin-bottom:24px">One build covers your subscription. Subscribers appear in verified searches — non-subscribers do not.</p>
+          <div style="padding:20px;background:rgba(45,106,79,0.06);border-radius:var(--radius-md);margin-bottom:16px">
+            <p style="font-weight:700;color:var(--navy);margin:0;font-size:1.1rem">Monthly</p>
+            <p style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--green);margin:8px 0 4px">$70/mo</p>
+            <p style="font-size:0.85rem;margin:0">Cancel anytime</p>
           </div>
-          <div class="pro-card__tags" style="margin-bottom:16px">
-            <span class="pro-tag">Construction Loans</span>
-            <span class="pro-tag">First-Time Builders</span>
-            <span class="pro-tag">FHA Options</span>
+          <div style="padding:20px;background:rgba(232,168,56,0.08);border-radius:var(--radius-md);margin-bottom:24px">
+            <p style="font-weight:700;color:var(--navy);margin:0;font-size:1.1rem">Annual (save $90)</p>
+            <p style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--amber-dark);margin:8px 0 4px">$750/yr</p>
+            <p style="font-size:0.85rem;margin:0">Best value — equivalent to $62.50/mo</p>
           </div>
-          <p style="font-size:0.85rem;color:var(--gray);margin-bottom:16px">Specializing in one-time close construction loans. Work with first-time homebuilders to navigate the construction loan process from application to completion.</p>
-          <div class="pro-card__footer">
-            <span style="font-size:0.85rem;color:var(--gray)">📍 Nationwide</span>
-            <a href="#" class="btn btn-primary" style="padding:10px 18px;font-size:0.85rem">Get Pre-Approved</a>
-          </div>
-        </div>
-
-        <div class="pro-card reveal">
-          <div class="pro-card__header">
-            <div class="pro-avatar">🏦</div>
-            <div>
-              <h3 class="pro-card__name">Summit Mortgage Group</h3>
-              <p class="pro-card__type">Full-Service Mortgage Lender</p>
-            </div>
-            <div class="pro-card__verified">✓ Verified</div>
-          </div>
-          <div class="pro-card__tags" style="margin-bottom:16px">
-            <span class="pro-tag">Conventional</span>
-            <span class="pro-tag">VA Loans</span>
-            <span class="pro-tag">Construction-to-Perm</span>
-          </div>
-          <p style="font-size:0.85rem;color:var(--gray);margin-bottom:16px">Full-service mortgage lending including construction-to-permanent loans. Transparent process with dedicated loan officers from approval through closing.</p>
-          <div class="pro-card__footer">
-            <span style="font-size:0.85rem;color:var(--gray)">📍 Nationwide</span>
-            <a href="#" class="btn btn-primary" style="padding:10px 18px;font-size:0.85rem">Get Pre-Approved</a>
-          </div>
-        </div>
-
-        <div class="pro-card reveal" style="border:2px dashed var(--gray-light);background:rgba(248,245,240,0.5)">
-          <div style="text-align:center;padding:20px">
-            <div style="font-size:2.5rem;margin-bottom:12px">📢</div>
-            <h3 style="margin-bottom:8px">Advertise Here</h3>
-            <p style="font-size:0.85rem;margin-bottom:20px">Mortgage companies can advertise directly to pre-qualified homebuilders actively seeking financing. Starting at $8,000/year.</p>
-            <a href="about.html#contact" class="btn btn-outline" style="font-size:0.85rem">Learn About Advertising</a>
-          </div>
+          <a href="login.html" class="btn btn-green" style="width:100%;justify-content:center">Create Contractor Account →</a>
+          <p style="font-size:0.78rem;color:var(--gray);margin-top:12px;text-align:center">Subscription payment coming soon via Stripe</p>
         </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- ARE YOU A CONTRACTOR CTA -->
-    <div style="margin-top:64px;background:linear-gradient(135deg,rgba(45,106,79,0.08),rgba(27,58,107,0.08));border:1px solid rgba(45,106,79,0.15);border-radius:var(--radius-md);padding:40px;display:flex;gap:32px;align-items:center;flex-wrap:wrap" class="reveal">
-      <div style="flex:1;min-width:260px">
-        <h3 style="margin-bottom:10px">Are you a contractor?</h3>
-        <p style="font-size:0.9rem">Join the Narrow contractor directory. One build covers your annual subscription fee. Subscribers appear in verified searches — non-subscribers do not.</p>
-      </div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <a href="about.html#contact" class="btn btn-green">Join as Contractor — $70/mo</a>
-        <a href="about.html#contact" class="btn btn-outline" style="font-size:0.9rem">Learn More</a>
-      </div>
+<!-- ── CTA ────────────────────────────────── -->
+<section style="background:linear-gradient(135deg,var(--navy-dark),var(--navy));padding:96px 0;text-align:center">
+  <div class="container">
+    <h2 class="text-white">Ready to grow your business?</h2>
+    <p style="color:rgba(255,255,255,0.7);margin:16px auto 36px;max-width:480px">Join the platform that puts you in front of pre-qualified homebuilders who are ready to build.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <a href="login.html" class="btn btn-primary btn-lg">Create Your Account →</a>
+      <a href="index.html#contact" class="btn btn-secondary btn-lg">Contact Us</a>
     </div>
-
   </div>
 </section>
 
@@ -498,24 +261,23 @@
       <div>
         <p class="footer__heading">Platform</p>
         <ul class="footer__links">
-          <li><a href="how-it-works.html">How It Works</a></li>
-          <li><a href="architects.html">Architect Plans</a></li>
-          <li><a href="professionals.html">Find Pros</a></li>
+          <li><a href="index.html#how-it-works">How It Works</a></li>
+          <li><a href="marketplace.html">Plan Marketplace</a></li>
         </ul>
       </div>
       <div>
         <p class="footer__heading">Company</p>
         <ul class="footer__links">
-          <li><a href="about.html">About Us</a></li>
-          <li><a href="about.html#contact">Contact</a></li>
+          <li><a href="index.html#about">About Us</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
         </ul>
       </div>
       <div>
-        <p class="footer__heading">For Pros</p>
+        <p class="footer__heading">For Professionals</p>
         <ul class="footer__links">
-          <li><a href="#">Contractor Sign Up</a></li>
-          <li><a href="#">Agent Network</a></li>
-          <li><a href="#">Mortgage Advertising</a></li>
+          <li><a href="#architects">Architects</a></li>
+          <li><a href="#contractors">Contractors</a></li>
+          <li><a href="#mortgage">Mortgage Agents</a></li>
         </ul>
       </div>
     </div>
@@ -526,14 +288,6 @@
   </div>
 </footer>
 
-<script>
-function switchTab(tab, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tab-' + tab).classList.add('active');
-}
-</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
 </body>

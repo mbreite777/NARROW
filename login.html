@@ -6,271 +6,34 @@
   <title>Narrow — Sign In / Create Account</title>
   <meta name="description" content="Sign in or create your Narrow account to start your home building journey.">
   <link rel="stylesheet" href="styles.css">
-  <style>
-    .auth-section {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 120px 24px 60px;
-      background: var(--navy-dark);
-    }
-
-    .auth-card {
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-lg);
-      width: 100%;
-      max-width: 500px;
-      overflow: hidden;
-    }
-
-    .auth-card__header {
-      background: var(--navy);
-      padding: 36px 40px 28px;
-      text-align: center;
-    }
-
-    .auth-card__logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .auth-card__logo-text {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--white);
-    }
-
-    .auth-tabs {
-      display: flex;
-      border-bottom: 1px solid rgba(255,255,255,0.15);
-    }
-
-    .auth-tab {
-      flex: 1;
-      padding: 14px;
-      background: none;
-      border: none;
-      color: rgba(255,255,255,0.55);
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: var(--transition);
-      border-bottom: 3px solid transparent;
-      margin-bottom: -1px;
-    }
-
-    .auth-tab.active {
-      color: var(--amber);
-      border-bottom-color: var(--amber);
-    }
-
-    .auth-card__body {
-      padding: 36px 40px 40px;
-    }
-
-    .auth-panel { display: none; }
-    .auth-panel.active { display: block; }
-
-    .form-group {
-      margin-bottom: 18px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--charcoal);
-      margin-bottom: 6px;
-      letter-spacing: 0.02em;
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 12px 16px;
-      border: 2px solid var(--gray-light);
-      border-radius: var(--radius-sm);
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      color: var(--charcoal);
-      background: var(--cream);
-      transition: var(--transition);
-      outline: none;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-      border-color: var(--navy);
-      background: var(--white);
-    }
-
-    .auth-btn {
-      width: 100%;
-      padding: 14px;
-      background: var(--amber);
-      color: var(--navy-dark);
-      border: none;
-      border-radius: var(--radius-sm);
-      font-family: var(--font-body);
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: var(--transition);
-      margin-top: 8px;
-    }
-
-    .auth-btn:hover {
-      background: var(--amber-dark);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .auth-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .auth-divider {
-      text-align: center;
-      margin: 20px 0;
-      position: relative;
-    }
-
-    .auth-divider::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0; right: 0;
-      height: 1px;
-      background: var(--gray-light);
-    }
-
-    .auth-divider span {
-      position: relative;
-      background: var(--white);
-      padding: 0 12px;
-      font-size: 0.8rem;
-      color: var(--gray);
-    }
-
-    .auth-switch {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 0.875rem;
-      color: var(--gray);
-    }
-
-    .auth-switch a {
-      color: var(--navy);
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    .auth-message {
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      margin-bottom: 16px;
-      display: none;
-    }
-
-    .auth-message.success {
-      background: #D1FAE5;
-      color: #065F46;
-      border: 1px solid #6EE7B7;
-      display: block;
-    }
-
-    .auth-message.error {
-      background: #FEE2E2;
-      color: #991B1B;
-      border: 1px solid #FCA5A5;
-      display: block;
-    }
-
-    .role-cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .role-card {
-      padding: 14px 8px;
-      border: 2px solid var(--gray-light);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      text-align: center;
-      transition: var(--transition);
-      font-family: var(--font-body);
-      background: var(--cream);
-    }
-
-    .role-card:hover {
-      border-color: var(--navy-light);
-      background: #F0F4FF;
-    }
-
-    .role-card.selected {
-      border-color: var(--navy);
-      background: #EEF2FF;
-    }
-
-    .role-card .role-icon  { font-size: 1.3rem; display: block; margin-bottom: 4px; }
-    .role-card .role-label { font-size: 0.72rem; font-weight: 600; color: var(--charcoal); }
-
-    .form-label-top {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--charcoal);
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    .conditional-field { display: none; }
-    .conditional-field.visible { display: block; }
-  </style>
 </head>
 <body>
 
-<!-- ── NAV ─────────────────────────────────── -->
 <nav class="nav">
   <div class="nav__inner">
     <a href="index.html" class="nav__logo">
       <img src="Narrow Logo.png" alt="Narrow Logo" style="width:40px;height:40px;object-fit:contain">
       <span class="nav__logo-text">Narrow</span>
     </a>
-    <ul class="nav__links">
+    <ul class="nav__links" id="nav-links">
       <li><a href="index.html" class="nav__link">Home</a></li>
-      <li><a href="how-it-works.html" class="nav__link">How It Works</a></li>
-      <li><a href="architects.html" class="nav__link">Architect Plans</a></li>
-      <li><a href="professionals.html" class="nav__link">Find Pros</a></li>
-      <li><a href="about.html" class="nav__link">About</a></li>
+      <li><a href="marketplace.html" class="nav__link">Plan Marketplace</a></li>
+      <li><a href="professionals.html" class="nav__link">For Professionals</a></li>
     </ul>
-    <div id="nav-auth" class="nav__auth"></div>
-    <button class="nav__hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <div id="nav-auth" class="nav__auth">
+      <a href="login.html" class="nav__signin">Login</a>
+    </div>
+    <button class="nav__hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
+<div id="mobileMenu" class="nav__mobile-menu"></div>
 
-<!-- ── AUTH SECTION ──────────────────────────── -->
 <section class="auth-section">
   <div class="auth-card">
-
     <div class="auth-card__header">
-      <div class="auth-card__logo">
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px">
         <img src="Narrow Logo.png" alt="Narrow" style="width:36px;height:36px;object-fit:contain">
-        <span class="auth-card__logo-text">Narrow</span>
+        <span style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--white)">Narrow</span>
       </div>
       <div class="auth-tabs">
         <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
@@ -279,37 +42,34 @@
     </div>
 
     <div class="auth-card__body">
-
       <div id="authMessage" class="auth-message"></div>
 
-      <!-- ── LOGIN PANEL ── -->
-      <div id="loginPanel" class="auth-panel active">
+      <!-- LOGIN PANEL -->
+      <div class="auth-panel active" id="loginPanel">
         <div class="form-group">
           <label>Email Address</label>
           <input type="email" id="loginEmail" placeholder="you@email.com">
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="loginPassword" placeholder="••••••••">
+          <input type="password" id="loginPassword" placeholder="Your password">
         </div>
         <button class="auth-btn" onclick="handleLogin()">Sign In →</button>
-        <div class="auth-divider"><span>new to narrow?</span></div>
-        <div class="auth-switch">
-          Don't have an account? <a onclick="switchTab('signup')">Create one free</a>
+        <div style="text-align:center;margin-top:16px">
+          <a onclick="handleForgotPassword()" style="font-size:0.85rem;color:var(--navy);cursor:pointer;text-decoration:underline">Forgot password?</a>
         </div>
-        <div style="text-align:center;margin-top:12px">
-          <a onclick="handleForgotPassword()" style="font-size:0.8rem;color:var(--gray);cursor:pointer;text-decoration:underline">Forgot password?</a>
+        <div class="auth-switch">
+          New to Narrow? <a onclick="switchTab('signup')">Create an account</a>
         </div>
       </div>
 
-      <!-- ── SIGNUP PANEL ── -->
-      <div id="signupPanel" class="auth-panel">
-
-        <span class="form-label-top">I am a…</span>
+      <!-- SIGNUP PANEL -->
+      <div class="auth-panel" id="signupPanel">
+        <span style="font-size:0.85rem;font-weight:600;color:var(--charcoal);display:block;margin-bottom:8px">I am a...</span>
         <div class="role-cards">
-          <div class="role-card" onclick="selectRole(this, 'homebuyer')">
+          <div class="role-card" onclick="selectRole(this, 'homebuilder')">
             <span class="role-icon">🏠</span>
-            <span class="role-label">Homebuyer</span>
+            <span class="role-label">Homebuilder</span>
           </div>
           <div class="role-card" onclick="selectRole(this, 'architect')">
             <span class="role-icon">📐</span>
@@ -319,17 +79,8 @@
             <span class="role-icon">🔨</span>
             <span class="role-label">Contractor</span>
           </div>
-          <div class="role-card" onclick="selectRole(this, 'agent')">
-            <span class="role-icon">🏡</span>
-            <span class="role-label">Real Estate Agent</span>
-          </div>
-          <div class="role-card" onclick="selectRole(this, 'mortgage')">
-            <span class="role-icon">💰</span>
-            <span class="role-label">Mortgage Agent</span>
-          </div>
         </div>
 
-        <!-- Core fields -->
         <div class="form-group">
           <label>Full Name</label>
           <input type="text" id="signupName" placeholder="Jane Smith">
@@ -341,6 +92,18 @@
         <div class="form-group">
           <label>Password</label>
           <input type="password" id="signupPassword" placeholder="Min. 8 characters">
+        </div>
+
+        <!-- Architect fields -->
+        <div id="architectFields" class="conditional-field">
+          <div class="form-group">
+            <label>Firm / Company Name</label>
+            <input type="text" id="architectCompany" placeholder="Smith Architecture Studio">
+          </div>
+          <div class="form-group">
+            <label>Architect License Number</label>
+            <input type="text" id="architectLicense" placeholder="State architect license #">
+          </div>
         </div>
 
         <!-- Contractor fields -->
@@ -359,50 +122,6 @@
           </div>
         </div>
 
-        <!-- Architect fields -->
-        <div id="architectFields" class="conditional-field">
-          <div class="form-group">
-            <label>Firm / Company Name</label>
-            <input type="text" id="architectCompany" placeholder="Smith Architecture Studio">
-          </div>
-          <div class="form-group">
-            <label>Architect License Number</label>
-            <input type="text" id="architectLicense" placeholder="State architect license #">
-          </div>
-        </div>
-
-        <!-- Real Estate Agent fields -->
-        <div id="agentFields" class="conditional-field">
-          <div class="form-group">
-            <label>Brokerage Name</label>
-            <input type="text" id="agentBrokerage" placeholder="Keller Williams, Compass, etc.">
-          </div>
-          <div class="form-group">
-            <label>RE License Number</label>
-            <input type="text" id="agentLicense" placeholder="State RE license #">
-          </div>
-          <div class="form-group">
-            <label>Service Area (City, State)</label>
-            <input type="text" id="agentArea" placeholder="Austin, TX">
-          </div>
-        </div>
-
-        <!-- Mortgage Agent fields -->
-        <div id="mortgageFields" class="conditional-field">
-          <div class="form-group">
-            <label>Company / Lender Name</label>
-            <input type="text" id="mortgageCompany" placeholder="First National Bank, etc.">
-          </div>
-          <div class="form-group">
-            <label>NMLS Number</label>
-            <input type="text" id="mortgageNmls" placeholder="Your NMLS license #">
-          </div>
-          <div class="form-group">
-            <label>Licensed States</label>
-            <input type="text" id="mortgageStates" placeholder="TX, OK, AR, LA">
-          </div>
-        </div>
-
         <button class="auth-btn" onclick="handleSignup()">Create My Account →</button>
         <div class="auth-switch" style="margin-top:16px">
           Already have an account? <a onclick="switchTab('login')">Sign in</a>
@@ -415,7 +134,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Initialize Supabase (standalone - no main.js on this page)
   const { createClient } = window.supabase;
   window.narrowSupabase = createClient(
     'https://okalotfqhmwiyckhvcmk.supabase.co',
@@ -438,17 +156,13 @@
     el.classList.add('selected');
     selectedRole = role;
 
-    // Hide all conditional fields
-    ['contractorFields','architectFields','agentFields','mortgageFields'].forEach(id => {
+    ['contractorFields','architectFields'].forEach(id => {
       document.getElementById(id).classList.remove('visible');
     });
 
-    // Show relevant fields
     const map = {
       contractor: 'contractorFields',
-      architect:  'architectFields',
-      agent:      'agentFields',
-      mortgage:   'mortgageFields'
+      architect:  'architectFields'
     };
     if (map[role]) document.getElementById(map[role]).classList.add('visible');
   }
@@ -483,7 +197,14 @@
       btn.disabled = false;
     } else {
       showMessage('Welcome back! Redirecting…', 'success');
-      setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+      // Check for redirect param
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect');
+      if (redirect === 'questionnaire') {
+        setTimeout(() => { window.location.href = 'index.html?openQuestionnaire=1'; }, 1000);
+      } else {
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+      }
     }
   }
 
@@ -516,12 +237,12 @@
       return;
     }
 
-    // Save role-specific profile to the right table
     const userId = data.user?.id;
     if (userId) {
       if (selectedRole === 'contractor') {
         await window.narrowSupabase.from('contractor_profiles').insert({
           user_id:        userId,
+          full_name:      name,
           company_name:   document.getElementById('contractorCompany').value,
           license_number: document.getElementById('contractorLicense').value,
           service_area:   document.getElementById('contractorArea').value,
@@ -533,16 +254,8 @@
           company_name:   document.getElementById('architectCompany').value,
           license_number: document.getElementById('architectLicense').value,
         });
-      } else if (selectedRole === 'mortgage') {
-        await window.narrowSupabase.from('mortgage_profiles').insert({
-          user_id:        userId,
-          full_name:      name,
-          company_name:   document.getElementById('mortgageCompany').value,
-          nmls_number:    document.getElementById('mortgageNmls').value,
-          service_states: document.getElementById('mortgageStates').value,
-        });
       }
-      // homebuyer and agent profiles stored via auth metadata for now
+      // homebuilder profile stored via auth metadata
     }
 
     showMessage('Account created! Check your email to confirm, then sign in.', 'success');
@@ -563,6 +276,32 @@
     } else {
       showMessage('Password reset email sent! Check your inbox.', 'success');
     }
+  }
+
+  // Check if already logged in
+  (async () => {
+    const { data: { session } } = await window.narrowSupabase.auth.getSession();
+    if (session) {
+      window.location.href = 'dashboard.html';
+    }
+  })();
+
+  // Mobile hamburger
+  const hamburger = document.querySelector('.nav__hamburger');
+  if (hamburger) {
+    hamburger.addEventListener('click', () => {
+      const menu = document.getElementById('mobileMenu');
+      if (menu) menu.classList.toggle('open');
+    });
+  }
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (mobileMenu) {
+    mobileMenu.innerHTML = `
+      <a href="index.html">Home</a>
+      <a href="marketplace.html">Plan Marketplace</a>
+      <a href="professionals.html">For Professionals</a>
+      <a href="login.html" style="color:var(--amber)">Login</a>
+    `;
   }
 </script>
 </body>

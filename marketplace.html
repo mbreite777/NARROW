@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan Marketplace — Narrow</title>
+  <meta name="description" content="Browse verified architect-designed home plans on Narrow. Purchase, customize, and build with confidence.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────── -->
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">
+      <img src="Narrow Logo.png" alt="Narrow Logo" style="width:40px;height:40px;object-fit:contain">
+      <span class="nav__logo-text">Narrow</span>
+    </a>
+    <ul class="nav__links" id="nav-links">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li><a href="marketplace.html" class="nav__link">Plan Marketplace</a></li>
+      <li><a href="professionals.html" class="nav__link">For Professionals</a></li>
+    </ul>
+    <div id="nav-auth" class="nav__auth">
+      <a href="login.html" class="nav__signin">Login</a>
+    </div>
+    <button class="nav__hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div id="mobileMenu" class="nav__mobile-menu"></div>
+
+<!-- ── HERO ───────────────────────────────── -->
+<section class="hero" style="padding:140px 0 72px">
+  <div class="container hero__content">
+    <span class="hero__eyebrow">Step 4 of Your Journey</span>
+    <h1>Plan<br><span style="color:var(--amber)">Marketplace</span></h1>
+    <p>Browse verified home plans from licensed architects. Each plan is their business — priced by them, sold through Narrow. Purchase securely and customize if needed.</p>
+    <div style="display:flex;gap:24px;margin-top:28px;flex-wrap:wrap">
+      <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;display:flex;align-items:center;gap:6px">✅ Verified architects</span>
+      <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;display:flex;align-items:center;gap:6px">📐 All home styles</span>
+      <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;display:flex;align-items:center;gap:6px">💳 Secure purchase</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── MARKETPLACE ─────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <p style="margin-bottom:24px"><strong>9 plans</strong> available — filtered by style below</p>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <span class="filter-label">Style:</span>
+      <button class="filter-btn active" data-filter="all" onclick="filterPlans(this,'all')">All Plans</button>
+      <button class="filter-btn" data-filter="modern" onclick="filterPlans(this,'modern')">Modern</button>
+      <button class="filter-btn" data-filter="farmhouse" onclick="filterPlans(this,'farmhouse')">Farmhouse</button>
+      <button class="filter-btn" data-filter="craftsman" onclick="filterPlans(this,'craftsman')">Craftsman</button>
+      <button class="filter-btn" data-filter="ranch" onclick="filterPlans(this,'ranch')">Ranch</button>
+      <button class="filter-btn" data-filter="traditional" onclick="filterPlans(this,'traditional')">Traditional</button>
+      <select class="sort-select">
+        <option>Sort: Featured</option>
+        <option>Price: Low → High</option>
+        <option>Price: High → Low</option>
+        <option>Sq Ft: Largest</option>
+        <option>Most Popular</option>
+      </select>
+    </div>
+
+    <!-- Plan grid -->
+    <div class="plan-grid" id="planGrid">
+
+      <div class="plan-card filterable" data-category="farmhouse" onclick="openPlanDetail({name:'The Heritage',architect:'Ridgeline Design Co.',beds:'4',baths:'3',sqft:'2,850',stories:'2 story',price:'$1,850',style:'Farmhouse',stars:'★★★★★',reviews:'(29 reviews)',emoji:'🏡',gradient:'linear-gradient(135deg,#2D6A4F,#40916C)'})">
+        <div class="plan-card__img" style="background:linear-gradient(135deg,#2D6A4F,#40916C)">
+          <span class="plan-card__badge">Popular</span>
+          <div style="text-align:center"><span style="font-size:2.5rem">🏡</span><br><span>Plan image</span></div>
+        </div>
+        <div class="plan-card__body">
+          <h3 class="plan-card__title">The Heritage</h3>
+          <p class="plan-card__arch">✓ Verified · Ridgeline Design Co.</p>
+          <div class="plan-card__specs">
+            <span class="plan-card__spec">🛏️ 4 bed</span>
+            <span class="plan-card__spec">🚿 3 bath</span>
+            <span class="plan-card__spec">📐 2,850 sq ft</span>
+            <span class="plan-card__spec">🏗️ 2 story</span>
+          </div>
+          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(29 reviews)</span></div>
+          <div class="plan-card__footer">
+            <span class="plan-card__price">$1,850</span>
+            <span class="btn btn-primary plan-card__btn">View Plan</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="plan-card filterable" data-category="modern" onclick="openPlanDetail({name:'The Axiom',architect:'Clearview Architecture',beds:'5',baths:'4',sqft:'4,100',stories:'2 story',price:'$2,950',style:'Modern',stars:'★★★★★',reviews:'(12 reviews)',emoji:'🏠',gradient:'linear-gradient(135deg,#1B3A6B,#2A5298)'})">
+        <div class="plan-card__img" style="background:linear-gradient(135deg,#1B3A6B,#2A5298)">
+          <div style="text-align:center"><span style="font-size:2.5rem">🏠</span><br><span>Plan image</span></div>
+        </div>
+        <div class="plan-card__body">
+          <h3 class="plan-card__title">The Axiom</h3>
+          <p class="plan-card__arch">✓ Verified · Clearview Architecture</p>
+          <div class="plan-card__specs">
+            <span class="plan-card__spec">🛏️ 5 bed</span>
+            <span class="plan-card__spec">🚿 4 bath</span>
+            <span class="plan-card__spec">📐 4,100 sq ft</span>
+            <span class="plan-card__spec">🏗️ 2 story</span>
+          </div>
+          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(12 reviews)</span></div>
+          <div class="plan-card__footer">
+            <span class="plan-card__price">$2,950</span>
+            <span class="btn btn-primary plan-card__btn">View Plan</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="plan-card filterable" data-category="ranch" onclick="openPlanDetail({name:'The Meadowlark',architect:'Sunset Home Designs',beds:'3',baths:'2',sqft:'1,780',stories:'1 story',price:'$975',style:'Ranch',stars:'★★★★☆',reviews:'(8 reviews)',emoji:'🏡',gradient:'linear-gradient(135deg,#6B4F35,#9C7A5A)'})">
+        <div class="plan-card__img" style="background:linear-gradient(135deg,#6B4F35,#9C7A5A)">
+          <div style="text-align:center"><span style="font-size:2.5rem">🏡</span><br><span>Plan image</span></div>
+        </div>
+        <div class="plan-card__body">
+          <h3 class="plan-card__title">The Meadowlark</h3>
+          <p class="plan-card__arch">✓ Verified · Sunset Home Designs</p>
+          <div class="plan-card__specs">
+            <span class="plan-card__spec">🛏️ 3 bed</span>
+            <span class="plan-card__spec">🚿 2 bath</span>
+            <span class="plan-card__spec">📐 1,780 sq ft</span>
+            <span class="plan-card__spec">🏗️ 1 story</span>
+          </div>
+          <div style="margin-bottom:10px"><span class="stars">★★★★☆</span> <span style="font-size:0.8rem;color:var(--gray)">(8 reviews)</span></div>
+          <div class="plan-card__footer">
+            <span class="plan-card__price">$975</span>
+            <span class="btn btn-primary plan-card__btn">View Plan</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="plan-card filterable" data-category="traditional" onclick="openPlanDetail({name:'The Wellington',architect:'Cornerstone Drafting',beds:'4',baths:'3.5',sqft:'3,600',stories:'2 story',price:'$2,400',style:'Traditional',stars:'★★★★★',reviews:'(41 reviews)',emoji:'🏠',gradient:'linear-gradient(135deg,#374151,#1F2937)'})">
+        <div class="plan-card__img" style="background:linear-gradient(135deg,#374151,#1F2937)">
+          <div style="text-align:center"><span style="font-size:2.5rem">🏠</span><br><span>Plan image</span></div>
+        </div>
+        <div class="plan-card__body">
+          <h3 class="plan-card__title">The Wellington</h3>
+          <p class="plan-card__arch">✓ Verified · Cornerstone Drafting</p>
+          <div class="plan-card__specs">
+            <span class="plan-card__spec">🛏️ 4 bed</span>
+            <span class="plan-card__spec">🚿 3.5 bath</span>
+            <span class="plan-card__spec">📐 3,600 sq ft</span>
+            <span class="plan-card__spec">🏗️ 2 story</span>
+          </div>
+          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(41 reviews)</span></div>
+          <div class="plan-card__footer">
+            <span class="plan-card__price">$2,400</span>
+            <span class="btn btn-primary plan-card__btn">View Plan</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="plan-card filterable" data-category="farmhouse" onclick="openPlanDetail({name:'The Clover Hill',architect:'Hartwell Design Studio',beds:'3',baths:'2',sqft:'2,200',stories:'1.5 story',price:'$1,450',style:'Farmhouse',stars:'★★★★★',reviews:'(16 reviews)',emoji:'🏡',gradient:'linear-gradient(135deg,#2D6A4F,#1B4332)'})">
+        <div class="plan-card__img" style="background:linear-gradient(135deg,#2D6A4F,#1B4332)">
+          <div style="text-align:center"><span style="font-size:2.5rem">🏡</span><br><span>Plan image</span></div>
+        </div>
+        <div class="plan-card__body">
+          <h3 class="plan-card__title">The Clover Hill</h3>
+          <p class="plan-card__arch">✓ Verified · Hartwell Design Studio</p>
+          <div class="plan-card__specs">
+            <span class="plan-card__spec">🛏️ 3 bed</span>
+            <span class="plan-card__spec">🚿 2 bath</span>
+            <span class="plan-card__spec">📐 2,200 sq ft</span>
+            <span class="plan-card__spec">🏗️ 1.5 story</span>
+          </div>
+          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(16 reviews)</span></div>
+          <div class="plan-card__footer">
+            <span class="plan-card__price">$1,450</span>
+            <span class="btn btn-primary plan-card__btn">View Plan</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="plan-card filterable" data-category="craftsman" onclick="openPlanDetail({name:'The Lakewood',architect:'Northern Timber Design',beds:'4',baths:'3',sqft:'2,960',stories:'2 story',price:'$1,700',style:'Craftsman',stars:'★★★★☆',reviews:'(22 reviews)',emoji:'🏘️',gradient:'linear-gradient(135deg,#7C5A3C,#4A3728)'})">
+        <div class="plan-card__img" style="background:linear-gradient(135deg,#7C5A3C,#4A3728)">
+          <div style="text-align:center"><span style="font-size:2.5rem">🏘️</span><br><span>Plan image</span></div>
+        </div>
+        <div class="plan-card__body">
+          <h3 class="plan-card__title">The Lakewood</h3>
+          <p class="plan-card__arch">✓ Verified · Northern Timber Design</p>
+          <div class="plan-card__specs">
+            <span class="plan-card__spec">🛏️ 4 bed</span>
+            <span class="plan-card__spec">🚿 3 bath</span>
+            <span class="plan-card__spec">📐 2,960 sq ft</span>
+            <span class="plan-card__spec">🏗️ 2 story</span>
+          </div>
+          <div style="margin-bottom:10px"><span class="stars">★★★★☆</span> <span style="font-size:0.8rem;color:var(--gray)">(22 reviews)</span></div>
+          <div class="plan-card__footer">
+            <span class="plan-card__price">$1,700</span>
+            <span class="btn btn-primary plan-card__btn">View Plan</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="plan-card filterable" data-category="modern" onclick="openPlanDetail({name:'The Harbor View',architect:'Pacific Coast Architecture',beds:'5',baths:'4.5',sqft:'4,800',stories:'3 story',price:'$3,400',style:'Modern',stars:'★★★★★',reviews:'(6 reviews)',emoji:'🏠',gradient:'linear-gradient(135deg,#1a4a7a,#0d2a50)'})">
+        <div class="plan-card__img" style="background:linear-gradient(135deg,#1a4a7a,#0d2a50)">
+          <span class="plan-card__badge">New</span>
+          <div style="text-align:center"><span style="font-size:2.5rem">🏠</span><br><span>Plan image</span></div>
+        </div>
+        <div class="plan-card__body">
+          <h3 class="plan-card__title">The Harbor View</h3>
+          <p class="plan-card__arch">✓ Verified · Pacific Coast Architecture</p>
+          <div class="plan-card__specs">
+            <span class="plan-card__spec">🛏️ 5 bed</span>
+            <span class="plan-card__spec">🚿 4.5 bath</span>
+            <span class="plan-card__spec">📐 4,800 sq ft</span>
+            <span class="plan-card__spec">🏗️ 3 story</span>
+          </div>
+          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(6 reviews)</span></div>
+          <div class="plan-card__footer">
+            <span class="plan-card__price">$3,400</span>
+            <span class="btn btn-primary plan-card__btn">View Plan</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="plan-card filterable" data-category="ranch" onclick="openPlanDetail({name:'The Prairie',architect:'Sunset Home Designs',beds:'3',baths:'2',sqft:'1,620',stories:'1 story',price:'$850',style:'Ranch',stars:'★★★★☆',reviews:'(14 reviews)',emoji:'🏡',gradient:'linear-gradient(135deg,#8B6F47,#A08060)'})">
+        <div class="plan-card__img" style="background:linear-gradient(135deg,#8B6F47,#A08060)">
+          <div style="text-align:center"><span style="font-size:2.5rem">🏡</span><br><span>Plan image</span></div>
+        </div>
+        <div class="plan-card__body">
+          <h3 class="plan-card__title">The Prairie</h3>
+          <p class="plan-card__arch">✓ Verified · Sunset Home Designs</p>
+          <div class="plan-card__specs">
+            <span class="plan-card__spec">🛏️ 3 bed</span>
+            <span class="plan-card__spec">🚿 2 bath</span>
+            <span class="plan-card__spec">📐 1,620 sq ft</span>
+            <span class="plan-card__spec">🏗️ 1 story</span>
+          </div>
+          <div style="margin-bottom:10px"><span class="stars">★★★★☆</span> <span style="font-size:0.8rem;color:var(--gray)">(14 reviews)</span></div>
+          <div class="plan-card__footer">
+            <span class="plan-card__price">$850</span>
+            <span class="btn btn-primary plan-card__btn">View Plan</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="plan-card filterable" data-category="craftsman" onclick="openPlanDetail({name:'The Summit',architect:'Northern Timber Design',beds:'4',baths:'3.5',sqft:'3,200',stories:'2 story',price:'$2,100',style:'Craftsman',stars:'★★★★★',reviews:'(18 reviews)',emoji:'🏘️',gradient:'linear-gradient(135deg,#5C4033,#3D2B1F)'})">
+        <div class="plan-card__img" style="background:linear-gradient(135deg,#5C4033,#3D2B1F)">
+          <div style="text-align:center"><span style="font-size:2.5rem">🏘️</span><br><span>Plan image</span></div>
+        </div>
+        <div class="plan-card__body">
+          <h3 class="plan-card__title">The Summit</h3>
+          <p class="plan-card__arch">✓ Verified · Northern Timber Design</p>
+          <div class="plan-card__specs">
+            <span class="plan-card__spec">🛏️ 4 bed</span>
+            <span class="plan-card__spec">🚿 3.5 bath</span>
+            <span class="plan-card__spec">📐 3,200 sq ft</span>
+            <span class="plan-card__spec">🏗️ 2 story</span>
+          </div>
+          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(18 reviews)</span></div>
+          <div class="plan-card__footer">
+            <span class="plan-card__price">$2,100</span>
+            <span class="btn btn-primary plan-card__btn">View Plan</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Customization callout -->
+    <div style="margin-top:60px;background:linear-gradient(135deg,rgba(27,58,107,0.06),rgba(45,106,79,0.06));border:1px solid rgba(27,58,107,0.12);border-radius:var(--radius-md);padding:40px;text-align:center">
+      <span class="section-label">Step 5</span>
+      <h2 style="margin-bottom:12px">Need to customize a plan?</h2>
+      <p style="max-width:500px;margin:0 auto 28px">After purchasing, the architect can modify your plan — layout changes, regional code adaptation, and permit-ready drawings. Don't settle for 90% right when you can make it 100% yours.</p>
+      <a href="index.html#how-it-works" class="btn btn-outline">Learn About Customization</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FAQ: BUILDING CODES & PERMITS ──────── -->
+<section class="section section--cream">
+  <div class="container">
+    <div style="max-width:760px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:56px">
+        <span class="section-label">FAQ</span>
+        <h2>Building Codes & Permits</h2>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Do I need to get a building permit?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Yes. Nearly all new residential construction requires a building permit from your local city or county government. Your general contractor typically handles the permit application, but you should confirm this before starting.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          What building codes will apply to my home?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Building codes vary by jurisdiction. Most areas in the US follow some version of the International Building Code (IBC) or International Residential Code (IRC). Your architect and contractor will ensure the plans comply with your local requirements.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Can I use a stock plan in my area without modification?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>It depends on your local code requirements. Some areas require specific engineering for wind, snow, or seismic loads. Narrow's architect customization service (Step 5) handles these regional adaptations.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Who is responsible for ensuring code compliance?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Ultimately, the licensed architect and general contractor share responsibility for code compliance. The architect ensures the drawings meet code, and the contractor ensures the construction matches the approved plans. Local building inspectors verify compliance at key stages.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          How long does the permit process typically take?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Permit timelines vary widely — from a few weeks in rural areas to several months in larger cities. Your contractor or architect can give you a timeline estimate based on your specific jurisdiction.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ: WHAT'S INCLUDED IN PLANS ─────── -->
+<section class="section">
+  <div class="container">
+    <div style="max-width:760px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:56px">
+        <span class="section-label">FAQ</span>
+        <h2>What's Included in Plans</h2>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          What documents are included when I purchase a plan?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>A typical plan set includes floor plans, exterior elevations, roof plan, foundation plan, wall sections, electrical layout, and general construction notes. Exact contents vary by architect and plan.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Are plans ready to build immediately after purchase?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Plans provide the architectural drawings. You may still need site-specific engineering (structural, mechanical, plumbing) and local code adaptations. That's what Narrow's customization step handles — working with the architect to create permit-ready drawings for your area.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Can I modify a plan after I purchase it?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Yes. After purchasing, you can work with the architect through Narrow's customization service. Modifications range from simple changes (adding a room, adjusting a layout) to full regional code adaptation. Pricing is based on scope.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Do I own the plan after purchasing?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>You receive a license to build one home from the plan. The architect retains the intellectual property and design rights. If you want to build multiple homes from the same plan, contact the architect for additional licensing.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Is Narrow free for homebuilders?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Yes — completely free. Narrow earns revenue from professionals on the platform (architects, contractors, mortgage partners), not from you. Your personalized path, questionnaire, and agent connections cost nothing.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          How are architects verified on Narrow?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>All architects list under their own business identity — not anonymously. Their work, credentials, and reviews are visible on their profile. Narrow vets each professional before they appear in search results.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a href="index.html" class="nav__logo" style="display:inline-flex">
+          <img src="Narrow Logo.png" alt="Narrow Logo" style="width:36px;height:36px;object-fit:contain">
+          <span class="nav__logo-text" style="margin-left:10px">Narrow</span>
+        </a>
+        <p>Build A to Z with Narrow.</p>
+      </div>
+      <div>
+        <p class="footer__heading">Platform</p>
+        <ul class="footer__links">
+          <li><a href="index.html#how-it-works">How It Works</a></li>
+          <li><a href="marketplace.html">Plan Marketplace</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer__heading">Company</p>
+        <ul class="footer__links">
+          <li><a href="index.html#about">About Us</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer__heading">For Professionals</p>
+        <ul class="footer__links">
+          <li><a href="professionals.html#architects">List Your Plans</a></li>
+          <li><a href="professionals.html#contractors">Contractor Sign Up</a></li>
+          <li><a href="professionals.html#mortgage">Mortgage Advertising</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2025 Narrow. Breite Family. All rights reserved.</span>
+      <span class="footer__tagline">"Build A to Z with Narrow"</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+function filterPlans(btn, filter) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.filterable').forEach(card => {
+    card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none';
+  });
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="main.js"></script>
+</body>
+</html>

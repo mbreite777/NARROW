@@ -3,180 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Journey — Narrow</title>
+  <title>Dashboard — Narrow</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    .dashboard-hero {
-      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
-      padding: 110px 0 48px;
-    }
-    .dashboard-hero h1 { color: var(--white); margin-bottom: 6px; font-size: clamp(1.8rem, 3vw, 2.4rem); }
-    .dashboard-hero p  { color: rgba(255,255,255,0.6); font-size: 1rem; }
-
-    .progress-wrap {
-      margin-top: 28px;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: var(--radius-md);
-      padding: 20px 24px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-    .progress-wrap__num {
-      font-family: var(--font-display);
-      font-size: 2.8rem;
-      font-weight: 700;
-      color: var(--amber);
-      line-height: 1;
-      min-width: 48px;
-    }
-    .progress-wrap__right { flex: 1; min-width: 180px; }
-    .progress-track {
-      height: 10px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-    .progress-track__fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--green), var(--amber));
-      border-radius: 10px;
-      transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
-    }
-    .progress-label { color: rgba(255,255,255,0.45); font-size: 0.78rem; }
-
-    .steps-grid {
-      display: flex;
-      flex-direction: column;
-      padding: 48px 0 80px;
-    }
-
-    .step-row {
-      display: grid;
-      grid-template-columns: 56px 1fr;
-      gap: 0 20px;
-      position: relative;
-    }
-
-    .step-row__line {
-      position: absolute;
-      left: 27px;
-      top: 72px;
-      bottom: -20px;
-      width: 2px;
-      background: var(--gray-light);
-    }
-    .step-row:last-child .step-row__line { display: none; }
-    .step-row.completed .step-row__line { background: var(--green); }
-
-    .step-row__num-col {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 16px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .step-num {
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      font-weight: 700;
-      border: 2px solid var(--gray-light);
-      background: var(--white);
-      color: var(--gray);
-      transition: all var(--transition);
-      flex-shrink: 0;
-    }
-    .step-row.completed .step-num { background: var(--green); border-color: var(--green); color: white; }
-    .step-row.current .step-num { background: var(--amber); border-color: var(--amber); color: var(--navy-dark); box-shadow: 0 0 0 4px rgba(232,168,56,0.2); }
-
-    .step-card {
-      background: var(--white);
-      border: 2px solid var(--gray-light);
-      border-radius: var(--radius-md);
-      padding: 22px 26px;
-      margin-bottom: 20px;
-      transition: all var(--transition);
-    }
-    .step-card:hover { border-color: var(--navy-light); box-shadow: var(--shadow-md); }
-    .step-row.completed .step-card { border-color: var(--green); background: #f4fbf6; }
-    .step-row.current .step-card { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,168,56,0.12); }
-
-    .step-card__top {
-      display: flex; align-items: flex-start;
-      justify-content: space-between; gap: 12px; margin-bottom: 6px;
-    }
-    .step-card__title {
-      font-family: var(--font-display);
-      font-size: 1.1rem; font-weight: 600; color: var(--navy);
-    }
-    .step-row.completed .step-card__title { color: var(--gray); text-decoration: line-through; }
-
-    .step-badge {
-      font-size: 0.68rem; font-weight: 700;
-      letter-spacing: 0.07em; text-transform: uppercase;
-      padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;
-    }
-    .badge-current  { background: #FEF3C7; color: #92400E; }
-    .badge-done     { background: #D1FAE5; color: #065F46; }
-    .badge-upcoming { background: #F3F4F6; color: #6B7280; }
-
-    .step-card__desc {
-      font-size: 0.85rem; color: var(--gray); margin: 0 0 14px;
-    }
-    .step-row.completed .step-card__desc { display: none; }
-
-    .step-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-    .step-row.completed .step-actions { display: none; }
-
-    .action-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 9px 16px; border-radius: var(--radius-sm);
-      font-family: var(--font-body); font-size: 0.82rem; font-weight: 600;
-      cursor: pointer; text-decoration: none; transition: all var(--transition); border: none;
-    }
-    .action-btn--primary   { background: var(--navy); color: white; }
-    .action-btn--primary:hover { background: var(--navy-light); }
-    .action-btn--secondary { background: var(--cream); color: var(--navy); border: 1px solid var(--gray-light); }
-    .action-btn--secondary:hover { background: var(--cream-dark); border-color: var(--navy); }
-    .action-btn--amber     { background: var(--amber); color: var(--navy-dark); }
-    .action-btn--amber:hover { background: var(--amber-dark); }
-
-    .check-btn {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 0.78rem; color: var(--gray);
-      background: none; border: none; cursor: pointer;
-      font-family: var(--font-body); padding: 0; margin-top: 14px; transition: color 0.2s;
-    }
-    .check-btn:hover { color: var(--green); }
-    .step-row.completed .check-btn { color: var(--green); }
-
-    .celebration {
-      display: none; text-align: center; padding: 48px 32px;
-      background: linear-gradient(135deg, #f0fbf4, #fffbeb);
-      border-radius: var(--radius-lg); border: 2px solid var(--green); margin-bottom: 40px;
-    }
-    .celebration.show { display: block; }
-    .celebration h2 { color: var(--green); margin-bottom: 12px; }
-
-    .auth-prompt {
-      min-height: 70vh; display: flex; align-items: center;
-      justify-content: center; text-align: center; padding: 80px 24px;
-    }
-
-    @media (max-width: 600px) {
-      .step-card { padding: 16px 14px; }
-      .step-actions { flex-direction: column; }
-      .action-btn { width: 100%; justify-content: center; }
-    }
-  </style>
 </head>
 <body>
 
@@ -186,38 +14,42 @@
       <img src="Narrow Logo.png" alt="Narrow Logo" style="width:40px;height:40px;object-fit:contain">
       <span class="nav__logo-text">Narrow</span>
     </a>
-    <ul class="nav__links">
+    <ul class="nav__links" id="nav-links">
       <li><a href="index.html" class="nav__link">Home</a></li>
-      <li><a href="how-it-works.html" class="nav__link">How It Works</a></li>
-      <li><a href="architects.html" class="nav__link">Architect Plans</a></li>
-      <li><a href="professionals.html" class="nav__link">Find Pros</a></li>
-      <li><a href="about.html" class="nav__link">About</a></li>
+      <li><a href="marketplace.html" class="nav__link">Plan Marketplace</a></li>
+      <li><a href="professionals.html" class="nav__link">For Professionals</a></li>
     </ul>
     <div id="nav-auth" class="nav__auth"></div>
-    <a href="#start" class="nav__cta nav__journey-btn">Start Your Journey</a>
     <button class="nav__hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
+<div id="mobileMenu" class="nav__mobile-menu"></div>
 
 <!-- Not logged in -->
 <div id="authPrompt" style="display:none">
   <div class="auth-prompt">
     <div>
       <div style="font-size:3.5rem;margin-bottom:20px">🏠</div>
-      <h2 style="margin-bottom:12px">Sign in to track your journey</h2>
+      <h2 style="margin-bottom:12px">Sign in to access your dashboard</h2>
       <p style="max-width:420px;margin:0 auto 32px">Create a free account to save your progress and access your personalized A to Z roadmap.</p>
       <a href="login.html" class="btn btn-primary btn-lg">Sign In / Create Account →</a>
     </div>
   </div>
 </div>
 
-<!-- Dashboard -->
-<div id="dashboardWrap" style="display:none">
+<!-- ═══════════════════════════════════════════ -->
+<!-- HOMEBUILDER DASHBOARD -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="homebuilderDash" style="display:none">
   <section class="dashboard-hero">
     <div class="container">
       <span class="section-label" style="color:rgba(255,255,255,0.45);margin-bottom:8px;display:block">Your Building Journey</span>
       <h1 id="heroGreeting">Welcome back!</h1>
       <p id="heroSubtitle">Track your progress from idea to front door.</p>
+
+      <!-- Build selector -->
+      <div class="build-selector" id="buildSelector"></div>
+
       <div class="progress-wrap">
         <div class="progress-wrap__num" id="stepsCount">0</div>
         <div class="progress-wrap__right">
@@ -237,6 +69,156 @@
   </section>
 </div>
 
+<!-- ═══════════════════════════════════════════ -->
+<!-- ARCHITECT DASHBOARD -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="architectDash" style="display:none">
+  <section class="dashboard-hero">
+    <div class="container">
+      <span class="section-label" style="color:rgba(255,255,255,0.45);margin-bottom:8px;display:block">Architect Dashboard</span>
+      <h1 id="archGreeting">Welcome back!</h1>
+      <p>Manage your profile, plans, and clients.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:48px">
+    <div class="container" style="max-width:900px">
+
+      <!-- Public Profile Editor -->
+      <div class="dash-panel">
+        <div class="dash-panel__header">
+          <h3>📐 Public Profile</h3>
+          <button class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem" onclick="saveArchProfile()">Save Changes</button>
+        </div>
+        <div class="grid-2" style="gap:24px;align-items:start">
+          <div class="form-group">
+            <label>Firm / Company Name</label>
+            <input type="text" id="archCompany" placeholder="Your architecture firm">
+          </div>
+          <div class="form-group">
+            <label>License Number</label>
+            <input type="text" id="archLicense" placeholder="State license #">
+          </div>
+          <div class="form-group">
+            <label>Specialties</label>
+            <input type="text" id="archSpecialties" placeholder="Modern, Farmhouse, etc.">
+          </div>
+          <div class="form-group">
+            <label>Website</label>
+            <input type="text" id="archWebsite" placeholder="https://yourfirm.com">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Bio / Description</label>
+          <textarea id="archBio" rows="3" placeholder="Tell homebuilders about your firm..." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
+        </div>
+      </div>
+
+      <!-- Plan Library -->
+      <div class="dash-panel">
+        <div class="dash-panel__header">
+          <h3>📋 Plan Library</h3>
+          <button class="btn btn-green" style="padding:8px 16px;font-size:0.82rem" onclick="showUploadPlan()">+ Upload Plan</button>
+        </div>
+        <div id="archPlanList">
+          <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">Your uploaded plans will appear here. Click "Upload Plan" to add your first listing.</p>
+        </div>
+      </div>
+
+      <!-- Client List (private) -->
+      <div class="dash-panel">
+        <div class="dash-panel__header">
+          <h3>👥 Client List</h3>
+          <span style="font-size:0.75rem;color:var(--gray);background:var(--cream);padding:4px 10px;border-radius:99px">🔒 Private</span>
+        </div>
+        <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">Client activity will appear here as homebuilders purchase your plans or request customization.</p>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- CONTRACTOR DASHBOARD -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="contractorDash" style="display:none">
+  <section class="dashboard-hero">
+    <div class="container">
+      <span class="section-label" style="color:rgba(255,255,255,0.45);margin-bottom:8px;display:block">Contractor Dashboard</span>
+      <h1 id="contGreeting">Welcome back!</h1>
+      <p>Manage your profile, bids, and clients.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:48px">
+    <div class="container" style="max-width:900px">
+
+      <!-- Public Profile Editor -->
+      <div class="dash-panel">
+        <div class="dash-panel__header">
+          <h3>🏗️ Public Profile</h3>
+          <button class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem" onclick="saveContProfile()">Save Changes</button>
+        </div>
+        <div class="grid-2" style="gap:24px;align-items:start">
+          <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" id="contCompany" placeholder="Your construction company">
+          </div>
+          <div class="form-group">
+            <label>License Number</label>
+            <input type="text" id="contLicense" placeholder="State license #">
+          </div>
+          <div class="form-group">
+            <label>Service Radius (miles)</label>
+            <input type="number" id="contRadius" placeholder="e.g. 50">
+          </div>
+          <div class="form-group">
+            <label>Service Area (City, State)</label>
+            <input type="text" id="contArea" placeholder="Austin, TX">
+          </div>
+          <div class="form-group">
+            <label>Years of Experience</label>
+            <input type="number" id="contExperience" placeholder="e.g. 15">
+          </div>
+          <div class="form-group">
+            <label>Contact Email</label>
+            <input type="email" id="contEmail" placeholder="contact@yourcompany.com">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>About Your Company</label>
+          <textarea id="contBio" rows="3" placeholder="Describe your services, specialties, and experience..." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center;padding:16px;background:var(--cream);border-radius:var(--radius-sm);margin-top:8px">
+          <span style="font-size:1.2rem">⭐</span>
+          <div>
+            <p style="font-weight:600;color:var(--navy);margin:0;font-size:0.9rem">Ratings</p>
+            <p style="font-size:0.82rem;color:var(--gray);margin:0">Ratings will appear here after completed builds are reviewed by homebuilders.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plan Upload Access -->
+      <div class="dash-panel">
+        <div class="dash-panel__header">
+          <h3>📋 Received Plans & Bid Requests</h3>
+        </div>
+        <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">When homebuilders send you plans for bidding, they will appear here. You can review plans and submit your bid directly.</p>
+      </div>
+
+      <!-- Client List (private) -->
+      <div class="dash-panel">
+        <div class="dash-panel__header">
+          <h3>👥 Client List</h3>
+          <span style="font-size:0.75rem;color:var(--gray);background:var(--cream);padding:4px 10px;border-radius:99px">🔒 Private</span>
+        </div>
+        <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">Active and past client engagements will appear here.</p>
+      </div>
+
+    </div>
+  </section>
+</div>
+
 <footer class="footer">
   <div class="container">
     <div class="footer__bottom" style="justify-content:center">
@@ -248,73 +230,69 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
 <script>
+// ═══════════════════════════════════════════
+// DASHBOARD INIT
+// ═══════════════════════════════════════════
 const STEPS = [
   {
-    title: 'Start Your Journey',
-    desc: 'Complete the quick questionnaire to get your personalized path from concept to move-in day.',
+    title: 'Questionnaire',
+    desc: 'Complete the questionnaire to get your personalized path from concept to move-in day.',
     icon: '🗺️',
     actions: [
-      { label: '→ Take the Questionnaire', href: 'index.html#start', style: 'amber' }
+      { label: '→ Take the Questionnaire', onclick: 'startJourney()', style: 'amber' }
     ]
   },
   {
-    title: 'Financing',
-    desc: 'Connect with our verified mortgage partners to get pre-approved before you start shopping for land.',
+    title: 'Get Funding',
+    desc: 'Get pre-approved. Connect with verified mortgage partners for construction financing.',
     icon: '💰',
     actions: [
-      { label: '→ Find Mortgage Partners', href: 'professionals.html', style: 'primary' },
-      { label: '✉ Contact Narrow', href: 'mailto:info@buildnarrow.com?subject=Mortgage%20Inquiry', style: 'secondary' }
+      { label: '→ Mortgage Lenders', href: 'lenders.html', style: 'primary' }
     ]
   },
   {
-    title: 'Find Land',
-    desc: 'Our EXP Realty agents are matched by zip code and specialize in finding buildable lots.',
+    title: 'Find Your Dream Location',
+    desc: 'After pre-approval, contact us to locate an agent in your area.',
     icon: '🗺️',
     actions: [
-      { label: '→ Find a Real Estate Agent', href: 'professionals.html', style: 'primary' },
-      { label: '✉ Email Narrow', href: 'mailto:info@buildnarrow.com?subject=Land%20Search%20Inquiry', style: 'secondary' },
-      { label: '💬 Inquire via Contact Form', href: 'about.html#contact', style: 'secondary' }
+      { label: '→ Land Contact Form', onclick: 'openLandForm()', style: 'primary' }
     ]
   },
   {
-    title: 'Architect Plans',
-    desc: 'Browse and purchase verified home plans from our architect marketplace.',
+    title: 'Find Your Plans',
+    desc: 'Browse and purchase plans from the architect marketplace.',
     icon: '📐',
     actions: [
-      { label: '→ Browse Plans', href: 'architects.html', style: 'amber' },
-      { label: '→ Find an Architect', href: 'professionals.html', style: 'secondary' }
+      { label: '→ Plan Marketplace', href: 'marketplace.html', style: 'amber' }
     ]
   },
   {
-    title: 'Customize',
-    desc: 'Work directly with a licensed architect to modify your plans to fit your vision and lot.',
+    title: 'Make It Your Home',
+    desc: 'Contact your architect for revisions and customizations to make the plans perfect for your lot and lifestyle.',
     icon: '✏️',
-    actions: [
-      { label: '→ Find an Architect', href: 'professionals.html', style: 'primary' },
-      { label: '✉ Ask Narrow', href: 'mailto:info@buildnarrow.com?subject=Plan%20Customization%20Question', style: 'secondary' }
-    ]
+    actions: []
   },
   {
-    title: 'Contractor Bids',
-    desc: 'Get 3+ competitive bids from our vetted, licensed general contractors in your area.',
+    title: 'Bid Your Plans',
+    desc: 'Upload plans and request bids from 3 vetted contractors in your region.',
     icon: '🔨',
     actions: [
-      { label: '→ Find Contractors', href: 'professionals.html', style: 'primary' },
-      { label: '✉ Get Help Matching', href: 'mailto:info@buildnarrow.com?subject=Contractor%20Matching%20Request', style: 'secondary' }
+      { label: '→ Bid Portal', onclick: 'openBidPortal()', style: 'primary' }
     ]
   },
   {
-    title: 'Move In',
-    desc: "You're almost there! Complete final walkthrough, reviews, and move-in day coordination.",
+    title: 'Move In Day',
+    desc: 'Leave reviews for your plans, architect, contractor, and Narrow. Encourage friends and family to build with Narrow!',
     icon: '🏠',
     actions: [
-      { label: '✉ Contact Your Narrow Specialist', href: 'mailto:info@buildnarrow.com?subject=Move-In%20Coordination', style: 'amber' }
+      { label: '✉ Contact Narrow', href: 'mailto:info@buildnarrow.com?subject=Move-In%20Day', style: 'amber' }
     ]
   }
 ];
 
 let userSession = null;
-let journeyData = { steps_done: [], current_step: 1 };
+let allBuilds = [];
+let activeBuildIdx = 0;
 
 async function initDashboard() {
   const { data: { session } } = await narrowSupabase.auth.getSession();
@@ -324,32 +302,98 @@ async function initDashboard() {
   }
 
   userSession = session;
-  const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+  const meta = session.user.user_metadata || {};
+  const name = meta.full_name || session.user.email.split('@')[0];
   const firstName = name.split(' ')[0];
-  document.getElementById('heroGreeting').textContent = `Welcome back, ${firstName}!`;
-  document.getElementById('dashboardWrap').style.display = 'block';
+  const role = meta.role || 'homebuilder';
 
+  if (role === 'architect') {
+    document.getElementById('architectDash').style.display = 'block';
+    document.getElementById('archGreeting').textContent = `Welcome back, ${firstName}!`;
+    loadArchitectProfile();
+  } else if (role === 'contractor') {
+    document.getElementById('contractorDash').style.display = 'block';
+    document.getElementById('contGreeting').textContent = `Welcome back, ${firstName}!`;
+    loadContractorProfile();
+  } else {
+    // Homebuilder
+    document.getElementById('homebuilderDash').style.display = 'block';
+    document.getElementById('heroGreeting').textContent = `Welcome back, ${firstName}!`;
+    await loadBuilds();
+  }
+}
+
+// ═══════════════════════════════════════════
+// HOMEBUILDER — Build management
+// ═══════════════════════════════════════════
+async function loadBuilds() {
   const { data } = await narrowSupabase
-    .from('user_journeys').select('*')
-    .eq('user_id', session.user.id).single();
+    .from('user_builds')
+    .select('*')
+    .eq('user_id', userSession.user.id)
+    .order('created_at', { ascending: true });
 
-  if (data) journeyData = data;
+  allBuilds = data || [];
+
+  if (allBuilds.length === 0) {
+    // No builds yet — prompt questionnaire
+    allBuilds = [{ name: 'My First Build', current_step: 1, steps_done: [], id: null }];
+  }
+
+  renderBuildSelector();
   renderSteps();
   updateProgress();
 }
 
+function renderBuildSelector() {
+  const selector = document.getElementById('buildSelector');
+  selector.innerHTML = allBuilds.map((b, i) =>
+    `<button class="build-tab ${i === activeBuildIdx ? 'active' : ''}" onclick="switchBuild(${i})">${b.name}</button>`
+  ).join('') +
+  `<button class="build-tab build-tab--add" onclick="addNewBuild()">+ New Build</button>`;
+}
+
+window.switchBuild = function(idx) {
+  activeBuildIdx = idx;
+  renderBuildSelector();
+  renderSteps();
+  updateProgress();
+};
+
+window.addNewBuild = async function() {
+  const name = prompt('Name your new build:', `Build ${allBuilds.length + 1}`);
+  if (!name) return;
+
+  const { data } = await narrowSupabase.from('user_builds').insert({
+    user_id: userSession.user.id,
+    name: name,
+    current_step: 1,
+    steps_done: [],
+    created_at: new Date().toISOString()
+  }).select().single();
+
+  if (data) {
+    allBuilds.push(data);
+    activeBuildIdx = allBuilds.length - 1;
+    renderBuildSelector();
+    renderSteps();
+    updateProgress();
+  }
+};
+
 function renderSteps() {
-  const done = journeyData.steps_done || [];
-  const current = journeyData.current_step || 1;
+  const build = allBuilds[activeBuildIdx];
+  const done = build?.steps_done || [];
+  const current = build?.current_step || 1;
   const allDone = done.length === 7;
 
   document.getElementById('stepsContainer').innerHTML =
     (allDone ? `
-      <div class="celebration show">
+      <div style="text-align:center;padding:48px 32px;background:linear-gradient(135deg,#f0fbf4,#fffbeb);border-radius:var(--radius-lg);border:2px solid var(--green);margin-bottom:40px">
         <div style="font-size:3rem;margin-bottom:16px">🎉</div>
-        <h2>Congratulations — Journey Complete!</h2>
-        <p style="max-width:460px;margin:0 auto 24px">You've completed all 7 steps. A Narrow specialist will be in touch to coordinate your final walkthrough and move-in review.</p>
-        <a href="mailto:info@buildnarrow.com?subject=Journey%20Complete" class="btn btn-primary">Contact Your Specialist →</a>
+        <h2 style="color:var(--green);margin-bottom:12px">Congratulations — Journey Complete!</h2>
+        <p style="max-width:460px;margin:0 auto 24px">All 7 steps complete. Leave reviews for your team and encourage others to build with Narrow.</p>
+        <a href="mailto:info@buildnarrow.com?subject=Journey%20Complete" class="btn btn-primary">Contact Narrow →</a>
       </div>
     ` : '') +
     STEPS.map((step, i) => {
@@ -364,7 +408,9 @@ function renderSteps() {
           : `<span class="step-badge badge-upcoming">Upcoming</span>`;
 
       const actions = step.actions.map(a =>
-        `<a href="${a.href}" class="action-btn action-btn--${a.style}">${a.label}</a>`
+        a.href
+          ? `<a href="${a.href}" class="action-btn action-btn--${a.style}">${a.label}</a>`
+          : `<button onclick="${a.onclick}" class="action-btn action-btn--${a.style}">${a.label}</button>`
       ).join('');
 
       return `
@@ -390,7 +436,8 @@ function renderSteps() {
 }
 
 function updateProgress() {
-  const done = (journeyData.steps_done || []).length;
+  const build = allBuilds[activeBuildIdx];
+  const done = (build?.steps_done || []).length;
   const pct = Math.round((done / 7) * 100);
   document.getElementById('stepsCount').textContent = done;
   document.getElementById('progressFill').style.width = pct + '%';
@@ -407,9 +454,10 @@ function updateProgress() {
   document.getElementById('heroSubtitle').textContent = subtitles[done] || '';
 }
 
-async function toggleStep(n) {
+window.toggleStep = async function(n) {
   if (!userSession) return;
-  const done = [...(journeyData.steps_done || [])];
+  const build = allBuilds[activeBuildIdx];
+  const done = [...(build.steps_done || [])];
   const pos = done.indexOf(n);
   if (pos === -1) done.push(n); else done.splice(pos, 1);
 
@@ -418,20 +466,205 @@ async function toggleStep(n) {
     if (!done.includes(i)) { next = i; break; }
   }
 
-  journeyData.steps_done = done;
-  journeyData.current_step = next;
+  build.steps_done = done;
+  build.current_step = next;
 
-  await narrowSupabase.from('user_journeys').upsert({
-    user_id: userSession.user.id,
-    current_step: next,
-    steps_done: done,
-    updated_at: new Date().toISOString()
-  });
+  if (build.id) {
+    await narrowSupabase.from('user_builds').update({
+      current_step: next,
+      steps_done: done,
+      updated_at: new Date().toISOString()
+    }).eq('id', build.id);
+  }
 
   renderSteps();
   updateProgress();
+};
+
+// ── Land Contact Form Modal ──────────────
+window.openLandForm = function() {
+  const overlay = document.createElement('div');
+  overlay.className = 'plan-modal-overlay';
+  overlay.onclick = function(e) { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
+  overlay.innerHTML = `
+    <div class="plan-modal" style="max-width:560px">
+      <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
+      <div style="padding:40px">
+        <h2 style="margin-bottom:8px">Land Search Inquiry</h2>
+        <p style="margin-bottom:24px;font-size:0.9rem">Submit your preferences and we'll connect you with a qualified agent in your area.</p>
+        <form id="landContactForm">
+          <div class="form-group">
+            <label>Preferred Location *</label>
+            <input type="text" name="location" placeholder="City, State or Region" required>
+          </div>
+          <div class="form-group">
+            <label>Land Budget *</label>
+            <input type="text" name="budget" placeholder="e.g. $50,000 – $150,000" required>
+          </div>
+          <div class="form-group">
+            <label>Property Type</label>
+            <select name="property_type">
+              <option>Residential Lot</option>
+              <option>Rural Acreage</option>
+              <option>Subdivision Lot</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Timeline</label>
+            <select name="timeline">
+              <option>Within 3 months</option>
+              <option>3–6 months</option>
+              <option>6–12 months</option>
+              <option>Just exploring</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea name="notes" rows="3" placeholder="Any specifics about what you're looking for..." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
+          </div>
+          <input type="hidden" name="name" value="${userSession?.user?.user_metadata?.full_name || ''}">
+          <input type="hidden" name="email" value="${userSession?.user?.email || ''}">
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Submit Inquiry</button>
+        </form>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+
+  // Attach form handler
+  overlay.querySelector('#landContactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    const orig = btn.textContent;
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+    const fd = new FormData(e.target);
+    try {
+      const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/send-contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: fd.get('name') || 'Land Inquiry',
+          email: fd.get('email') || 'via-dashboard@buildnarrow.com',
+          role: 'Land Inquiry',
+          message: `Location: ${fd.get('location')}\nBudget: ${fd.get('budget')}\nProperty Type: ${fd.get('property_type')}\nTimeline: ${fd.get('timeline')}\nNotes: ${fd.get('notes')}`
+        })
+      });
+      if (res.ok) {
+        btn.textContent = '✓ Submitted!';
+        btn.style.background = '#2D6A4F';
+        setTimeout(() => { overlay.remove(); document.body.style.overflow = ''; }, 2000);
+      } else { throw new Error(); }
+    } catch {
+      btn.textContent = '✗ Failed — try again';
+      btn.style.background = '#DC2626';
+      btn.disabled = false;
+      setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 3000);
+    }
+  });
+};
+
+// ── Bid Portal Placeholder ──────────────
+window.openBidPortal = function() {
+  const overlay = document.createElement('div');
+  overlay.className = 'plan-modal-overlay';
+  overlay.onclick = function(e) { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
+  overlay.innerHTML = `
+    <div class="plan-modal" style="max-width:560px">
+      <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
+      <div style="padding:48px;text-align:center">
+        <div style="font-size:3rem;margin-bottom:16px">🔨</div>
+        <h2 style="margin-bottom:12px">Bid Portal</h2>
+        <p style="margin-bottom:24px">Upload your architectural plans and select vetted contractors in your region to receive them. Filter contractors by city/region.</p>
+        <p style="font-size:0.85rem;color:var(--gray);margin-bottom:24px">This feature will be available with the upcoming Cloudflare R2 file upload integration. For now, email your plans directly to <strong>info@buildnarrow.com</strong>.</p>
+        <a href="mailto:info@buildnarrow.com?subject=Bid%20Request%20-%20Plans%20Attached" class="btn btn-primary">Email Plans to Narrow →</a>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+};
+
+// ═══════════════════════════════════════════
+// ARCHITECT — Profile management
+// ═══════════════════════════════════════════
+async function loadArchitectProfile() {
+  const { data } = await narrowSupabase
+    .from('architect_profiles')
+    .select('*')
+    .eq('user_id', userSession.user.id)
+    .single();
+
+  if (data) {
+    document.getElementById('archCompany').value = data.company_name || '';
+    document.getElementById('archLicense').value = data.license_number || '';
+    document.getElementById('archSpecialties').value = data.specialties || '';
+    document.getElementById('archWebsite').value = data.website || '';
+    document.getElementById('archBio').value = data.bio || '';
+  }
 }
 
+window.saveArchProfile = async function() {
+  await narrowSupabase.from('architect_profiles').upsert({
+    user_id: userSession.user.id,
+    company_name: document.getElementById('archCompany').value,
+    license_number: document.getElementById('archLicense').value,
+    specialties: document.getElementById('archSpecialties').value,
+    website: document.getElementById('archWebsite').value,
+    bio: document.getElementById('archBio').value,
+    updated_at: new Date().toISOString()
+  });
+  alert('Profile saved!');
+};
+
+window.showUploadPlan = function() {
+  alert('Plan upload will be available with the upcoming Cloudflare R2 integration. For now, email your plan files to info@buildnarrow.com and we will list them for you.');
+};
+
+// ═══════════════════════════════════════════
+// CONTRACTOR — Profile management
+// ═══════════════════════════════════════════
+async function loadContractorProfile() {
+  const { data } = await narrowSupabase
+    .from('contractor_profiles')
+    .select('*')
+    .eq('user_id', userSession.user.id)
+    .single();
+
+  if (data) {
+    document.getElementById('contCompany').value = data.company_name || '';
+    document.getElementById('contLicense').value = data.license_number || '';
+    document.getElementById('contRadius').value = data.service_radius || '';
+    document.getElementById('contArea').value = data.service_area || '';
+    document.getElementById('contExperience').value = data.experience_years || '';
+    document.getElementById('contEmail').value = data.contact_email || '';
+    document.getElementById('contBio').value = data.bio || '';
+  }
+}
+
+window.saveContProfile = async function() {
+  await narrowSupabase.from('contractor_profiles').upsert({
+    user_id: userSession.user.id,
+    company_name: document.getElementById('contCompany').value,
+    license_number: document.getElementById('contLicense').value,
+    service_radius: parseInt(document.getElementById('contRadius').value) || null,
+    service_area: document.getElementById('contArea').value,
+    experience_years: parseInt(document.getElementById('contExperience').value) || null,
+    contact_email: document.getElementById('contEmail').value,
+    bio: document.getElementById('contBio').value,
+    updated_at: new Date().toISOString()
+  });
+  alert('Profile saved!');
+};
+
+// ── Mortgage Lenders page (simple redirect) ──
+// Create lenders.html or handle inline
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(initDashboard, 350);
 });
