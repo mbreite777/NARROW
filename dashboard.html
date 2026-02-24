@@ -560,7 +560,11 @@ window.openLandForm = function() {
     try {
       const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/send-contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ',
+          'apikey': 'sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ'
+        },
         body: JSON.stringify({
           name: fd.get('name') || 'Land Inquiry',
           email: fd.get('email') || 'via-dashboard@buildnarrow.com',

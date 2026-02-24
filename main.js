@@ -379,7 +379,11 @@ async function handleContact(e) {
       'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/send-contact',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ',
+          'apikey': 'sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ'
+        },
         body: JSON.stringify({
           name:    data.get('name'),
           email:   data.get('email'),
@@ -424,7 +428,11 @@ async function handleLandContact(e) {
       'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/send-contact',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ',
+          'apikey': 'sb_publishable_YrgPXrGiPlCY1Mdhw_NYpw_jO36M2iZ'
+        },
         body: JSON.stringify({
           name:    data.get('name') || 'Land Inquiry',
           email:   data.get('email') || 'via-dashboard@buildnarrow.com',
