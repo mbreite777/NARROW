@@ -515,6 +515,187 @@ p { color: var(--gray); line-height: 1.75; }
 
 .trust-item span.icon { font-size: 1.2rem; }
 
+/* ─── TRUST STATS BAR ────────────────────── */
+.trust-bar--stats {
+  gap: 0;
+  justify-content: space-evenly;
+  padding: 8px 0;
+}
+.trust-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 24px;
+}
+.trust-stat__num {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.1;
+}
+.trust-stat__label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray);
+}
+.trust-stat__divider {
+  width: 1px;
+  height: 36px;
+  background: var(--gray-light);
+  flex-shrink: 0;
+}
+
+/* ─── HORIZONTAL JOURNEY TIMELINE ─────────── */
+.journey-timeline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  padding: 0 12px;
+  overflow-x: auto;
+  gap: 4px;
+}
+.journey-line {
+  position: absolute;
+  top: 24px;
+  left: 36px;
+  right: 36px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--navy), var(--green), var(--amber));
+  border-radius: 3px;
+  z-index: 0;
+}
+.journey-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  min-width: 100px;
+  position: relative;
+  z-index: 1;
+}
+.journey-step__dot {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: 4px solid var(--cream);
+  box-shadow: 0 2px 8px rgba(27,58,107,0.2);
+  flex-shrink: 0;
+  margin-bottom: 14px;
+  transition: transform 0.2s;
+}
+.journey-step:hover .journey-step__dot {
+  transform: scale(1.12);
+}
+.journey-step__dot--start {
+  background: var(--green);
+  border-color: rgba(45,106,79,0.15);
+}
+.journey-step__dot--end {
+  background: var(--amber);
+  color: var(--navy-dark);
+  border-color: rgba(232,168,56,0.2);
+}
+.journey-step__content h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.journey-step__content p {
+  font-size: 0.75rem;
+  color: var(--gray);
+  line-height: 1.4;
+  max-width: 130px;
+  margin: 0 auto;
+}
+
+/* ─── REVIEW CARDS ────────────────────────── */
+.review-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(27,58,107,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.review-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.review-card__stars {
+  color: var(--amber);
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+}
+.review-card__text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--charcoal);
+  font-style: italic;
+  flex: 1;
+}
+.review-card__author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--cream-dark);
+}
+.review-card__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.review-card__name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--navy);
+  margin: 0;
+}
+.review-card__meta {
+  font-size: 0.75rem;
+  color: var(--gray);
+  margin: 2px 0 0;
+}
+
+/* ─── HERO VIDEO ──────────────────────────── */
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0.3;
+}
+
 /* ─── STEP TIMELINE ────────────────────────── */
 .steps {
   display: grid;
@@ -1411,6 +1592,13 @@ p { color: var(--gray); line-height: 1.75; }
   .mission-block { padding: 40px 28px; }
   .nav__links, .nav__cta, .nav__auth { display: none; }
   .nav__hamburger { display: flex; }
+  .journey-timeline { gap: 2px; padding: 0; }
+  .journey-step { min-width: 80px; }
+  .journey-step__dot { width: 40px; height: 40px; font-size: 0.95rem; }
+  .journey-step__content h4 { font-size: 0.78rem; }
+  .journey-step__content p { font-size: 0.68rem; max-width: 100px; }
+  .trust-stat__num { font-size: 1.3rem; }
+  .trust-stat { padding: 8px 12px; }
 }
 
 @media (max-width: 600px) {
@@ -1418,6 +1606,33 @@ p { color: var(--gray); line-height: 1.75; }
   .hero { padding: 120px 0 72px; }
   .section { padding: 64px 0; }
   .trust-bar__inner { gap: 24px; }
+  .trust-bar--stats { flex-wrap: wrap; gap: 8px; }
+  .trust-stat__divider { display: none; }
+  .trust-stat { padding: 6px 16px; }
+  .journey-timeline {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .journey-line {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 3px;
+    height: auto;
+    right: auto;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, var(--navy), var(--green), var(--amber));
+  }
+  .journey-step {
+    flex-direction: row;
+    text-align: left;
+    min-width: auto;
+    gap: 16px;
+    padding: 12px 0;
+  }
+  .journey-step__dot { margin-bottom: 0; }
+  .journey-step__content p { max-width: none; margin: 0; }
   .footer__grid { grid-template-columns: 1fr; }
   .plan-grid { grid-template-columns: 1fr; }
   .step-card { padding: 16px 14px; }
