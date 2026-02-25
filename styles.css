@@ -698,6 +698,93 @@ p { color: var(--gray); line-height: 1.75; }
 }
 .hero-video.active {
   opacity: 1;
+
+}
+
+/* ─── CONTRACTOR CARDS ────────────────────── */
+.contractor-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(27,58,107,0.06);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.contractor-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Tier badges */
+.tier-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 99px;
+}
+.tier-badge--pro {
+  background: rgba(27,58,107,0.1);
+  color: var(--navy);
+}
+.tier-badge--elite {
+  background: rgba(232,168,56,0.15);
+  color: var(--amber-dark);
+}
+
+/* Checkbox tag style */
+.checkbox-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1.5px solid var(--gray-light);
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+}
+.checkbox-tag:hover {
+  border-color: var(--navy-light);
+  background: rgba(27,58,107,0.04);
+}
+.checkbox-tag input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--navy);
+}
+.checkbox-tag:has(input:checked) {
+  background: rgba(27,58,107,0.08);
+  border-color: var(--navy);
+  color: var(--navy);
+}
+
+/* ─── COVERAGE SECTION ────────────────────── */
+.coverage-stats {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.coverage-stat {
+  text-align: center;
+}
+.coverage-stat__num {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.1;
+}
+.coverage-stat__label {
+  font-size: 0.82rem;
+  color: var(--gray);
+  margin-top: 4px;
 }
 .hero-overlay {
   position: absolute;

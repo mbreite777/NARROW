@@ -107,6 +107,16 @@
             <label>Website</label>
             <input type="text" id="archWebsite" placeholder="https://yourfirm.com">
           </div>
+          <div class="form-group">
+            <label>Years Licensed</label>
+            <input type="number" id="archYearsLicensed" placeholder="e.g. 12">
+          </div>
+        </div>
+        <!-- Licensed States -->
+        <div class="form-group" style="margin-top:16px">
+          <label>States Licensed In (select all that apply)</label>
+          <div id="archStatesGrid" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-height:180px;overflow-y:auto;padding:12px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);background:white">
+          </div>
         </div>
         <div class="form-group">
           <label>Bio / Description</label>
@@ -169,12 +179,12 @@
             <input type="text" id="contLicense" placeholder="State license #">
           </div>
           <div class="form-group">
-            <label>Service Radius (miles)</label>
-            <input type="number" id="contRadius" placeholder="e.g. 50">
-          </div>
-          <div class="form-group">
             <label>Service Area (City, State)</label>
             <input type="text" id="contArea" placeholder="Austin, TX">
+          </div>
+          <div class="form-group">
+            <label>Service Radius (miles)</label>
+            <input type="number" id="contRadius" placeholder="e.g. 50">
           </div>
           <div class="form-group">
             <label>Years of Experience</label>
@@ -185,7 +195,56 @@
             <input type="email" id="contEmail" placeholder="contact@yourcompany.com">
           </div>
         </div>
-        <div class="form-group">
+
+        <!-- Service Location Map -->
+        <div class="form-group" style="margin-top:16px">
+          <label>📍 Service Location</label>
+          <p style="font-size:0.82rem;color:var(--gray);margin-bottom:8px">Enter your address above and click "Set Location" to pin your service area on the map.</p>
+          <div style="display:flex;gap:12px;margin-bottom:12px">
+            <input type="text" id="contAddress" placeholder="123 Main St, Austin, TX" style="flex:1">
+            <button class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem;white-space:nowrap" onclick="geocodeContractorAddress()">Set Location</button>
+          </div>
+          <div id="contMap" style="width:100%;height:280px;border-radius:var(--radius-sm);background:var(--cream);border:1.5px solid var(--gray-light);display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:0.85rem">
+            Map will appear after setting your location
+          </div>
+          <input type="hidden" id="contLat">
+          <input type="hidden" id="contLng">
+        </div>
+
+        <!-- New Business Fields -->
+        <div class="grid-2" style="gap:24px;margin-top:16px;align-items:start">
+          <div class="form-group">
+            <label>Min Project Budget ($)</label>
+            <input type="number" id="contMinBudget" placeholder="e.g. 100000">
+          </div>
+          <div class="form-group">
+            <label>Max Project Budget ($)</label>
+            <input type="number" id="contMaxBudget" placeholder="e.g. 1000000">
+          </div>
+          <div class="form-group">
+            <label>Timeline Availability</label>
+            <select id="contTimeline" style="width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem;background:white">
+              <option value="">Select availability</option>
+              <option value="available_now">Available Now</option>
+              <option value="1_3_months">1-3 Months</option>
+              <option value="3_6_months">3-6 Months</option>
+              <option value="booked">Currently Booked</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Build Types Multi-select -->
+        <div class="form-group" style="margin-top:16px">
+          <label>Build Types (select all that apply)</label>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+            <label class="checkbox-tag"><input type="checkbox" id="btCustom" value="custom"> Custom Homes</label>
+            <label class="checkbox-tag"><input type="checkbox" id="btSpec" value="spec"> Spec Homes</label>
+            <label class="checkbox-tag"><input type="checkbox" id="btLuxury" value="luxury"> Luxury Homes</label>
+            <label class="checkbox-tag"><input type="checkbox" id="btInvestment" value="investment"> Investment Properties</label>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:16px">
           <label>About Your Company</label>
           <textarea id="contBio" rows="3" placeholder="Describe your services, specialties, and experience..." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
         </div>
@@ -193,7 +252,7 @@
           <span style="font-size:1.2rem">⭐</span>
           <div>
             <p style="font-weight:600;color:var(--navy);margin:0;font-size:0.9rem">Ratings</p>
-            <p style="font-size:0.82rem;color:var(--gray);margin:0">Ratings will appear here after completed builds are reviewed by homebuilders.</p>
+            <p style="font-size:0.82rem;color:var(--gray);margin:0">Ratings will appear here after completed builds are reviewed by homebuilders. Requires Pro or Elite subscription.</p>
           </div>
         </div>
       </div>
@@ -274,10 +333,11 @@ const STEPS = [
   },
   {
     title: 'Bid Your Plans',
-    desc: 'Upload plans and request bids from 3 vetted contractors in your region.',
+    desc: 'Find vetted contractors in your area and request competitive bids on your plans.',
     icon: '🔨',
     actions: [
-      { label: '→ Bid Portal', onclick: 'openBidPortal()', style: 'primary' }
+      { label: '→ Find a Contractor', href: 'contractors.html', style: 'primary' },
+      { label: '→ Bid Portal', onclick: 'openBidPortal()', style: 'amber' }
     ]
   },
   {
@@ -635,6 +695,13 @@ window.openBidPortal = function() {
 // ARCHITECT — Profile management
 // ═══════════════════════════════════════════
 async function loadArchitectProfile() {
+  // Build states grid
+  const states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+  const grid = document.getElementById('archStatesGrid');
+  if (grid) {
+    grid.innerHTML = states.map(s => `<label class="checkbox-tag" style="min-width:58px"><input type="checkbox" class="archStateCheck" value="${s}"> ${s}</label>`).join('');
+  }
+
   try {
     const { data, error } = await narrowSupabase
       .from('architect_profiles')
@@ -643,7 +710,6 @@ async function loadArchitectProfile() {
       .single();
 
     if (error && error.code === 'PGRST116') {
-      // No profile row exists — create one (catch-up for signup failures)
       const meta = userSession.user.user_metadata || {};
       await narrowSupabase.from('architect_profiles').insert({
         user_id: userSession.user.id,
@@ -659,6 +725,13 @@ async function loadArchitectProfile() {
       document.getElementById('archSpecialties').value = data.specialties || '';
       document.getElementById('archWebsite').value = data.website || '';
       document.getElementById('archBio').value = data.bio || '';
+      document.getElementById('archYearsLicensed').value = data.years_licensed || '';
+
+      // Check licensed state boxes
+      const ls = data.licensed_states || [];
+      document.querySelectorAll('.archStateCheck').forEach(cb => {
+        if (ls.includes(cb.value)) cb.checked = true;
+      });
     }
   } catch (err) {
     console.warn('Could not load architect profile:', err);
@@ -666,6 +739,9 @@ async function loadArchitectProfile() {
 }
 
 window.saveArchProfile = async function() {
+  const licensedStates = [];
+  document.querySelectorAll('.archStateCheck:checked').forEach(cb => licensedStates.push(cb.value));
+
   const { error } = await narrowSupabase.from('architect_profiles').upsert({
     user_id: userSession.user.id,
     company_name: document.getElementById('archCompany').value,
@@ -673,6 +749,8 @@ window.saveArchProfile = async function() {
     specialties: document.getElementById('archSpecialties').value,
     website: document.getElementById('archWebsite').value,
     bio: document.getElementById('archBio').value,
+    years_licensed: parseInt(document.getElementById('archYearsLicensed').value) || null,
+    licensed_states: licensedStates.length > 0 ? licensedStates : null,
     updated_at: new Date().toISOString()
   }, { onConflict: 'user_id' });
   if (error) {
@@ -699,7 +777,6 @@ async function loadContractorProfile() {
       .single();
 
     if (error && error.code === 'PGRST116') {
-      // No profile row exists — create one (catch-up for signup failures)
       const meta = userSession.user.user_metadata || {};
       await narrowSupabase.from('contractor_profiles').insert({
         user_id: userSession.user.id,
@@ -717,6 +794,22 @@ async function loadContractorProfile() {
       document.getElementById('contExperience').value = data.experience_years || '';
       document.getElementById('contEmail').value = data.contact_email || '';
       document.getElementById('contBio').value = data.bio || '';
+      document.getElementById('contMinBudget').value = data.min_budget || '';
+      document.getElementById('contMaxBudget').value = data.max_budget || '';
+      document.getElementById('contTimeline').value = data.timeline_availability || '';
+
+      // Build types checkboxes
+      const bt = data.build_types || [];
+      if (bt.includes('custom')) document.getElementById('btCustom').checked = true;
+      if (bt.includes('spec')) document.getElementById('btSpec').checked = true;
+      if (bt.includes('luxury')) document.getElementById('btLuxury').checked = true;
+      if (bt.includes('investment')) document.getElementById('btInvestment').checked = true;
+
+      // If location exists, show map
+      if (data.location) {
+        // location is stored as POINT(lng lat) — parse from service_area for display
+        // We'll show a simple marker when Leaflet is integrated
+      }
     }
   } catch (err) {
     console.warn('Could not load contractor profile:', err);
@@ -724,7 +817,14 @@ async function loadContractorProfile() {
 }
 
 window.saveContProfile = async function() {
-  const { error } = await narrowSupabase.from('contractor_profiles').upsert({
+  // Gather build types
+  const buildTypes = [];
+  if (document.getElementById('btCustom').checked) buildTypes.push('custom');
+  if (document.getElementById('btSpec').checked) buildTypes.push('spec');
+  if (document.getElementById('btLuxury').checked) buildTypes.push('luxury');
+  if (document.getElementById('btInvestment').checked) buildTypes.push('investment');
+
+  const profileData = {
     user_id: userSession.user.id,
     company_name: document.getElementById('contCompany').value,
     license_number: document.getElementById('contLicense').value,
@@ -733,13 +833,53 @@ window.saveContProfile = async function() {
     experience_years: parseInt(document.getElementById('contExperience').value) || null,
     contact_email: document.getElementById('contEmail').value,
     bio: document.getElementById('contBio').value,
+    min_budget: parseInt(document.getElementById('contMinBudget').value) || null,
+    max_budget: parseInt(document.getElementById('contMaxBudget').value) || null,
+    timeline_availability: document.getElementById('contTimeline').value || null,
+    build_types: buildTypes.length > 0 ? buildTypes : null,
     updated_at: new Date().toISOString()
-  }, { onConflict: 'user_id' });
+  };
+
+  // Add location if geocoded
+  const lat = document.getElementById('contLat').value;
+  const lng = document.getElementById('contLng').value;
+  if (lat && lng) {
+    profileData.location = `POINT(${lng} ${lat})`;
+  }
+
+  const { error } = await narrowSupabase.from('contractor_profiles').upsert(profileData, { onConflict: 'user_id' });
   if (error) {
     console.error('Save error:', error);
     alert('Error saving profile. Check console for details.');
   } else {
     alert('Profile saved!');
+  }
+};
+
+// Geocode contractor address using Nominatim (free, OpenStreetMap)
+window.geocodeContractorAddress = async function() {
+  const address = document.getElementById('contAddress').value.trim();
+  if (!address) { alert('Enter an address first.'); return; }
+
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`);
+    const results = await res.json();
+    if (results.length === 0) { alert('Address not found. Try a more specific address.'); return; }
+
+    const { lat, lon } = results[0];
+    document.getElementById('contLat').value = lat;
+    document.getElementById('contLng').value = lon;
+    document.getElementById('contMap').innerHTML = `
+      <div style="text-align:center;padding:24px">
+        <div style="font-size:2rem;margin-bottom:8px">📍</div>
+        <p style="font-weight:600;color:var(--navy);margin:0">Location Set</p>
+        <p style="font-size:0.82rem;color:var(--gray);margin:4px 0 0">${results[0].display_name}</p>
+        <p style="font-size:0.75rem;color:var(--gray);margin:4px 0 0">Lat: ${parseFloat(lat).toFixed(4)}, Lng: ${parseFloat(lon).toFixed(4)}</p>
+      </div>
+    `;
+  } catch (err) {
+    console.error('Geocoding error:', err);
+    alert('Geocoding failed. Please try again.');
   }
 };
 

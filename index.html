@@ -392,6 +392,35 @@
   </div>
 </section>
 
+<!-- ── NATIONAL COVERAGE ─────────────────── -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:32px">
+      <span class="section-label">Growing Nationwide</span>
+      <h2>Narrow's national coverage</h2>
+      <p style="max-width:520px;margin:12px auto 0">Our network of verified contractors and licensed architects is expanding across the country.</p>
+    </div>
+    <div class="coverage-stats" id="coverageStats">
+      <div class="coverage-stat">
+        <div class="coverage-stat__num" id="statContractors">—</div>
+        <div class="coverage-stat__label">Verified Contractors</div>
+      </div>
+      <div class="coverage-stat">
+        <div class="coverage-stat__num" id="statArchStates">—</div>
+        <div class="coverage-stat__label">States with Licensed Architects</div>
+      </div>
+      <div class="coverage-stat">
+        <div class="coverage-stat__num" id="statCoveredStates">—</div>
+        <div class="coverage-stat__label">States with Contractor Coverage</div>
+      </div>
+    </div>
+    <p id="coverageMessage" style="text-align:center;margin-top:24px;font-size:0.9rem;color:var(--gray)"></p>
+    <div style="text-align:center;margin-top:24px">
+      <a href="professionals.html#contractors" class="btn btn-outline">Join as a Contractor →</a>
+    </div>
+  </div>
+</section>
+
 <!-- ── CTA ────────────────────────────────── -->
 <section style="background:linear-gradient(135deg,var(--navy-dark),var(--navy));padding:96px 0;text-align:center">
   <div class="container">
@@ -531,10 +560,40 @@
     videos[current].classList.remove('active');
     current = (current + 1) % videos.length;
     videos[current].classList.add('active');
-    // Restart playback from beginning on each cycle
     videos[current].currentTime = 0;
     videos[current].play().catch(() => {});
   }, 6000);
+})();
+
+// Load coverage stats
+(async function() {
+  try {
+    if (!narrowSupabase) return;
+    const { data, error } = await narrowSupabase.rpc('get_coverage_stats');
+    if (error || !data || data.length === 0) return;
+
+    const stats = data[0] || data;
+    const el = id => document.getElementById(id);
+
+    if (el('statContractors')) el('statContractors').textContent = stats.total_contractors || '0';
+    if (el('statArchStates')) {
+      const cnt = stats.architect_licensed_states || 0;
+      el('statArchStates').textContent = cnt >= 50 ? 'All 50' : cnt;
+    }
+    if (el('statCoveredStates')) el('statCoveredStates').textContent = stats.covered_states || '0';
+
+    // Coverage message
+    const msg = el('coverageMessage');
+    if (msg && stats.uncovered_states && stats.uncovered_states.length > 0 && stats.uncovered_states.length <= 20) {
+      msg.textContent = `Contractors needed in: ${stats.uncovered_states.join(', ')}`;
+    } else if (msg && stats.covered_states >= 50) {
+      msg.textContent = 'Contractors available in all 50 states!';
+      msg.style.color = 'var(--green)';
+      msg.style.fontWeight = '600';
+    }
+  } catch (e) {
+    console.log('Coverage stats not yet available');
+  }
 })();
 </script>
 </body>
