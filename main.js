@@ -55,11 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
       navAuth.innerHTML = `
         <div class="nav__user-wrap">
           <button class="nav__user-btn" onclick="toggleUserDropdown(event)">
-            ${firstName} Dashboard
+            Hello, ${firstName}
             <span style="font-size:0.65rem;opacity:0.6">▾</span>
           </button>
           <div id="userDropdown" class="nav__dropdown">
-            <a href="dashboard.html">${firstName}'s Dashboard</a>
+            <a href="dashboard.html">Dashboard</a>
             <hr>
             <button onclick="window.narrowSignOut()">Sign Out</button>
           </div>

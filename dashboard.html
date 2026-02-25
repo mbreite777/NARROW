@@ -807,10 +807,41 @@ async function loadContractorProfile() {
       if (bt.includes('luxury')) document.getElementById('btLuxury').checked = true;
       if (bt.includes('investment')) document.getElementById('btInvestment').checked = true;
 
-      // If location exists, show map
-      if (data.location) {
-        // location is stored as POINT(lng lat) — parse from service_area for display
-        // We'll show a simple marker when Leaflet is integrated
+      // Restore map if location was saved
+      if (data.service_lat && data.service_lng) {
+        document.getElementById('contLat').value = data.service_lat;
+        document.getElementById('contLng').value = data.service_lng;
+        document.getElementById('contAddress').value = data.service_area || '';
+        // Init map after a short delay to ensure DOM is ready
+        setTimeout(() => {
+          const lat = data.service_lat;
+          const lng = data.service_lng;
+          const mapEl = document.getElementById('contMap');
+          mapEl.innerHTML = '';
+          mapEl.style.color = '';
+          contMap = L.map('contMap').setView([lat, lng], 9);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap',
+            maxZoom: 18
+          }).addTo(contMap);
+          contMarker = L.marker([lat, lng]).addTo(contMap);
+          const radiusMiles = data.service_radius || 50;
+          contCircle = L.circle([lat, lng], {
+            radius: radiusMiles * 1609.34,
+            color: '#1B3A6B',
+            fillColor: '#1B3A6B',
+            fillOpacity: 0.08,
+            weight: 2
+          }).addTo(contMap);
+          contMap.fitBounds(contCircle.getBounds());
+
+          document.getElementById('contRadius').onchange = function() {
+            if (contCircle && contMap) {
+              contCircle.setRadius((parseInt(this.value) || 50) * 1609.34);
+              contMap.fitBounds(contCircle.getBounds());
+            }
+          };
+        }, 200);
       }
     }
   } catch (err) {
@@ -826,6 +857,9 @@ window.saveContProfile = async function() {
   if (document.getElementById('btLuxury').checked) buildTypes.push('luxury');
   if (document.getElementById('btInvestment').checked) buildTypes.push('investment');
 
+  const lat = parseFloat(document.getElementById('contLat').value) || null;
+  const lng = parseFloat(document.getElementById('contLng').value) || null;
+
   const profileData = {
     user_id: userSession.user.id,
     company_name: document.getElementById('contCompany').value,
@@ -839,21 +873,24 @@ window.saveContProfile = async function() {
     max_budget: parseInt(document.getElementById('contMaxBudget').value) || null,
     timeline_availability: document.getElementById('contTimeline').value || null,
     build_types: buildTypes.length > 0 ? buildTypes : null,
+    service_lat: lat,
+    service_lng: lng,
     updated_at: new Date().toISOString()
   };
-
-  // Add location if geocoded
-  const lat = document.getElementById('contLat').value;
-  const lng = document.getElementById('contLng').value;
-  if (lat && lng) {
-    profileData.location = `POINT(${lng} ${lat})`;
-  }
 
   const { error } = await narrowSupabase.from('contractor_profiles').upsert(profileData, { onConflict: 'user_id' });
   if (error) {
     console.error('Save error:', error);
     alert('Error saving profile. Check console for details.');
   } else {
+    // If we have coordinates, update the geography column via RPC
+    if (lat && lng) {
+      await narrowSupabase.rpc('set_contractor_location', {
+        contractor_user_id: userSession.user.id,
+        lat: lat,
+        lng: lng
+      }).catch(e => console.warn('Location geo update:', e));
+    }
     alert('Profile saved!');
   }
 };
