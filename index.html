@@ -33,13 +33,14 @@
   <a href="login.html" style="color:var(--amber)">Login</a>
 </div>
 
-<!-- ── HERO (video-ready) ─────────────────── -->
+<!-- ── HERO (3-video cycle) ────────────────── -->
 <section class="hero" style="min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden">
-  <!-- VIDEO: Uncomment and replace src when ready
-  <video autoplay muted loop playsinline class="hero-video">
-    <source src="hero-video.mp4" type="video/mp4">
-  </video>
-  -->
+  <!-- 3 VIDEO CAROUSEL: Replace src values with your video files -->
+  <video autoplay muted loop playsinline class="hero-video active" src="hero-1.mp4"></video>
+  <video autoplay muted loop playsinline class="hero-video" src="hero-2.mp4"></video>
+  <video autoplay muted loop playsinline class="hero-video" src="hero-3.mp4"></video>
+  <div class="hero-overlay"></div>
+
   <div class="container" style="position:relative;z-index:2">
     <div class="grid-2" style="gap:64px">
       <div class="hero__content">
@@ -531,5 +532,22 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
+<script>
+// Hero video carousel — cycles every 6 seconds with crossfade
+(function() {
+  const videos = document.querySelectorAll('.hero-video');
+  if (videos.length < 2) return;
+  let current = 0;
+
+  setInterval(() => {
+    videos[current].classList.remove('active');
+    current = (current + 1) % videos.length;
+    videos[current].classList.add('active');
+    // Restart playback from beginning on each cycle
+    videos[current].currentTime = 0;
+    videos[current].play().catch(() => {});
+  }, 6000);
+})();
+</script>
 </body>
 </html>

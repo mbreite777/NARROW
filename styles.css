@@ -684,7 +684,7 @@ p { color: var(--gray); line-height: 1.75; }
   margin: 2px 0 0;
 }
 
-/* ─── HERO VIDEO ──────────────────────────── */
+/* ─── HERO VIDEO CAROUSEL ─────────────────── */
 .hero-video {
   position: absolute;
   top: 0;
@@ -693,7 +693,20 @@ p { color: var(--gray); line-height: 1.75; }
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  opacity: 0.3;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+.hero-video.active {
+  opacity: 1;
+}
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(18,40,80,0.82), rgba(27,58,107,0.7));
+  z-index: 1;
 }
 
 /* ─── STEP TIMELINE ────────────────────────── */
