@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard — Narrow</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
@@ -286,6 +287,7 @@
   </div>
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
 <script>
@@ -856,7 +858,11 @@ window.saveContProfile = async function() {
   }
 };
 
-// Geocode contractor address using Nominatim (free, OpenStreetMap)
+// Geocode contractor address + show Leaflet map
+let contMap = null;
+let contMarker = null;
+let contCircle = null;
+
 window.geocodeContractorAddress = async function() {
   const address = document.getElementById('contAddress').value.trim();
   if (!address) { alert('Enter an address first.'); return; }
@@ -866,17 +872,55 @@ window.geocodeContractorAddress = async function() {
     const results = await res.json();
     if (results.length === 0) { alert('Address not found. Try a more specific address.'); return; }
 
-    const { lat, lon } = results[0];
+    const lat = parseFloat(results[0].lat);
+    const lng = parseFloat(results[0].lon);
     document.getElementById('contLat').value = lat;
-    document.getElementById('contLng').value = lon;
-    document.getElementById('contMap').innerHTML = `
-      <div style="text-align:center;padding:24px">
-        <div style="font-size:2rem;margin-bottom:8px">📍</div>
-        <p style="font-weight:600;color:var(--navy);margin:0">Location Set</p>
-        <p style="font-size:0.82rem;color:var(--gray);margin:4px 0 0">${results[0].display_name}</p>
-        <p style="font-size:0.75rem;color:var(--gray);margin:4px 0 0">Lat: ${parseFloat(lat).toFixed(4)}, Lng: ${parseFloat(lon).toFixed(4)}</p>
-      </div>
-    `;
+    document.getElementById('contLng').value = lng;
+
+    const mapEl = document.getElementById('contMap');
+
+    if (contMap) {
+      // Map already exists — just update view and markers
+      contMap.setView([lat, lng], 9);
+      if (contMarker) contMap.removeLayer(contMarker);
+      if (contCircle) contMap.removeLayer(contCircle);
+    } else {
+      mapEl.innerHTML = '';
+      mapEl.style.color = '';
+      contMap = L.map('contMap').setView([lat, lng], 9);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap',
+        maxZoom: 18
+      }).addTo(contMap);
+    }
+
+    // Add marker
+    contMarker = L.marker([lat, lng]).addTo(contMap)
+      .bindPopup(`<strong>${results[0].display_name}</strong>`).openPopup();
+
+    // Add radius circle
+    const radiusMiles = parseInt(document.getElementById('contRadius').value) || 50;
+    const radiusMeters = radiusMiles * 1609.34;
+    contCircle = L.circle([lat, lng], {
+      radius: radiusMeters,
+      color: '#1B3A6B',
+      fillColor: '#1B3A6B',
+      fillOpacity: 0.08,
+      weight: 2
+    }).addTo(contMap);
+
+    // Fit map to circle bounds
+    contMap.fitBounds(contCircle.getBounds());
+
+    // Update circle when radius changes
+    document.getElementById('contRadius').onchange = function() {
+      if (contCircle && contMap) {
+        const newRadius = (parseInt(this.value) || 50) * 1609.34;
+        contCircle.setRadius(newRadius);
+        contMap.fitBounds(contCircle.getBounds());
+      }
+    };
+
   } catch (err) {
     console.error('Geocoding error:', err);
     alert('Geocoding failed. Please try again.');

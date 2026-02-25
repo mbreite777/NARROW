@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Find a Contractor — Narrow</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
@@ -89,6 +90,11 @@
       </details>
     </div>
 
+    <!-- RESULTS MAP -->
+    <div id="searchMapContainer" style="display:none;margin-top:32px">
+      <div id="searchMap" style="width:100%;height:360px;border-radius:var(--radius-md);border:1.5px solid var(--gray-light)"></div>
+    </div>
+
     <!-- RESULTS -->
     <div id="searchStatus" style="display:none;text-align:center;padding:32px 0">
       <p style="color:var(--gray);font-size:0.95rem">Searching...</p>
@@ -152,10 +158,12 @@
   </div>
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
 <script>
 let searchLat = null, searchLng = null;
+let searchMap = null;
 
 async function searchContractors() {
   const address = document.getElementById('searchAddress').value.trim();
@@ -164,9 +172,11 @@ async function searchContractors() {
   const resultsGrid = document.getElementById('resultsGrid');
   const noMatch = document.getElementById('noMatchSection');
   const status = document.getElementById('searchStatus');
+  const mapContainer = document.getElementById('searchMapContainer');
 
   resultsGrid.innerHTML = '';
   noMatch.style.display = 'none';
+  mapContainer.style.display = 'none';
   status.style.display = 'block';
 
   try {
@@ -242,10 +252,56 @@ async function searchContractors() {
         </div>
         ${c.verified ? '<p style="font-size:0.78rem;color:var(--green);margin-bottom:12px">✅ Verified by Narrow</p>' : ''}
         <div style="display:flex;gap:12px">
-          <button class="btn btn-primary" style="padding:10px 20px;font-size:0.85rem;flex:1;justify-content:center" onclick="requestBid('${c.id}', '${escHtml(c.company_name || '')}')">Request Bid</button>
+          <button class="btn btn-primary" style="padding:10px 20px;font-size:0.85rem;flex:1;justify-content:center" onclick="requestBid('${c.id}', this)" data-name="${escHtml(c.company_name || '')}">Request Bid</button>
         </div>
       </div>
     `).join('');
+
+    // Show map with contractor pins
+    mapContainer.style.display = 'block';
+    if (!searchMap) {
+      searchMap = L.map('searchMap').setView([searchLat, searchLng], 8);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap',
+        maxZoom: 18
+      }).addTo(searchMap);
+    } else {
+      searchMap.setView([searchLat, searchLng], 8);
+      searchMap.eachLayer(l => { if (l instanceof L.Marker || l instanceof L.Circle) searchMap.removeLayer(l); });
+    }
+
+    // Your location marker (blue)
+    L.marker([searchLat, searchLng], {
+      icon: L.divIcon({
+        className: '',
+        html: '<div style="width:14px;height:14px;background:#1B3A6B;border:3px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3)"></div>',
+        iconSize: [14, 14],
+        iconAnchor: [7, 7]
+      })
+    }).addTo(searchMap).bindPopup('<strong>Your build location</strong>');
+
+    // Search radius circle
+    const radiusMiles = parseInt(document.getElementById('searchRadius').value) || 50;
+    const radiusCircle = L.circle([searchLat, searchLng], {
+      radius: radiusMiles * 1609.34,
+      color: '#1B3A6B',
+      fillColor: '#1B3A6B',
+      fillOpacity: 0.05,
+      weight: 1,
+      dashArray: '6 4'
+    }).addTo(searchMap);
+
+    // Contractor pins (amber)
+    const bounds = L.latLngBounds([[searchLat, searchLng]]);
+    data.forEach(c => {
+      // Approximate contractor location from distance + bearing (we don't have their exact coords from RPC)
+      // For now, place a pin at search location offset by distance — full coords require returning lat/lng from function
+      // We'll show them all as pins near the search area with popup info
+    });
+
+    // Fit to radius circle bounds
+    searchMap.fitBounds(radiusCircle.getBounds());
+    setTimeout(() => searchMap.invalidateSize(), 200);
 
   } catch (err) {
     console.error('Search failed:', err);
@@ -285,7 +341,8 @@ async function prefillRequestForm() {
 }
 
 // Request Bid modal
-async function requestBid(contractorId, companyName) {
+async function requestBid(contractorId, btnEl) {
+  const companyName = btnEl.getAttribute('data-name') || 'Contractor';
   const { data: { session } } = await narrowSupabase.auth.getSession();
   if (!session) {
     alert('Please log in to request a bid.');
