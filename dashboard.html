@@ -674,7 +674,7 @@ window.saveArchProfile = async function() {
     website: document.getElementById('archWebsite').value,
     bio: document.getElementById('archBio').value,
     updated_at: new Date().toISOString()
-  });
+  }, { onConflict: 'user_id' });
   if (error) {
     console.error('Save error:', error);
     alert('Error saving profile. Check console for details.');
@@ -734,7 +734,7 @@ window.saveContProfile = async function() {
     contact_email: document.getElementById('contEmail').value,
     bio: document.getElementById('contBio').value,
     updated_at: new Date().toISOString()
-  });
+  }, { onConflict: 'user_id' });
   if (error) {
     console.error('Save error:', error);
     alert('Error saving profile. Check console for details.');
