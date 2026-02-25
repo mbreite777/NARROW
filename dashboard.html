@@ -885,11 +885,15 @@ window.saveContProfile = async function() {
   } else {
     // If we have coordinates, update the geography column via RPC
     if (lat && lng) {
-      await narrowSupabase.rpc('set_contractor_location', {
-        contractor_user_id: userSession.user.id,
-        lat: lat,
-        lng: lng
-      }).catch(e => console.warn('Location geo update:', e));
+      try {
+        await narrowSupabase.rpc('set_contractor_location', {
+          contractor_user_id: userSession.user.id,
+          lat: lat,
+          lng: lng
+        });
+      } catch (e) {
+        console.warn('Location geo update:', e);
+      }
     }
     alert('Profile saved!');
   }
