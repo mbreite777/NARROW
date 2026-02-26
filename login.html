@@ -202,6 +202,9 @@
       const redirect = params.get('redirect');
       if (redirect === 'questionnaire') {
         setTimeout(() => { window.location.href = 'index.html?openQuestionnaire=1'; }, 1000);
+      } else if (redirect === 'marketplace') {
+        // Go back to marketplace — main.js will reopen the plan modal from sessionStorage
+        setTimeout(() => { window.location.href = 'marketplace.html?redirect=marketplace'; }, 1000);
       } else {
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
       }

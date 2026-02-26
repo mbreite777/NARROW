@@ -151,6 +151,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 800);
   }
 
+  // After login redirect from marketplace — reopen the plan the user was trying to buy
+  if (urlParams.get('redirect') === 'marketplace') {
+    window.history.replaceState({}, '', window.location.pathname);
+    setTimeout(async () => {
+      const { data: { session } } = await narrowSupabase.auth.getSession();
+      if (session) {
+        const pending = sessionStorage.getItem('pendingPlan');
+        if (pending) {
+          sessionStorage.removeItem('pendingPlan');
+          try {
+            const planData = JSON.parse(pending);
+            // Small delay to let the page settle
+            setTimeout(() => {
+              window.openPlanDetail(planData);
+            }, 300);
+          } catch(e) {
+            // If plan data is corrupt just go to marketplace
+            window.location.href = 'marketplace.html';
+          }
+        } else {
+          window.location.href = 'marketplace.html';
+        }
+      }
+    }, 800);
+  }
+
   // ── Contact form ─────────────────────────
   const contactForm = document.getElementById('contactForm');
   if (contactForm) {
@@ -510,6 +536,8 @@ window.handlePurchase = async function(planData) {
   // Require login before purchase
   const { data: { session } } = await narrowSupabase.auth.getSession();
   if (!session) {
+    // Save plan data so we can reopen it after login
+    sessionStorage.setItem('pendingPlan', JSON.stringify(planData));
     window.location.href = 'login.html?redirect=marketplace';
     return;
   }

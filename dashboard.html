@@ -68,6 +68,21 @@
       <div class="steps-grid" id="stepsContainer"></div>
     </div>
   </section>
+
+  <!-- My Purchased Plans -->
+  <section class="section" style="padding-top:0;padding-bottom:64px">
+    <div class="container" style="max-width:740px">
+      <div class="dash-panel" id="myPlansPanel" style="display:none">
+        <div class="dash-panel__header">
+          <h3>📐 My Purchased Plans</h3>
+          <span style="font-size:0.75rem;color:var(--gray);background:var(--cream);padding:4px 10px;border-radius:99px">🔒 Private</span>
+        </div>
+        <div id="myPlansList">
+          <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">Loading your plans...</p>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 
 <!-- ═══════════════════════════════════════════ -->
@@ -383,6 +398,8 @@ async function initDashboard() {
       document.getElementById('homebuilderDash').style.display = 'block';
       document.getElementById('heroGreeting').textContent = `Welcome back, ${firstName}!`;
       await loadBuilds();
+      // Load purchased plans in the background
+      loadMyPlans(session.user.email);
     }
   } catch (err) {
     console.error('Dashboard init error:', err);
@@ -1009,6 +1026,62 @@ window.geocodeContractorAddress = async function() {
 
 // ── Mortgage Lenders page (simple redirect) ──
 // Create lenders.html or handle inline
+
+// ── My Purchased Plans ───────────────────────
+async function loadMyPlans(email) {
+  const panel = document.getElementById('myPlansPanel');
+  const list  = document.getElementById('myPlansList');
+  if (!panel || !list) return;
+
+  try {
+    const { data, error } = await narrowSupabase
+      .from('purchases')
+      .select('*')
+      .eq('buyer_email', email)
+      .order('purchased_at', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+      // No purchases yet — hide panel entirely
+      panel.style.display = 'none';
+      return;
+    }
+
+    // Show panel
+    panel.style.display = 'block';
+
+    list.innerHTML = data.map(p => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--cream-dark);gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px">
+          <p style="font-weight:700;color:var(--navy);margin:0 0 4px">${p.plan_name || 'Architectural Plan'}</p>
+          <p style="font-size:0.82rem;color:var(--gray);margin:0">
+            by ${p.architect_name || 'Architect'} &nbsp;·&nbsp;
+            $${parseFloat(p.amount_paid).toFixed(2)} &nbsp;·&nbsp;
+            ${new Date(p.purchased_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </p>
+        </div>
+        ${p.download_url ? `
+          <a href="${p.download_url}" target="_blank" rel="noopener"
+             style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:white;padding:10px 20px;border-radius:var(--radius-sm);font-weight:700;font-size:0.875rem;text-decoration:none;white-space:nowrap;transition:background 0.2s"
+             onmouseover="this.style.background='#1B4332'" onmouseout="this.style.background='var(--green)'">
+            ⬇️ Download PDF
+          </a>
+        ` : `
+          <span style="font-size:0.82rem;color:var(--gray);font-style:italic">
+            Contact <a href="mailto:info@buildnarrow.com" style="color:var(--navy)">info@buildnarrow.com</a> for download
+          </span>
+        `}
+      </div>
+    `).join('') + `
+      <p style="font-size:0.78rem;color:var(--gray);margin-top:16px;margin-bottom:0;text-align:center">
+        Your plans are always available here. Download anytime.
+      </p>
+    `;
+
+  } catch(err) {
+    console.warn('Could not load purchases:', err);
+    panel.style.display = 'none';
+  }
+}
 
 // ═══════════════════════════════════════════
 // INIT
