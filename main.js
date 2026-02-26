@@ -462,7 +462,7 @@ async function handleLandContact(e) {
 window.openPlanDetail = function(planData) {
   const overlay = document.createElement('div');
   overlay.className = 'plan-modal-overlay';
-  overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); document.body.style.overflow = ''; };
+  overlay.onclick = function(e) { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
   overlay.innerHTML = `
     <div class="plan-modal">
       <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
@@ -486,12 +486,73 @@ window.openPlanDetail = function(planData) {
         <p style="margin-bottom:32px">This plan is designed by ${planData.architect} and includes full architectural drawings. Plans are priced by the architect and sold through Narrow. After purchase, customization services are available through the architect.</p>
         <div style="display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid var(--cream-dark)">
           <span style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy)">${planData.price}</span>
-          <button class="btn btn-primary btn-lg" style="opacity:0.7;cursor:default" title="Coming soon — Stripe integration pending">Purchase Plan</button>
+          <button
+            id="purchaseBtn"
+            class="btn btn-primary btn-lg"
+            onclick="handlePurchase(${JSON.stringify(planData).replace(/"/g, '&quot;')})"
+          >Purchase Plan 🔒</button>
         </div>
-        <p style="font-size:0.78rem;color:var(--gray);margin-top:12px;text-align:right">Secure checkout coming soon via Stripe</p>
+        <p style="font-size:0.78rem;color:var(--gray);margin-top:12px;text-align:right">
+          🔒 Secure checkout via Stripe &nbsp;·&nbsp; Instant PDF download after payment
+        </p>
       </div>
     </div>
   `;
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
+};
+
+// ── STRIPE CHECKOUT ────────────────────────────
+window.handlePurchase = async function(planData) {
+  const btn = document.getElementById('purchaseBtn');
+  if (!btn) return;
+
+  // Require login before purchase
+  const { data: { session } } = await narrowSupabase.auth.getSession();
+  if (!session) {
+    window.location.href = 'login.html?redirect=marketplace';
+    return;
+  }
+
+  btn.textContent = 'Redirecting to checkout…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(
+      'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/create-checkout',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM`,
+          'apikey': `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM`,
+        },
+        body: JSON.stringify({
+          planId:        planData.planId,
+          planName:      planData.name,
+          planPrice:     planData.price,
+          architectName: planData.architect,
+          buyerEmail:    session.user.email,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.url) {
+      // Redirect to Stripe hosted checkout
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'No checkout URL returned');
+    }
+  } catch (err) {
+    console.error('Purchase error:', err);
+    btn.textContent = '✗ Error — try again';
+    btn.style.background = '#DC2626';
+    btn.disabled = false;
+    setTimeout(() => {
+      btn.textContent = 'Purchase Plan 🔒';
+      btn.style.background = '';
+    }, 3000);
+  }
 };

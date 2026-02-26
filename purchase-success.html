@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purchase Complete — Narrow</title>
+  <meta name="description" content="Your plan purchase is complete. Download your architectural plans.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .success-hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      padding: 40px 20px;
+    }
+    .success-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 56px 48px;
+      max-width: 560px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+    }
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #2D6A4F, #40916C);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 2rem;
+    }
+    .success-card h1 {
+      color: var(--navy);
+      margin-bottom: 12px;
+      font-size: 2rem;
+    }
+    .success-card p {
+      color: var(--gray);
+      margin-bottom: 32px;
+      line-height: 1.65;
+    }
+    .download-box {
+      background: linear-gradient(135deg, rgba(45,106,79,0.06), rgba(45,106,79,0.12));
+      border: 2px solid var(--green);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      margin-bottom: 32px;
+    }
+    .download-box h3 {
+      color: var(--green);
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+    .download-box p {
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green);
+      color: white;
+      padding: 14px 28px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-download:hover {
+      background: #1B4332;
+      transform: translateY(-1px);
+    }
+    .next-steps {
+      background: var(--cream);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+    .next-steps h4 {
+      color: var(--navy);
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+    .next-step-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+      color: var(--charcoal);
+    }
+    .next-step-item:last-child { margin-bottom: 0; }
+    .step-num-badge {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .loading-state { color: var(--gray); font-size: 0.9rem; }
+    @media (max-width: 600px) {
+      .success-card { padding: 36px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="success-hero">
+  <div class="success-card">
+
+    <div class="success-icon">✓</div>
+
+    <h1>Payment Complete!</h1>
+    <p>Thank you for your purchase through Narrow. Your architectural plan is ready to download below.</p>
+
+    <!-- Download Box — filled dynamically -->
+    <div class="download-box" id="downloadBox">
+      <div class="loading-state" id="loadingState">
+        ⏳ Verifying your purchase…
+      </div>
+      <div id="downloadContent" style="display:none">
+        <h3>📐 Your Plan is Ready</h3>
+        <p id="planDescription">Full architectural plan set — PDF format</p>
+        <a id="downloadLink" href="#" class="btn-download" target="_blank" rel="noopener">
+          ⬇️ Download Your Plan (PDF)
+        </a>
+        <p style="font-size:0.78rem;color:var(--gray);margin-top:12px;margin-bottom:0">
+          Save this file securely. This link will always be available in your Narrow account.
+        </p>
+      </div>
+      <div id="errorContent" style="display:none">
+        <h3 style="color:var(--amber-dark)">⚠️ Verification Needed</h3>
+        <p>Your payment was received but we couldn't auto-load your download. Email us at <a href="mailto:info@buildnarrow.com" style="color:var(--navy);font-weight:600">info@buildnarrow.com</a> and we'll send your plan within 1 hour.</p>
+      </div>
+    </div>
+
+    <!-- Next Steps -->
+    <div class="next-steps">
+      <h4>🗺️ Your Next Steps in Narrow</h4>
+      <div class="next-step-item">
+        <div class="step-num-badge">5</div>
+        <span><strong>Customize</strong> — Work with your architect on regional code adaptations or modifications.</span>
+      </div>
+      <div class="next-step-item">
+        <div class="step-num-badge">6</div>
+        <span><strong>Get Bids</strong> — Share your plan with 3+ verified contractors from the Narrow directory.</span>
+      </div>
+      <div class="next-step-item">
+        <div class="step-num-badge">Z</div>
+        <span><strong>Build</strong> — Break ground and track your journey to move-in day.</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="dashboard.html" class="btn btn-primary">Go to My Dashboard →</a>
+      <a href="marketplace.html" class="btn btn-outline">Browse More Plans</a>
+    </div>
+
+    <p style="font-size:0.78rem;color:var(--gray);margin-top:20px">
+      Questions? Email <a href="mailto:info@buildnarrow.com" style="color:var(--navy)">info@buildnarrow.com</a>
+    </p>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL  = 'https://okalotfqhmwiyckhvcmk.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM';
+
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  // Plan ID → download URL map (matches webhook PLAN_FILE_MAP)
+  const PLAN_DOWNLOADS = {
+    'breite_shouse': {
+      url:  'https://files.buildnarrow.com/architects/breite_design/THE%20SHOUSE%20PLAN.pdf',
+      name: 'The Shouse Plan — Breite Design',
+    },
+    // Add more as architects upload:
+    // 'heritage': { url: '...', name: 'The Heritage' },
+  };
+
+  async function loadPurchase() {
+    const params    = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    const planId    = params.get('plan_id');
+
+    const loadingEl  = document.getElementById('loadingState');
+    const downloadEl = document.getElementById('downloadContent');
+    const errorEl    = document.getElementById('errorContent');
+    const linkEl     = document.getElementById('downloadLink');
+    const descEl     = document.getElementById('planDescription');
+
+    if (!sessionId || !planId) {
+      loadingEl.style.display = 'none';
+      errorEl.style.display   = 'block';
+      return;
+    }
+
+    // Try to get download URL from our map first (instant)
+    const planInfo = PLAN_DOWNLOADS[planId];
+
+    if (planInfo) {
+      loadingEl.style.display  = 'none';
+      downloadEl.style.display = 'block';
+      linkEl.href              = planInfo.url;
+      linkEl.setAttribute('download', planInfo.name + '.pdf');
+      descEl.textContent       = planInfo.name + ' — Full architectural plan set (PDF)';
+      return;
+    }
+
+    // Fallback: check Supabase purchases table (webhook may have recorded it)
+    try {
+      // Poll up to 10 seconds for webhook to process
+      let purchase = null;
+      for (let i = 0; i < 5; i++) {
+        const { data } = await sb
+          .from('purchases')
+          .select('download_url, plan_name')
+          .eq('stripe_session_id', sessionId)
+          .single();
+
+        if (data?.download_url) {
+          purchase = data;
+          break;
+        }
+        await new Promise(r => setTimeout(r, 2000));
+      }
+
+      if (purchase?.download_url) {
+        loadingEl.style.display  = 'none';
+        downloadEl.style.display = 'block';
+        linkEl.href              = purchase.download_url;
+        descEl.textContent       = (purchase.plan_name || 'Your Plan') + ' — Full architectural plan set (PDF)';
+      } else {
+        loadingEl.style.display = 'none';
+        errorEl.style.display   = 'block';
+      }
+    } catch (err) {
+      console.error('Purchase lookup error:', err);
+      loadingEl.style.display = 'none';
+      errorEl.style.display   = 'block';
+    }
+  }
+
+  loadPurchase();
+</script>
+</body>
+</html>

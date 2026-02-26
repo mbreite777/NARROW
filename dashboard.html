@@ -595,14 +595,22 @@ window.openLandForm = function() {
         <h2 style="margin-bottom:8px">Land Search Inquiry</h2>
         <p style="margin-bottom:24px;font-size:0.9rem">Submit your preferences and we'll connect you with a qualified agent in your area.</p>
         <form id="landContactForm">
+
           <div class="form-group">
             <label>Preferred Location *</label>
             <input type="text" name="location" placeholder="City, State or Region" required>
           </div>
+
+          <div class="form-group">
+            <label>Zip Code of Target Area</label>
+            <input type="text" name="zip_code" placeholder="e.g. 65721" maxlength="10">
+          </div>
+
           <div class="form-group">
             <label>Land Budget *</label>
-            <input type="text" name="budget" placeholder="e.g. $50,000 – $150,000" required>
+            <input type="text" name="budget" placeholder="e.g. $50,000 to $150,000" required>
           </div>
+
           <div class="form-group">
             <label>Property Type</label>
             <select name="property_type">
@@ -612,22 +620,53 @@ window.openLandForm = function() {
               <option>Other</option>
             </select>
           </div>
+
           <div class="form-group">
-            <label>Timeline</label>
+            <label>Minimum Acreage Needed</label>
+            <select name="acreage">
+              <option>No preference</option>
+              <option>Under 1 acre</option>
+              <option>1 to 5 acres</option>
+              <option>5 to 10 acres</option>
+              <option>10 to 20 acres</option>
+              <option>20+ acres</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Are you pre-approved for financing?</label>
+            <select name="pre_approved">
+              <option>Yes - pre-approved</option>
+              <option>No - but working on it</option>
+              <option>Paying cash</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Do you have specific properties you want to look at?</label>
+            <textarea name="specific_properties" rows="2" placeholder="Paste addresses, Zillow links, parcel numbers, or describe what you have already found..." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Timeline to Purchase Land</label>
             <select name="timeline">
               <option>Within 3 months</option>
-              <option>3–6 months</option>
-              <option>6–12 months</option>
+              <option>3 to 6 months</option>
+              <option>6 to 12 months</option>
               <option>Just exploring</option>
             </select>
           </div>
+
           <div class="form-group">
-            <label>Notes</label>
-            <textarea name="notes" rows="3" placeholder="Any specifics about what you're looking for..." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
+            <label>Anything else we should know?</label>
+            <textarea name="notes" rows="2" placeholder="Road access, utilities, zoning, flood zone concerns..." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
           </div>
+
           <input type="hidden" name="name" value="${userSession?.user?.user_metadata?.full_name || ''}">
           <input type="hidden" name="email" value="${userSession?.user?.email || ''}">
-          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Submit Inquiry</button>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Submit Land Inquiry</button>
+          <p style="font-size:0.78rem;color:var(--gray);margin-top:10px;text-align:center">We'll match you with a verified agent in your target area within 1 business day.</p>
         </form>
       </div>
     </div>
@@ -655,7 +694,7 @@ window.openLandForm = function() {
           name: fd.get('name') || 'Land Inquiry',
           email: fd.get('email') || 'via-dashboard@buildnarrow.com',
           role: 'Land Inquiry',
-          message: `Location: ${fd.get('location')}\nBudget: ${fd.get('budget')}\nProperty Type: ${fd.get('property_type')}\nTimeline: ${fd.get('timeline')}\nNotes: ${fd.get('notes')}`
+          message: `NARROW - LAND SEARCH INQUIRY\n\nClient: ${fd.get('name') || 'Not provided'}\nEmail: ${fd.get('email') || 'Not provided'}\n\n--- SEARCH CRITERIA ---\nLocation: ${fd.get('location')}\nZip Code: ${fd.get('zip_code') || 'Not provided'}\nBudget: ${fd.get('budget')}\nProperty Type: ${fd.get('property_type')}\nAcreage: ${fd.get('acreage')}\nPre-Approved: ${fd.get('pre_approved')}\nTimeline: ${fd.get('timeline')}\n\n--- SPECIFIC PROPERTIES ---\n${fd.get('specific_properties') || 'None listed'}\n\n--- ADDITIONAL NOTES ---\n${fd.get('notes') || 'None'}\n\n--- EXP ADDITIONAL TERMS (copy/paste) ---\nLocation: ${fd.get('location')} (Zip: ${fd.get('zip_code') || 'N/A'}) | Budget: ${fd.get('budget')} | Type: ${fd.get('property_type')} | Acreage: ${fd.get('acreage')} | Pre-Approved: ${fd.get('pre_approved')} | Timeline: ${fd.get('timeline')} | Properties: ${fd.get('specific_properties') || 'None'} | Notes: ${fd.get('notes') || 'None'} | Referral fee 25% at closing. Referred by Narrow (buildnarrow.com).`
         })
       });
       if (res.ok) {
@@ -974,8 +1013,22 @@ window.geocodeContractorAddress = async function() {
 // ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(initDashboard, 350);
+// Wait for narrowSupabase to be initialized by main.js before running dashboard.
+// main.js sets narrowSupabase inside a DOMContentLoaded listener, so we poll
+// until it exists rather than racing with a fixed timeout.
+function waitForSupabase(callback, tries) {
+  tries = tries || 0;
+  if (typeof narrowSupabase !== 'undefined' && narrowSupabase) {
+    callback();
+  } else if (tries > 40) {
+    console.error('Supabase client never initialized — check main.js loaded correctly.');
+  } else {
+    setTimeout(function() { waitForSupabase(callback, tries + 1); }, 50);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  waitForSupabase(initDashboard);
 });
 </script>
 </body>
