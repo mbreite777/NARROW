@@ -122,6 +122,15 @@
           </div>
         </div>
 
+        <div style="margin:16px 0 12px;display:flex;align-items:flex-start;gap:10px">
+          <input type="checkbox" id="termsAccept" style="margin-top:3px;width:16px;height:16px;accent-color:var(--navy);flex-shrink:0;cursor:pointer">
+          <label for="termsAccept" style="font-size:0.82rem;color:var(--gray);line-height:1.5;cursor:pointer">
+            I have read and agree to Narrow's
+            <a href="terms.html" target="_blank" style="color:var(--navy);text-decoration:underline">Terms of Service</a>
+            and
+            <a href="privacy.html" target="_blank" style="color:var(--navy);text-decoration:underline">Privacy Policy</a>
+          </label>
+        </div>
         <button class="auth-btn" onclick="handleSignup()">Create My Account →</button>
         <div class="auth-switch" style="margin-top:16px">
           Already have an account? <a onclick="switchTab('login')">Sign in</a>
@@ -202,9 +211,6 @@
       const redirect = params.get('redirect');
       if (redirect === 'questionnaire') {
         setTimeout(() => { window.location.href = 'index.html?openQuestionnaire=1'; }, 1000);
-      } else if (redirect === 'marketplace') {
-        // Go back to marketplace — main.js will reopen the plan modal from sessionStorage
-        setTimeout(() => { window.location.href = 'marketplace.html?redirect=marketplace'; }, 1000);
       } else {
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
       }
@@ -220,6 +226,8 @@
     if (!name)               return showMessage('Please enter your full name.', 'error');
     if (!email)              return showMessage('Please enter your email address.', 'error');
     if (password.length < 8) return showMessage('Password must be at least 8 characters.', 'error');
+    if (!document.getElementById('termsAccept').checked)
+                             return showMessage('Please accept the Terms of Service and Privacy Policy to continue.', 'error');
 
     const btn = document.querySelector('#signupPanel .auth-btn');
     btn.textContent = 'Creating account…';

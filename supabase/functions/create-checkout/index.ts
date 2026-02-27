@@ -63,6 +63,12 @@ Deno.serve(async (req) => {
       // After payment, redirect to success page with session ID
       success_url: `https://buildnarrow.com/purchase-success.html?session_id={CHECKOUT_SESSION_ID}&plan_id=${encodeURIComponent(planId)}`,
       cancel_url: `https://buildnarrow.com/marketplace.html?cancelled=1`,
+      // Display terms notice on Stripe checkout page
+      custom_text: {
+        submit: {
+          message: 'By completing this purchase you agree to the Narrow Terms of Service (buildnarrow.com/terms.html). All plan sales are final once downloaded.',
+        },
+      },
     });
 
     return new Response(
