@@ -1,12 +1,12 @@
 // ─── NARROW — main.js ───────────────────────
-// Supabase client
-let narrowSupabase;
+// Supabase client — initialized immediately so dashboard.html can access it
+// This must run before any DOMContentLoaded listeners in other scripts
+const narrowSupabase = window.supabase.createClient(
+  'https://okalotfqhmwiyckhvcmk.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM'
+);
 
 document.addEventListener('DOMContentLoaded', () => {
-  narrowSupabase = window.supabase.createClient(
-    'https://okalotfqhmwiyckhvcmk.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM'
-  );
 
   // ── Auth state → nav ────────────────────
   async function updateNavAuth() {
