@@ -211,6 +211,8 @@
       const redirect = params.get('redirect');
       if (redirect === 'questionnaire') {
         setTimeout(() => { window.location.href = 'index.html?openQuestionnaire=1'; }, 1000);
+      } else if (redirect === 'marketplace') {
+        setTimeout(() => { window.location.href = 'index.html?redirect=marketplace'; }, 1000);
       } else {
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
       }

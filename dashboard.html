@@ -537,6 +537,11 @@ function renderSteps() {
           : `<button onclick="${a.onclick}" class="action-btn action-btn--${a.style}">${a.label}</button>`
       ).join('');
 
+      const actionsHtml = step.actions.length === 0 ? '' :
+        (i === STEPS.length - 1)
+          ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">${actions}</div>`
+          : `<div class="step-actions">${actions}</div>`;
+
       return `
         <div class="step-row ${isDone ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
           <div class="step-row__line"></div>
@@ -549,7 +554,7 @@ function renderSteps() {
               ${badge}
             </div>
             <p class="step-card__desc">${step.desc}</p>
-            <div class="step-actions">${actions}</div>
+            ${actionsHtml}
             <button class="check-btn" onclick="toggleStep(${n})">
               ${isDone ? '↩ Mark as incomplete' : '☐ Mark as complete'}
             </button>

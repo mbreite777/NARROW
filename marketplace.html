@@ -37,7 +37,7 @@
     <p>Browse verified home plans from licensed architects. Each plan is their business — priced by them, sold through Narrow. Purchase securely and customize if needed.</p>
     <div style="display:flex;gap:24px;margin-top:28px;flex-wrap:wrap">
       <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;display:flex;align-items:center;gap:6px">✅ Verified architects</span>
-      <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;display:flex;align-items:center;gap:6px">📐 All home styles</span>
+      <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;display:flex;align-items:center;gap:6px">📐 More plans coming soon</span>
       <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;display:flex;align-items:center;gap:6px">💳 Secure purchase</span>
     </div>
   </div>
@@ -46,215 +46,28 @@
 <!-- ── MARKETPLACE ─────────────────────────── -->
 <section class="section">
   <div class="container">
-    <p style="margin-bottom:24px"><strong>9 plans</strong> available — filtered by style below</p>
-
-    <!-- Filter bar -->
-    <div class="filter-bar">
-      <span class="filter-label">Style:</span>
-      <button class="filter-btn active" data-filter="all" onclick="filterPlans(this,'all')">All Plans</button>
-      <button class="filter-btn" data-filter="modern" onclick="filterPlans(this,'modern')">Modern</button>
-      <button class="filter-btn" data-filter="farmhouse" onclick="filterPlans(this,'farmhouse')">Farmhouse</button>
-      <button class="filter-btn" data-filter="craftsman" onclick="filterPlans(this,'craftsman')">Craftsman</button>
-      <button class="filter-btn" data-filter="ranch" onclick="filterPlans(this,'ranch')">Ranch</button>
-      <button class="filter-btn" data-filter="traditional" onclick="filterPlans(this,'traditional')">Traditional</button>
-      <select class="sort-select">
-        <option>Sort: Featured</option>
-        <option>Price: Low → High</option>
-        <option>Price: High → Low</option>
-        <option>Sq Ft: Largest</option>
-        <option>Most Popular</option>
-      </select>
-    </div>
+    <p style="margin-bottom:24px"><strong>1 plan</strong> available — more architect plans coming soon</p>
 
     <!-- Plan grid -->
     <div class="plan-grid" id="planGrid">
 
-      <div class="plan-card filterable" data-category="farmhouse" onclick="openPlanDetail({name:'The Heritage',architect:'Ridgeline Design Co.',beds:'4',baths:'3',sqft:'2,850',stories:'2 story',price:'$1,850',style:'Farmhouse',stars:'★★★★★',reviews:'(29 reviews)',emoji:'🏡',gradient:'linear-gradient(135deg,#2D6A4F,#40916C)'})">
-        <div class="plan-card__img" style="background:linear-gradient(135deg,#2D6A4F,#40916C)">
-          <span class="plan-card__badge">Popular</span>
-          <div style="text-align:center"><span style="font-size:2.5rem">🏡</span><br><span>Plan image</span></div>
-        </div>
-        <div class="plan-card__body">
-          <h3 class="plan-card__title">The Heritage</h3>
-          <p class="plan-card__arch">✓ Verified · Ridgeline Design Co.</p>
-          <div class="plan-card__specs">
-            <span class="plan-card__spec">🛏️ 4 bed</span>
-            <span class="plan-card__spec">🚿 3 bath</span>
-            <span class="plan-card__spec">📐 2,850 sq ft</span>
-            <span class="plan-card__spec">🏗️ 2 story</span>
-          </div>
-          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(29 reviews)</span></div>
-          <div class="plan-card__footer">
-            <span class="plan-card__price">$1,850</span>
-            <span class="btn btn-primary plan-card__btn">View Plan</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="plan-card filterable" data-category="modern" onclick="openPlanDetail({name:'The Axiom',architect:'Clearview Architecture',beds:'5',baths:'4',sqft:'4,100',stories:'2 story',price:'$2,950',style:'Modern',stars:'★★★★★',reviews:'(12 reviews)',emoji:'🏠',gradient:'linear-gradient(135deg,#1B3A6B,#2A5298)'})">
-        <div class="plan-card__img" style="background:linear-gradient(135deg,#1B3A6B,#2A5298)">
+      <div class="plan-card" onclick="openPlanDetail({planId:'breite_shouse',name:'The Shouse Plan',architect:'Breite Design',beds:'3',baths:'2',sqft:'2,400',stories:'1 story',price:'$695',style:'Modern Shouse',stars:'★★★★★',reviews:'',emoji:'🏠',gradient:'linear-gradient(135deg,#1B3A6B,#2D6A4F)'})">
+        <div class="plan-card__img" style="background:linear-gradient(135deg,#1B3A6B,#2D6A4F)">
+          <span class="plan-card__badge">Featured</span>
           <div style="text-align:center"><span style="font-size:2.5rem">🏠</span><br><span>Plan image</span></div>
         </div>
         <div class="plan-card__body">
-          <h3 class="plan-card__title">The Axiom</h3>
-          <p class="plan-card__arch">✓ Verified · Clearview Architecture</p>
-          <div class="plan-card__specs">
-            <span class="plan-card__spec">🛏️ 5 bed</span>
-            <span class="plan-card__spec">🚿 4 bath</span>
-            <span class="plan-card__spec">📐 4,100 sq ft</span>
-            <span class="plan-card__spec">🏗️ 2 story</span>
-          </div>
-          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(12 reviews)</span></div>
-          <div class="plan-card__footer">
-            <span class="plan-card__price">$2,950</span>
-            <span class="btn btn-primary plan-card__btn">View Plan</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="plan-card filterable" data-category="ranch" onclick="openPlanDetail({name:'The Meadowlark',architect:'Sunset Home Designs',beds:'3',baths:'2',sqft:'1,780',stories:'1 story',price:'$975',style:'Ranch',stars:'★★★★☆',reviews:'(8 reviews)',emoji:'🏡',gradient:'linear-gradient(135deg,#6B4F35,#9C7A5A)'})">
-        <div class="plan-card__img" style="background:linear-gradient(135deg,#6B4F35,#9C7A5A)">
-          <div style="text-align:center"><span style="font-size:2.5rem">🏡</span><br><span>Plan image</span></div>
-        </div>
-        <div class="plan-card__body">
-          <h3 class="plan-card__title">The Meadowlark</h3>
-          <p class="plan-card__arch">✓ Verified · Sunset Home Designs</p>
+          <h3 class="plan-card__title">The Shouse Plan</h3>
+          <p class="plan-card__arch">✓ Verified · Breite Design</p>
           <div class="plan-card__specs">
             <span class="plan-card__spec">🛏️ 3 bed</span>
             <span class="plan-card__spec">🚿 2 bath</span>
-            <span class="plan-card__spec">📐 1,780 sq ft</span>
+            <span class="plan-card__spec">📐 2,400 sq ft</span>
             <span class="plan-card__spec">🏗️ 1 story</span>
           </div>
-          <div style="margin-bottom:10px"><span class="stars">★★★★☆</span> <span style="font-size:0.8rem;color:var(--gray)">(8 reviews)</span></div>
+          <div style="margin-bottom:10px"><span class="stars">★★★★★</span></div>
           <div class="plan-card__footer">
-            <span class="plan-card__price">$975</span>
-            <span class="btn btn-primary plan-card__btn">View Plan</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="plan-card filterable" data-category="traditional" onclick="openPlanDetail({name:'The Wellington',architect:'Cornerstone Drafting',beds:'4',baths:'3.5',sqft:'3,600',stories:'2 story',price:'$2,400',style:'Traditional',stars:'★★★★★',reviews:'(41 reviews)',emoji:'🏠',gradient:'linear-gradient(135deg,#374151,#1F2937)'})">
-        <div class="plan-card__img" style="background:linear-gradient(135deg,#374151,#1F2937)">
-          <div style="text-align:center"><span style="font-size:2.5rem">🏠</span><br><span>Plan image</span></div>
-        </div>
-        <div class="plan-card__body">
-          <h3 class="plan-card__title">The Wellington</h3>
-          <p class="plan-card__arch">✓ Verified · Cornerstone Drafting</p>
-          <div class="plan-card__specs">
-            <span class="plan-card__spec">🛏️ 4 bed</span>
-            <span class="plan-card__spec">🚿 3.5 bath</span>
-            <span class="plan-card__spec">📐 3,600 sq ft</span>
-            <span class="plan-card__spec">🏗️ 2 story</span>
-          </div>
-          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(41 reviews)</span></div>
-          <div class="plan-card__footer">
-            <span class="plan-card__price">$2,400</span>
-            <span class="btn btn-primary plan-card__btn">View Plan</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="plan-card filterable" data-category="farmhouse" onclick="openPlanDetail({name:'The Clover Hill',architect:'Hartwell Design Studio',beds:'3',baths:'2',sqft:'2,200',stories:'1.5 story',price:'$1,450',style:'Farmhouse',stars:'★★★★★',reviews:'(16 reviews)',emoji:'🏡',gradient:'linear-gradient(135deg,#2D6A4F,#1B4332)'})">
-        <div class="plan-card__img" style="background:linear-gradient(135deg,#2D6A4F,#1B4332)">
-          <div style="text-align:center"><span style="font-size:2.5rem">🏡</span><br><span>Plan image</span></div>
-        </div>
-        <div class="plan-card__body">
-          <h3 class="plan-card__title">The Clover Hill</h3>
-          <p class="plan-card__arch">✓ Verified · Hartwell Design Studio</p>
-          <div class="plan-card__specs">
-            <span class="plan-card__spec">🛏️ 3 bed</span>
-            <span class="plan-card__spec">🚿 2 bath</span>
-            <span class="plan-card__spec">📐 2,200 sq ft</span>
-            <span class="plan-card__spec">🏗️ 1.5 story</span>
-          </div>
-          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(16 reviews)</span></div>
-          <div class="plan-card__footer">
-            <span class="plan-card__price">$1,450</span>
-            <span class="btn btn-primary plan-card__btn">View Plan</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="plan-card filterable" data-category="craftsman" onclick="openPlanDetail({name:'The Lakewood',architect:'Northern Timber Design',beds:'4',baths:'3',sqft:'2,960',stories:'2 story',price:'$1,700',style:'Craftsman',stars:'★★★★☆',reviews:'(22 reviews)',emoji:'🏘️',gradient:'linear-gradient(135deg,#7C5A3C,#4A3728)'})">
-        <div class="plan-card__img" style="background:linear-gradient(135deg,#7C5A3C,#4A3728)">
-          <div style="text-align:center"><span style="font-size:2.5rem">🏘️</span><br><span>Plan image</span></div>
-        </div>
-        <div class="plan-card__body">
-          <h3 class="plan-card__title">The Lakewood</h3>
-          <p class="plan-card__arch">✓ Verified · Northern Timber Design</p>
-          <div class="plan-card__specs">
-            <span class="plan-card__spec">🛏️ 4 bed</span>
-            <span class="plan-card__spec">🚿 3 bath</span>
-            <span class="plan-card__spec">📐 2,960 sq ft</span>
-            <span class="plan-card__spec">🏗️ 2 story</span>
-          </div>
-          <div style="margin-bottom:10px"><span class="stars">★★★★☆</span> <span style="font-size:0.8rem;color:var(--gray)">(22 reviews)</span></div>
-          <div class="plan-card__footer">
-            <span class="plan-card__price">$1,700</span>
-            <span class="btn btn-primary plan-card__btn">View Plan</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="plan-card filterable" data-category="modern" onclick="openPlanDetail({name:'The Harbor View',architect:'Pacific Coast Architecture',beds:'5',baths:'4.5',sqft:'4,800',stories:'3 story',price:'$3,400',style:'Modern',stars:'★★★★★',reviews:'(6 reviews)',emoji:'🏠',gradient:'linear-gradient(135deg,#1a4a7a,#0d2a50)'})">
-        <div class="plan-card__img" style="background:linear-gradient(135deg,#1a4a7a,#0d2a50)">
-          <span class="plan-card__badge">New</span>
-          <div style="text-align:center"><span style="font-size:2.5rem">🏠</span><br><span>Plan image</span></div>
-        </div>
-        <div class="plan-card__body">
-          <h3 class="plan-card__title">The Harbor View</h3>
-          <p class="plan-card__arch">✓ Verified · Pacific Coast Architecture</p>
-          <div class="plan-card__specs">
-            <span class="plan-card__spec">🛏️ 5 bed</span>
-            <span class="plan-card__spec">🚿 4.5 bath</span>
-            <span class="plan-card__spec">📐 4,800 sq ft</span>
-            <span class="plan-card__spec">🏗️ 3 story</span>
-          </div>
-          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(6 reviews)</span></div>
-          <div class="plan-card__footer">
-            <span class="plan-card__price">$3,400</span>
-            <span class="btn btn-primary plan-card__btn">View Plan</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="plan-card filterable" data-category="ranch" onclick="openPlanDetail({name:'The Prairie',architect:'Sunset Home Designs',beds:'3',baths:'2',sqft:'1,620',stories:'1 story',price:'$850',style:'Ranch',stars:'★★★★☆',reviews:'(14 reviews)',emoji:'🏡',gradient:'linear-gradient(135deg,#8B6F47,#A08060)'})">
-        <div class="plan-card__img" style="background:linear-gradient(135deg,#8B6F47,#A08060)">
-          <div style="text-align:center"><span style="font-size:2.5rem">🏡</span><br><span>Plan image</span></div>
-        </div>
-        <div class="plan-card__body">
-          <h3 class="plan-card__title">The Prairie</h3>
-          <p class="plan-card__arch">✓ Verified · Sunset Home Designs</p>
-          <div class="plan-card__specs">
-            <span class="plan-card__spec">🛏️ 3 bed</span>
-            <span class="plan-card__spec">🚿 2 bath</span>
-            <span class="plan-card__spec">📐 1,620 sq ft</span>
-            <span class="plan-card__spec">🏗️ 1 story</span>
-          </div>
-          <div style="margin-bottom:10px"><span class="stars">★★★★☆</span> <span style="font-size:0.8rem;color:var(--gray)">(14 reviews)</span></div>
-          <div class="plan-card__footer">
-            <span class="plan-card__price">$850</span>
-            <span class="btn btn-primary plan-card__btn">View Plan</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="plan-card filterable" data-category="craftsman" onclick="openPlanDetail({name:'The Summit',architect:'Northern Timber Design',beds:'4',baths:'3.5',sqft:'3,200',stories:'2 story',price:'$2,100',style:'Craftsman',stars:'★★★★★',reviews:'(18 reviews)',emoji:'🏘️',gradient:'linear-gradient(135deg,#5C4033,#3D2B1F)'})">
-        <div class="plan-card__img" style="background:linear-gradient(135deg,#5C4033,#3D2B1F)">
-          <div style="text-align:center"><span style="font-size:2.5rem">🏘️</span><br><span>Plan image</span></div>
-        </div>
-        <div class="plan-card__body">
-          <h3 class="plan-card__title">The Summit</h3>
-          <p class="plan-card__arch">✓ Verified · Northern Timber Design</p>
-          <div class="plan-card__specs">
-            <span class="plan-card__spec">🛏️ 4 bed</span>
-            <span class="plan-card__spec">🚿 3.5 bath</span>
-            <span class="plan-card__spec">📐 3,200 sq ft</span>
-            <span class="plan-card__spec">🏗️ 2 story</span>
-          </div>
-          <div style="margin-bottom:10px"><span class="stars">★★★★★</span> <span style="font-size:0.8rem;color:var(--gray)">(18 reviews)</span></div>
-          <div class="plan-card__footer">
-            <span class="plan-card__price">$2,100</span>
+            <span class="plan-card__price">$695</span>
             <span class="btn btn-primary plan-card__btn">View Plan</span>
           </div>
         </div>
@@ -454,15 +267,6 @@
   </div>
 </footer>
 
-<script>
-function filterPlans(btn, filter) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.filterable').forEach(card => {
-    card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none';
-  });
-}
-</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
 </body>

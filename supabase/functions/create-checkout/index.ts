@@ -61,8 +61,8 @@ Deno.serve(async (req) => {
         architect_name: architectName,
       },
       // After payment, redirect to success page with session ID
-      success_url: `https://buildnarrow.com/purchase-success.html?session_id={CHECKOUT_SESSION_ID}&plan_id=${encodeURIComponent(planId)}`,
-      cancel_url: `https://buildnarrow.com/marketplace.html?cancelled=1`,
+      success_url: `https://www.buildnarrow.com/purchase-success.html?session_id={CHECKOUT_SESSION_ID}&plan_id=${encodeURIComponent(planId)}`,
+      cancel_url: `https://www.buildnarrow.com/marketplace.html?cancelled=1`,
       // Display terms notice on Stripe checkout page
       custom_text: {
         submit: {
