@@ -498,12 +498,15 @@ window.openPlanDetail = function(planData) {
       <div class="plan-modal__body">
         <span class="section-label" style="margin-bottom:12px">${planData.style}</span>
         <h2 style="margin-bottom:8px">${planData.name}</h2>
-        <p style="color:var(--green);font-weight:600;font-size:0.9rem;margin-bottom:20px">✓ Verified · ${planData.architect}</p>
-        <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:24px">
-          <span style="font-size:0.9rem;color:var(--gray)">🛏️ ${planData.beds} bed</span>
-          <span style="font-size:0.9rem;color:var(--gray)">🚿 ${planData.baths} bath</span>
-          <span style="font-size:0.9rem;color:var(--gray)">📐 ${planData.sqft} sq ft</span>
-          <span style="font-size:0.9rem;color:var(--gray)">🏗️ ${planData.stories}</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+          <p style="color:var(--green);font-weight:600;font-size:0.9rem;margin:0">✓ Verified · ${planData.architect}</p>
+          ${planData.architectId ? `<a href="architect-profile.html?id=${planData.architectId}" style="font-size:0.82rem;color:var(--navy);font-weight:500;border:1px solid var(--gray-light);padding:3px 10px;border-radius:99px;transition:background 0.2s" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='transparent'">View Profile →</a>` : ''}
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px">
+          <span style="font-size:0.88rem;color:var(--gray);display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${planData.beds} bed</span>
+          <span style="font-size:0.88rem;color:var(--gray);display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px"><path d="M4 12h16M4 12a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v4a2 2 0 01-2 2M4 12v4a2 2 0 002 2h12a2 2 0 002-2v-4"/></svg>${planData.baths} bath</span>
+          <span style="font-size:0.88rem;color:var(--gray);display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>${planData.sqft} sq ft</span>
+          <span style="font-size:0.88rem;color:var(--gray);display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px"><line x1="12" y1="2" x2="12" y2="6"/><path d="M5 10l-2 12h18l-2-12"/><path d="M5 10h14"/></svg>${planData.stories}</span>
         </div>
         <div style="margin-bottom:24px">
           <span class="stars">${planData.stars}</span>

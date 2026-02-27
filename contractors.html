@@ -252,6 +252,7 @@ async function searchContractors() {
         </div>
         ${c.verified ? '<p style="font-size:0.78rem;color:var(--green);margin-bottom:12px">✅ Verified by Narrow</p>' : ''}
         <div style="display:flex;gap:12px">
+          <a href="contractor-profile.html?id=${c.user_id}" class="btn btn-outline" style="padding:10px 20px;font-size:0.85rem;justify-content:center">View Profile</a>
           <button class="btn btn-primary" style="padding:10px 20px;font-size:0.85rem;flex:1;justify-content:center" onclick="requestBid('${c.id}', this)" data-name="${escHtml(c.company_name || '')}">Request Bid</button>
         </div>
       </div>
