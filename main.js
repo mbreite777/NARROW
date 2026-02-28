@@ -699,7 +699,7 @@ window.openPlanDetail = function(planData) {
       .plan-gallery__slide { min-width:100%;height:100%;position:absolute;top:0;left:0;opacity:0;transition:opacity 0.35s ease; }
       .plan-gallery__slide--active { opacity:1;position:relative;flex-shrink:0; }
       .plan-gallery__caption { position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.55);color:white;font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:4px 12px;border-radius:99px;white-space:nowrap; }
-      .plan-gallery__counter { position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.5);color:white;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:99px; }
+      .plan-gallery__counter { position:absolute;bottom:36px;right:12px;background:rgba(0,0,0,0.5);color:white;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:99px; }
       .plan-gallery__arrow { position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.4);color:white;border:none;width:36px;height:36px;border-radius:50%;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background 0.2s;z-index:2; }
       .plan-gallery__arrow:hover { background:rgba(0,0,0,0.7); }
       .plan-gallery__arrow--prev { left:12px; }
