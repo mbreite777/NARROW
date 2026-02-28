@@ -307,9 +307,9 @@
   </div>
 </footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ═══════════════════════════════════════════
 // DASHBOARD INIT
@@ -1474,8 +1474,18 @@ function waitForSupabase(callback, tries) {
   tries = tries || 0;
   if (typeof narrowSupabase !== 'undefined' && narrowSupabase) {
     callback();
-  } else if (tries > 40) {
-    console.error('Supabase client never initialized — check main.js loaded correctly.');
+  } else if (tries > 80) {
+    // Fallback: try to initialize Supabase directly if main.js failed to do so
+    console.warn('narrowSupabase not found via main.js — attempting direct init.');
+    try {
+      window.narrowSupabase = window.supabase.createClient(
+        'https://okalotfqhmwiyckhvcmk.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM'
+      );
+      callback();
+    } catch(e) {
+      console.error('Supabase failed to initialize. Check CDN and main.js loaded correctly.', e);
+    }
   } else {
     setTimeout(function() { waitForSupabase(callback, tries + 1); }, 50);
   }
