@@ -367,7 +367,7 @@ const STEPS = [
     desc: 'Leave reviews for your plans, architect, contractor, and Narrow. Encourage friends and family to build with Narrow!',
     icon: '🏠',
     actions: [
-      { label: '✉ Contact Narrow', href: 'mailto:info@buildnarrow.com?subject=Move-In%20Day', style: 'amber' }
+      { label: '✉ Contact Narrow', onclick: 'openMoveInContact()', style: 'amber' }
     ]
   }
 ];
@@ -517,7 +517,7 @@ function renderSteps() {
         <div style="font-size:3rem;margin-bottom:16px">🎉</div>
         <h2 style="color:var(--green);margin-bottom:12px">Congratulations — Journey Complete!</h2>
         <p style="max-width:460px;margin:0 auto 24px">All 7 steps complete. Leave reviews for your team and encourage others to build with Narrow.</p>
-        <a href="mailto:info@buildnarrow.com?subject=Journey%20Complete" class="btn btn-primary">Contact Narrow →</a>
+        <a href="#" onclick="openMoveInContact();return false;" class="btn btn-primary">Contact Narrow →</a>
       </div>
     ` : '') +
     STEPS.map((step, i) => {
@@ -1201,7 +1201,199 @@ window.saveArchProfile = async function() {
 };
 
 window.showUploadPlan = function() {
-  alert('Plan upload will be available with the upcoming Cloudflare R2 integration. For now, email your plan files to info@buildnarrow.com and we will list them for you.');
+  const overlay = document.createElement('div');
+  overlay.className = 'plan-modal-overlay';
+  overlay.onclick = e => { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
+
+  overlay.innerHTML = `
+    <div class="plan-modal" style="max-width:580px">
+      <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
+      <div style="padding:40px">
+        <h2 style="margin-bottom:6px">📐 Upload Plan Image</h2>
+        <p style="font-size:0.9rem;color:var(--gray);margin-bottom:8px">Images go into a <strong>pending review</strong> folder. Narrow will approve and move them live within 1 business day.</p>
+        <div style="background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.4);border-radius:8px;padding:12px 16px;margin-bottom:24px;font-size:0.82rem;color:#92400E">
+          ⏳ <strong>Pending review:</strong> Your image will not appear publicly until Narrow approves it. You'll receive a confirmation email when it goes live.
+        </div>
+
+        <div class="form-group">
+          <label>Plan Name *</label>
+          <input type="text" id="upPlanName" placeholder="e.g. The Shouse Plan">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="form-group">
+            <label>Architect Folder Slug *</label>
+            <input type="text" id="upArchSlug" placeholder="e.g. breite-design">
+            <p style="font-size:0.75rem;color:var(--gray);margin:4px 0 0">Lowercase, hyphens only</p>
+          </div>
+          <div class="form-group">
+            <label>Plan Folder Slug *</label>
+            <input type="text" id="upPlanSlug" placeholder="e.g. shouse-plan">
+            <p style="font-size:0.75rem;color:var(--gray);margin:4px 0 0">Lowercase, hyphens only</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Image Type *</label>
+          <select id="upImageLabel" style="width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem;background:white">
+            <option value="render-front">Front Rendering</option>
+            <option value="floorplan">Floor Plan</option>
+            <option value="elevation-front">Front Elevation</option>
+            <option value="elevation-rear">Rear Elevation</option>
+            <option value="elevation-side">Side Elevation</option>
+            <option value="render-rear">Rear Rendering</option>
+            <option value="detail">Detail / Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Image File * <span style="font-size:0.78rem;color:var(--gray);font-weight:400">(JPG, PNG or WebP — max 10MB)</span></label>
+          <div id="upDropZone" style="border:2px dashed var(--gray-light);border-radius:var(--radius-md);padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:#fafafa" onclick="document.getElementById('upFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--navy)'" ondragleave="this.style.borderColor='var(--gray-light)'" ondrop="handleUpDrop(event)">
+            <div style="font-size:2rem;margin-bottom:8px">🖼️</div>
+            <p style="font-weight:600;color:var(--navy);margin:0 0 4px">Click to select or drag & drop</p>
+            <p style="font-size:0.8rem;color:var(--gray);margin:0">JPG, PNG, WebP — max 10MB</p>
+          </div>
+          <input type="file" id="upFileInput" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="handleUpFileSelect(this)">
+        </div>
+
+        <!-- Preview -->
+        <div id="upPreviewWrap" style="display:none;margin-bottom:20px">
+          <img id="upPreview" style="width:100%;max-height:220px;object-fit:cover;border-radius:var(--radius-md);border:1px solid var(--cream-dark)">
+          <p id="upPreviewName" style="font-size:0.8rem;color:var(--gray);margin:6px 0 0;text-align:center"></p>
+        </div>
+
+        <!-- Progress bar -->
+        <div id="upProgressWrap" style="display:none;margin-bottom:20px">
+          <div style="height:6px;background:var(--cream-dark);border-radius:99px;overflow:hidden">
+            <div id="upProgressBar" style="height:100%;background:linear-gradient(90deg,var(--navy),var(--green));border-radius:99px;width:0%;transition:width 0.3s"></div>
+          </div>
+          <p id="upProgressLabel" style="font-size:0.8rem;color:var(--gray);margin:6px 0 0;text-align:center">Uploading…</p>
+        </div>
+
+        <button id="upSubmitBtn" class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitPlanImage()">Submit for Review →</button>
+        <p style="font-size:0.75rem;color:var(--gray);text-align:center;margin-top:10px">Images without dimensions or stamps only. Narrow will contact you if there are any issues.</p>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+
+  let selectedFile = null;
+
+  window.handleUpFileSelect = function(input) {
+    const file = input.files[0];
+    if (!file) return;
+    previewUpFile(file);
+  };
+
+  window.handleUpDrop = function(e) {
+    e.preventDefault();
+    overlay.querySelector('#upDropZone').style.borderColor = 'var(--gray-light)';
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    previewUpFile(file);
+  };
+
+  function previewUpFile(file) {
+    // Validate type
+    const allowed = ['image/jpeg','image/jpg','image/png','image/webp'];
+    if (!allowed.includes(file.type)) {
+      alert('Please upload a JPG, PNG, or WebP image.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File is too large. Maximum size is 10MB.');
+      return;
+    }
+    selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      overlay.querySelector('#upPreview').src = e.target.result;
+      overlay.querySelector('#upPreviewName').textContent = `${file.name} — ${(file.size / 1024 / 1024).toFixed(2)}MB`;
+      overlay.querySelector('#upPreviewWrap').style.display = 'block';
+      overlay.querySelector('#upDropZone').style.borderColor = 'var(--green)';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  window.submitPlanImage = async function() {
+    const planName  = overlay.querySelector('#upPlanName').value.trim();
+    const archSlug  = overlay.querySelector('#upArchSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
+    const planSlug  = overlay.querySelector('#upPlanSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
+    const imageLabel = overlay.querySelector('#upImageLabel').value;
+
+    if (!planName)   { alert('Please enter the plan name.'); return; }
+    if (!archSlug)   { alert('Please enter your architect folder slug (e.g. breite-design).'); return; }
+    if (!planSlug)   { alert('Please enter the plan folder slug (e.g. shouse-plan).'); return; }
+    if (!selectedFile) { alert('Please select an image file.'); return; }
+
+    const btn = overlay.querySelector('#upSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Uploading…';
+    overlay.querySelector('#upProgressWrap').style.display = 'block';
+    overlay.querySelector('#upProgressBar').style.width = '30%';
+    overlay.querySelector('#upProgressLabel').textContent = 'Uploading to Narrow…';
+
+    const fd = new FormData();
+    fd.append('file', selectedFile);
+    fd.append('plan_name', planName);
+    fd.append('arch_slug', archSlug);
+    fd.append('plan_slug', planSlug);
+    fd.append('image_label', imageLabel);
+
+    const { data: { session } } = await narrowSupabase.auth.getSession();
+
+    try {
+      overlay.querySelector('#upProgressBar').style.width = '60%';
+
+      const res = await fetch(
+        'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/upload-plan-image',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
+          },
+          body: fd,
+        }
+      );
+
+      overlay.querySelector('#upProgressBar').style.width = '100%';
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+      overlay.querySelector('#upProgressLabel').textContent = '✓ Submitted for review!';
+      overlay.querySelector('#upProgressBar').style.background = 'var(--green)';
+      btn.textContent = '✓ Submitted!';
+      btn.style.background = 'var(--green)';
+
+      // Show success message after short delay then close
+      setTimeout(() => {
+        overlay.innerHTML = `
+          <div class="plan-modal" style="max-width:480px">
+            <div style="padding:48px;text-align:center">
+              <div style="font-size:3rem;margin-bottom:16px">✅</div>
+              <h2 style="margin-bottom:12px">Image Submitted!</h2>
+              <p style="color:var(--gray);margin-bottom:8px"><strong>${planName} — ${imageLabel}</strong> is now in the pending review queue.</p>
+              <p style="font-size:0.85rem;color:var(--gray);margin-bottom:28px">Narrow will review and approve within 1 business day. You'll receive an email when it goes live.</p>
+              <p style="font-size:0.8rem;color:var(--gray);margin-bottom:24px;font-family:monospace;background:var(--cream);padding:10px;border-radius:6px">plans/pending/${archSlug}/${planSlug}/${imageLabel}</p>
+              <button class="btn btn-primary" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">Done →</button>
+            </div>
+          </div>
+        `;
+      }, 800);
+
+    } catch(err) {
+      console.error('Upload error:', err);
+      overlay.querySelector('#upProgressBar').style.background = '#DC2626';
+      overlay.querySelector('#upProgressLabel').textContent = '✗ Upload failed — try again';
+      btn.textContent = 'Submit for Review →';
+      btn.style.background = '';
+      btn.disabled = false;
+    }
+  };
 };
 
 // ═══════════════════════════════════════════
@@ -1463,6 +1655,87 @@ async function loadMyPlans(email) {
     panel.style.display = 'none';
   }
 }
+
+// ── Move In Day / Journey Complete Contact Modal ──
+window.openMoveInContact = function() {
+  const userName  = userSession?.user?.user_metadata?.full_name || '';
+  const userEmail = userSession?.user?.email || '';
+
+  const overlay = document.createElement('div');
+  overlay.className = 'plan-modal-overlay';
+  overlay.onclick = e => { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
+  overlay.innerHTML = `
+    <div class="plan-modal" style="max-width:500px">
+      <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
+      <div style="padding:40px">
+        <div style="text-align:center;margin-bottom:28px">
+          <div style="font-size:2.5rem;margin-bottom:10px">🏠</div>
+          <h2 style="margin-bottom:6px">Contact Narrow</h2>
+          <p style="font-size:0.9rem;color:var(--gray)">Leave a review, share your experience, or just say hello.</p>
+        </div>
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="miName" value="${userName}" placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="miEmail" value="${userEmail}" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label>Message *</label>
+          <textarea id="miMessage" rows="4" placeholder="Tell us about your build experience, leave a review, or ask a question…" style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
+        </div>
+        <button id="miSendBtn" class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitMoveInContact()">Send Message →</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+
+  window.submitMoveInContact = async function() {
+    const name    = overlay.querySelector('#miName').value.trim() || 'Homebuilder';
+    const email   = overlay.querySelector('#miEmail').value.trim() || userEmail;
+    const message = overlay.querySelector('#miMessage').value.trim();
+    if (!message) { alert('Please enter a message.'); return; }
+
+    const btn = overlay.querySelector('#miSendBtn');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/send-contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM'
+        },
+        body: JSON.stringify({
+          name, email,
+          role: 'Homebuilder — Move In Day',
+          message: `NARROW — MOVE IN DAY / JOURNEY COMPLETE\n\nFrom: ${name} (${email})\n\n${message}`
+        })
+      });
+      if (!res.ok) throw new Error();
+      overlay.innerHTML = `
+        <div class="plan-modal" style="max-width:440px">
+          <div style="padding:48px;text-align:center">
+            <div style="font-size:3rem;margin-bottom:16px">✅</div>
+            <h2 style="margin-bottom:12px">Message Sent!</h2>
+            <p style="color:var(--gray);margin-bottom:28px">Thanks for reaching out. The Narrow team will be in touch soon.</p>
+            <button class="btn btn-primary" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">Done →</button>
+          </div>
+        </div>
+      `;
+    } catch {
+      btn.textContent = '✗ Failed — try again';
+      btn.style.background = '#DC2626';
+      btn.disabled = false;
+      setTimeout(() => { btn.textContent = 'Send Message →'; btn.style.background = ''; }, 3000);
+    }
+  };
+};
 
 // ═══════════════════════════════════════════
 // INIT
