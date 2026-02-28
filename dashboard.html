@@ -738,25 +738,396 @@ window.openLandForm = function() {
   });
 };
 
-// ── Bid Portal Placeholder ──────────────
-window.openBidPortal = function() {
+// ── Bid Portal ──────────────────────────────
+window.openBidPortal = async function() {
   const overlay = document.createElement('div');
   overlay.className = 'plan-modal-overlay';
   overlay.onclick = function(e) { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
+
   overlay.innerHTML = `
-    <div class="plan-modal" style="max-width:560px">
+    <div class="plan-modal" style="max-width:600px">
       <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
-      <div style="padding:48px;text-align:center">
-        <div style="font-size:3rem;margin-bottom:16px">🔨</div>
-        <h2 style="margin-bottom:12px">Bid Portal</h2>
-        <p style="margin-bottom:24px">Upload your architectural plans and select vetted contractors in your region to receive them. Filter contractors by city/region.</p>
-        <p style="font-size:0.85rem;color:var(--gray);margin-bottom:24px">This feature will be available with the upcoming Cloudflare R2 file upload integration. For now, email your plans directly to <strong>info@buildnarrow.com</strong>.</p>
-        <a href="mailto:info@buildnarrow.com?subject=Bid%20Request%20-%20Plans%20Attached" class="btn btn-primary">Email Plans to Narrow →</a>
+      <div style="padding:40px">
+
+        <!-- Progress -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:32px">
+          <div class="bid-step-dot active" id="bDot1">1</div>
+          <div style="flex:1;height:2px;background:var(--cream-dark)" id="bLine1"></div>
+          <div class="bid-step-dot" id="bDot2">2</div>
+          <div style="flex:1;height:2px;background:var(--cream-dark)" id="bLine2"></div>
+          <div class="bid-step-dot" id="bDot3">3</div>
+        </div>
+
+        <!-- Step 1: Plan Details -->
+        <div id="bidStep1">
+          <h2 style="margin-bottom:6px">🔨 Bid Portal</h2>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:24px">Tell us about your project so contractors can give you an accurate bid.</p>
+
+          <div class="form-group">
+            <label>Plan Name / Description *</label>
+            <input type="text" id="bidPlanName" placeholder="e.g. The Shouse Plan — 2,400 sq ft" required>
+          </div>
+          <div class="form-group">
+            <label>Build Location *</label>
+            <input type="text" id="bidLocation" placeholder="City, State — e.g. Austin, TX" required>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="form-group">
+              <label>Total Budget Range</label>
+              <select id="bidBudget">
+                <option>Under $300K</option>
+                <option>$300K – $600K</option>
+                <option>$600K – $1M</option>
+                <option>$1M+</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Target Start Date</label>
+              <select id="bidTimeline">
+                <option>Within 3 months</option>
+                <option>3–6 months</option>
+                <option>6–12 months</option>
+                <option>Just exploring bids</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Additional Notes for Contractors</label>
+            <textarea id="bidNotes" rows="3" placeholder="Special site conditions, finishes level, accessibility needs, etc." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
+          </div>
+          <div class="form-group">
+            <label>📎 Plan File</label>
+            <p style="font-size:0.8rem;color:var(--gray);margin-bottom:8px">Select your plan file below. You'll attach it when your email client opens after submitting.</p>
+            <input type="text" id="bidFileName" placeholder="Enter your plan filename or description (e.g. shouse-plan.pdf)" style="width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem">
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="bidGoStep2()">Next — Select Contractors →</button>
+        </div>
+
+        <!-- Step 2: Select Contractors -->
+        <div id="bidStep2" style="display:none">
+          <h2 style="margin-bottom:6px">Select Contractors</h2>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:20px">Filter by region and select who you'd like to receive your plans. We recommend at least 3 bids.</p>
+
+          <div style="display:flex;gap:12px;margin-bottom:20px;align-items:center">
+            <input type="text" id="bidRegionFilter" placeholder="Filter by city or state…" style="flex:1;padding:10px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.9rem" oninput="filterBidContractors()">
+            <span id="bidSelectedCount" style="font-size:0.82rem;color:var(--navy);font-weight:700;white-space:nowrap">0 selected</span>
+          </div>
+
+          <div id="bidContractorList" style="max-height:320px;overflow-y:auto;display:grid;gap:10px;margin-bottom:24px">
+            <p style="color:var(--gray);text-align:center;padding:32px 0;font-size:0.9rem">Loading contractors…</p>
+          </div>
+
+          <div style="display:flex;gap:12px">
+            <button class="btn btn-outline" style="flex:1;justify-content:center" onclick="bidGoStep1()">← Back</button>
+            <button class="btn btn-primary" style="flex:2;justify-content:center" onclick="bidGoStep3()" id="bidStep2Next">Review & Send →</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Review & Send -->
+        <div id="bidStep3" style="display:none">
+          <h2 style="margin-bottom:6px">Review & Send</h2>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:20px">Confirm your request. Narrow will forward your plans to each selected contractor.</p>
+
+          <div style="background:var(--cream);border-radius:var(--radius-md);padding:20px;margin-bottom:20px;font-size:0.88rem;line-height:1.8">
+            <div><strong>Plan:</strong> <span id="revPlan"></span></div>
+            <div><strong>Location:</strong> <span id="revLocation"></span></div>
+            <div><strong>Budget:</strong> <span id="revBudget"></span></div>
+            <div><strong>Timeline:</strong> <span id="revTimeline"></span></div>
+            <div><strong>File:</strong> <span id="revFile"></span></div>
+          </div>
+
+          <p style="font-size:0.85rem;font-weight:700;color:var(--navy);margin-bottom:10px">Sending to:</p>
+          <div id="revContractors" style="display:grid;gap:6px;margin-bottom:24px;max-height:180px;overflow-y:auto;font-size:0.85rem"></div>
+
+          <div style="background:rgba(27,58,107,0.06);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:24px;font-size:0.82rem;color:var(--gray)">
+            📎 <strong>Next step:</strong> After clicking Send, attach your plan file to the email that opens. Narrow will forward it to your selected contractors within 1 business day.
+          </div>
+
+          <div style="display:flex;gap:12px">
+            <button class="btn btn-outline" style="flex:1;justify-content:center" onclick="bidGoStep2()">← Back</button>
+            <button class="btn btn-primary" style="flex:2;justify-content:center" id="bidSendBtn" onclick="bidSubmit()">Send Bid Request →</button>
+          </div>
+        </div>
+
+        <!-- Success -->
+        <div id="bidSuccess" style="display:none;text-align:center;padding:32px 0">
+          <div style="font-size:3rem;margin-bottom:16px">✅</div>
+          <h2 style="margin-bottom:12px">Bid Request Sent!</h2>
+          <p style="color:var(--gray);margin-bottom:8px">Your email client should have opened with the request pre-filled. Attach your plan file and hit send.</p>
+          <p style="font-size:0.85rem;color:var(--gray);margin-bottom:24px">Narrow will confirm receipt and distribute your plans within 1 business day.</p>
+          <button class="btn btn-primary" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">Done →</button>
+        </div>
+
       </div>
     </div>
   `;
+
+  // Inject bid portal styles once
+  if (!document.getElementById('bid-portal-styles')) {
+    const s = document.createElement('style');
+    s.id = 'bid-portal-styles';
+    s.textContent = `
+      .bid-step-dot { width:28px;height:28px;border-radius:50%;background:var(--cream-dark);color:var(--gray);font-size:0.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s; }
+      .bid-step-dot.active { background:var(--navy);color:white; }
+      .bid-step-dot.done { background:var(--green);color:white; }
+      .bid-contractor-card { border:2px solid var(--cream-dark);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all 0.18s;display:flex;align-items:flex-start;gap:12px; }
+      .bid-contractor-card:hover { border-color:var(--navy); }
+      .bid-contractor-card.selected { border-color:var(--navy);background:#EEF2FF; }
+      .bid-contractor-card input[type=checkbox] { margin-top:3px;flex-shrink:0;accent-color:var(--navy);width:16px;height:16px; }
+    `;
+    document.head.appendChild(s);
+  }
+
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
+
+  // State
+  let bidContractors = [];       // all contractors from Supabase
+  let bidFiltered = [];          // after geo/text filter
+  let bidSelected = new Set();
+  let buildLat = null;
+  let buildLng = null;
+
+  // Haversine formula — returns distance in miles between two lat/lng points
+  function haversine(lat1, lng1, lat2, lng2) {
+    const R = 3958.8; // Earth radius in miles
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng/2) * Math.sin(dLng/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  // Geocode the build location entered in Step 1
+  async function geocodeBuildLocation(address) {
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`
+      );
+      const results = await res.json();
+      if (results.length > 0) {
+        return { lat: parseFloat(results[0].lat), lng: parseFloat(results[0].lon) };
+      }
+    } catch(e) { /* fall through */ }
+    return null;
+  }
+
+  // Filter contractors — radius match if coordinates exist, text fallback otherwise
+  function applyBidFilter(textQuery) {
+    const q = (textQuery || '').toLowerCase().trim();
+    bidFiltered = bidContractors.filter(c => {
+      // Geo filter: if contractor has coordinates and build location is geocoded
+      if (buildLat !== null && c.service_lat && c.service_lng && c.service_radius) {
+        const dist = haversine(buildLat, buildLng, c.service_lat, c.service_lng);
+        if (dist > c.service_radius) return false; // outside radius — exclude
+      }
+      // Text filter on top (optional additional narrowing)
+      if (q) {
+        return (c.service_area || '').toLowerCase().includes(q) ||
+               (c.company_name || '').toLowerCase().includes(q);
+      }
+      return true;
+    });
+    renderBidContractors(bidFiltered);
+  }
+
+  // Load contractors from Supabase (includes geo fields)
+  async function loadBidContractors() {
+    const container = overlay.querySelector('#bidContractorList');
+    container.innerHTML = `<p style="color:var(--gray);text-align:center;padding:32px 0;font-size:0.9rem">⏳ Locating contractors near your build site…</p>`;
+    try {
+      const { data } = await narrowSupabase
+        .from('contractor_profiles')
+        .select('user_id, company_name, service_area, service_lat, service_lng, service_radius, contact_email, experience_years, bio, build_types')
+        .order('company_name');
+      bidContractors = data || [];
+    } catch(e) {
+      bidContractors = [];
+    }
+    applyBidFilter('');
+  }
+
+  function renderBidContractors(list) {
+    const container = overlay.querySelector('#bidContractorList');
+
+    // Show geo status banner
+    let banner = '';
+    if (buildLat !== null) {
+      const geoCount = bidContractors.filter(c => c.service_lat && c.service_lng && c.service_radius).length;
+      banner = `<div style="font-size:0.78rem;color:var(--green);font-weight:600;margin-bottom:8px;padding:6px 12px;background:rgba(45,106,79,0.08);border-radius:6px">
+        📍 Showing contractors whose service radius covers your build location${geoCount < bidContractors.length ? ` · ${bidContractors.length - geoCount} contractor(s) without map radius also shown below` : ''}
+      </div>`;
+    } else {
+      banner = `<div style="font-size:0.78rem;color:var(--gray);margin-bottom:8px;padding:6px 12px;background:var(--cream);border-radius:6px">
+        ⚠️ Could not geocode your build location — showing all contractors. You can filter manually above.
+      </div>`;
+    }
+
+    if (!list.length) {
+      container.innerHTML = banner + `<p style="color:var(--gray);text-align:center;padding:24px 0;font-size:0.9rem">No contractors found in your area. <a href="mailto:info@buildnarrow.com" style="color:var(--navy)">Contact Narrow</a> and we'll help you find someone.</p>`;
+      return;
+    }
+
+    container.innerHTML = banner + list.map(c => {
+      const isSelected = bidSelected.has(c.user_id);
+      // Calculate and show distance if possible
+      let distBadge = '';
+      if (buildLat !== null && c.service_lat && c.service_lng) {
+        const dist = Math.round(haversine(buildLat, buildLng, c.service_lat, c.service_lng));
+        distBadge = `<span style="font-size:0.75rem;background:rgba(27,58,107,0.08);color:var(--navy);padding:2px 8px;border-radius:99px;margin-left:6px">~${dist} mi away</span>`;
+      }
+      return `
+        <div class="bid-contractor-card ${isSelected ? 'selected' : ''}" onclick="bidToggleContractor('${c.user_id}', this)">
+          <input type="checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation();bidToggleContractor('${c.user_id}', this.closest('.bid-contractor-card'))">
+          <div style="flex:1;min-width:0">
+            <p style="font-weight:700;color:var(--navy);margin:0 0 2px">${c.company_name || 'Contractor'}${distBadge}</p>
+            <p style="font-size:0.8rem;color:var(--gray);margin:0 0 4px">📍 ${c.service_area || 'Region not specified'} &nbsp;·&nbsp; ${c.experience_years ? c.experience_years + ' yrs exp' : ''} &nbsp;·&nbsp; Radius: ${c.service_radius || '?'} mi</p>
+            ${c.bio ? `<p style="font-size:0.8rem;color:var(--charcoal);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.bio.substring(0,80)}${c.bio.length>80?'…':''}</p>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+    updateBidCount();
+  }
+
+  window.bidToggleContractor = function(id, card) {
+    const cb = card.querySelector('input[type=checkbox]');
+    if (bidSelected.has(id)) {
+      bidSelected.delete(id);
+      card.classList.remove('selected');
+      if (cb) cb.checked = false;
+    } else {
+      bidSelected.add(id);
+      card.classList.add('selected');
+      if (cb) cb.checked = true;
+    }
+    updateBidCount();
+  };
+
+  function updateBidCount() {
+    overlay.querySelector('#bidSelectedCount').textContent = `${bidSelected.size} selected`;
+  }
+
+  window.filterBidContractors = function() {
+    const q = overlay.querySelector('#bidRegionFilter').value;
+    applyBidFilter(q);
+  };
+
+  window.bidGoStep1 = function() {
+    overlay.querySelector('#bidStep2').style.display = 'none';
+    overlay.querySelector('#bidStep1').style.display = 'block';
+    overlay.querySelector('#bDot1').className = 'bid-step-dot active';
+    overlay.querySelector('#bDot2').className = 'bid-step-dot';
+  };
+
+  window.bidGoStep2 = async function() {
+    const locationInput = overlay.querySelector('#bidLocation').value.trim();
+    if (!locationInput) {
+      alert('Please enter your build location first.');
+      return;
+    }
+    // Show step 2 immediately — geocode + load in background
+    overlay.querySelector('#bidStep1').style.display = 'none';
+    overlay.querySelector('#bidStep3').style.display = 'none';
+    overlay.querySelector('#bidStep2').style.display = 'block';
+    overlay.querySelector('#bDot1').className = 'bid-step-dot done';
+    overlay.querySelector('#bDot2').className = 'bid-step-dot active';
+    overlay.querySelector('#bDot3').className = 'bid-step-dot';
+
+    // Geocode build location, then load contractors
+    const geo = await geocodeBuildLocation(locationInput);
+    if (geo) { buildLat = geo.lat; buildLng = geo.lng; }
+    else { buildLat = null; buildLng = null; }
+    loadBidContractors();
+  };
+
+  window.bidGoStep3 = function() {
+    if (bidSelected.size === 0) {
+      alert('Please select at least one contractor to receive your plans.');
+      return;
+    }
+    // Populate review
+    overlay.querySelector('#revPlan').textContent = overlay.querySelector('#bidPlanName').value || '—';
+    overlay.querySelector('#revLocation').textContent = overlay.querySelector('#bidLocation').value || '—';
+    overlay.querySelector('#revBudget').textContent = overlay.querySelector('#bidBudget').value;
+    overlay.querySelector('#revTimeline').textContent = overlay.querySelector('#bidTimeline').value;
+    overlay.querySelector('#revFile').textContent = overlay.querySelector('#bidFileName').value || 'Attach when email opens';
+
+    const selectedContractors = bidContractors.filter(c => bidSelected.has(c.user_id));
+    overlay.querySelector('#revContractors').innerHTML = selectedContractors.map(c =>
+      `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--cream);border-radius:6px">
+        <span style="color:var(--green);font-weight:700">✓</span>
+        <span style="font-weight:600">${c.company_name || 'Contractor'}</span>
+        <span style="color:var(--gray);font-size:0.8rem">— ${c.service_area || ''}</span>
+      </div>`
+    ).join('');
+
+    overlay.querySelector('#bidStep2').style.display = 'none';
+    overlay.querySelector('#bidStep3').style.display = 'block';
+    overlay.querySelector('#bDot2').className = 'bid-step-dot done';
+    overlay.querySelector('#bDot3').className = 'bid-step-dot active';
+  };
+
+  window.bidSubmit = async function() {
+    const btn = overlay.querySelector('#bidSendBtn');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    const planName   = overlay.querySelector('#bidPlanName').value;
+    const location   = overlay.querySelector('#bidLocation').value;
+    const budget     = overlay.querySelector('#bidBudget').value;
+    const timeline   = overlay.querySelector('#bidTimeline').value;
+    const notes      = overlay.querySelector('#bidNotes')?.value || '';
+    const fileName   = overlay.querySelector('#bidFileName').value || 'See attached';
+    const userEmail  = userSession?.user?.email || '';
+    const userName   = userSession?.user?.user_metadata?.full_name || 'Homebuilder';
+
+    const selectedContractors = bidContractors.filter(c => bidSelected.has(c.user_id));
+    const contractorList = selectedContractors.map(c =>
+      `  • ${c.company_name || 'Contractor'} — ${c.service_area || 'Region N/A'} — ${c.contact_email || 'Email on file'}`
+    ).join('\n');
+
+    const message = `NARROW — BID REQUEST\n\n` +
+      `From: ${userName} (${userEmail})\n\n` +
+      `--- PROJECT DETAILS ---\n` +
+      `Plan: ${planName}\n` +
+      `Location: ${location}\n` +
+      `Budget: ${budget}\n` +
+      `Timeline: ${timeline}\n` +
+      `Plan File: ${fileName}\n` +
+      `Notes: ${notes || 'None'}\n\n` +
+      `--- SELECTED CONTRACTORS (${selectedContractors.length}) ---\n${contractorList}\n\n` +
+      `Please forward the attached plan file to each listed contractor and coordinate bid submissions.`;
+
+    try {
+      const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/send-contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM'
+        },
+        body: JSON.stringify({ name: userName, email: userEmail, role: 'Bid Request', message })
+      });
+
+      // Also open mailto as backup so user can attach the file
+      const mailtoBody = encodeURIComponent(
+        `Hi Narrow,\n\nI'm submitting a bid request through the Narrow platform.\n\n` +
+        `Plan: ${planName}\nLocation: ${location}\nBudget: ${budget}\nTimeline: ${timeline}\n` +
+        `Notes: ${notes || 'None'}\n\nContractors selected:\n${contractorList}\n\n` +
+        `[Please attach your plan file to this email]`
+      );
+      window.location.href = `mailto:info@buildnarrow.com?subject=Bid Request — ${encodeURIComponent(planName)}&body=${mailtoBody}`;
+
+      overlay.querySelector('#bidStep3').style.display = 'none';
+      overlay.querySelector('#bidSuccess').style.display = 'block';
+    } catch(err) {
+      btn.textContent = '✗ Failed — try again';
+      btn.style.background = '#DC2626';
+      btn.disabled = false;
+      setTimeout(() => { btn.textContent = 'Send Bid Request →'; btn.style.background = ''; }, 3000);
+    }
+  };
 };
 
 // ═══════════════════════════════════════════
