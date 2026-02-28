@@ -30,8 +30,10 @@
 <div id="mobileMenu" class="nav__mobile-menu"></div>
 
 <!-- ── HERO ───────────────────────────────── -->
-<section class="hero" style="padding:140px 0 72px">
-  <div class="container hero__content">
+<section class="hero" style="padding:140px 0 72px;position:relative;overflow:hidden">
+  <img src="archbackground.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0">
+  <div class="hero-overlay" style="position:absolute;inset:0;background:rgba(18,40,80,0.62);z-index:1"></div>
+  <div class="container hero__content" style="position:relative;z-index:2">
     <span class="hero__eyebrow">Step 4 of Your Journey</span>
     <h1>Plan<br><span style="color:var(--amber)">Marketplace</span></h1>
     <p>Browse verified home plans from licensed architects. Each plan is their business — priced by them, sold through Narrow. Purchase securely and customize if needed.</p>
@@ -51,7 +53,7 @@
     <!-- Plan grid -->
     <div class="plan-grid" id="planGrid">
 
-      <div class="plan-card" onclick="openPlanDetail({planId:'breite_shouse',name:'The Shouse Plan',architect:'Breite Design',architectId:'',beds:'3',baths:'2',sqft:'2,400',stories:'1 story',price:'$695',style:'Modern Shouse',stars:'★★★★★',reviews:'',emoji:'🏠',gradient:'linear-gradient(135deg,#1B3A6B,#2D6A4F)'})">
+      <div class="plan-card" onclick="openPlanDetail({planId:'breite_shouse',name:'The Shouse Plan',architect:'Breite Design',beds:'3',baths:'2',sqft:'2,400',stories:'1 story',price:'$695',style:'Modern Shouse',stars:'★★★★★',reviews:'',emoji:'🏠',gradient:'linear-gradient(135deg,#1B3A6B,#2D6A4F)'})">
         <div class="plan-card__img" style="background:linear-gradient(135deg,#1B3A6B,#2D6A4F)">
           <span class="plan-card__badge">Featured</span>
           <div style="text-align:center"><span style="font-size:2.5rem">🏠</span><br><span>Plan image</span></div>
