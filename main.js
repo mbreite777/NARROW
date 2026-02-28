@@ -222,41 +222,88 @@ function openQuestionnaire(session) {
     <div class="modal-overlay" onclick="closeQuestionnaire()"></div>
     <div class="modal-box">
       <button class="modal-close" onclick="closeQuestionnaire()">✕</button>
+
+      <!-- Progress bar -->
+      <div class="q-progress-track" id="qProgressTrack">
+        <div class="q-progress-fill" id="qProgressFill" style="width:16.6%"></div>
+      </div>
+
+      <!-- Step 1: Experience -->
       <div class="modal-step active" id="q-step-1">
-        <p class="modal-label">Step 1 of 4</p>
+        <p class="modal-label">Step 1 of 6</p>
         <h2>What's your building experience?</h2>
+        <p class="q-sub">This helps us set the right level of guidance for you.</p>
         <div class="q-options">
           <div class="q-option" onclick="selectOption(this, 1)">🏠 First-time homebuilder</div>
           <div class="q-option" onclick="selectOption(this, 1)">🔨 I've built or renovated before</div>
           <div class="q-option" onclick="selectOption(this, 1)">🏗️ I build regularly / professionally</div>
         </div>
-        <button class="btn btn-primary" onclick="nextStep(1)" style="margin-top:24px">Continue →</button>
+        <button class="btn btn-primary q-continue" onclick="nextStep(1)">Continue →</button>
       </div>
+
+      <!-- Step 2: Budget -->
       <div class="modal-step" id="q-step-2">
-        <p class="modal-label">Step 2 of 4</p>
-        <h2>What's your budget range?</h2>
+        <p class="modal-label">Step 2 of 6</p>
+        <h2>What's your total budget range?</h2>
+        <p class="q-sub">Include land, construction, and soft costs.</p>
         <div class="q-options">
-          <div class="q-option" onclick="selectOption(this, 2)">Under $300K</div>
-          <div class="q-option" onclick="selectOption(this, 2)">$300K – $600K</div>
-          <div class="q-option" onclick="selectOption(this, 2)">$600K – $1M</div>
-          <div class="q-option" onclick="selectOption(this, 2)">$1M+</div>
+          <div class="q-option" onclick="selectOption(this, 2)">💵 Under $300K</div>
+          <div class="q-option" onclick="selectOption(this, 2)">💵 $300K – $600K</div>
+          <div class="q-option" onclick="selectOption(this, 2)">💵 $600K – $1M</div>
+          <div class="q-option" onclick="selectOption(this, 2)">💵 $1M+</div>
         </div>
-        <button class="btn btn-primary" onclick="nextStep(2)" style="margin-top:24px">Continue →</button>
+        <button class="btn btn-primary q-continue" onclick="nextStep(2)">Continue →</button>
       </div>
+
+      <!-- Step 3: Where in the process -->
       <div class="modal-step" id="q-step-3">
-        <p class="modal-label">Step 3 of 4</p>
-        <h2>Where are you in the process?</h2>
+        <p class="modal-label">Step 3 of 6</p>
+        <h2>Where are you in the build process?</h2>
+        <p class="q-sub">Be honest — your dashboard will jump you to the right step.</p>
         <div class="q-options">
-          <div class="q-option" onclick="selectOption(this, 3)">💡 Just an idea — starting from zero</div>
-          <div class="q-option" onclick="selectOption(this, 3)">💰 I have financing & need land</div>
-          <div class="q-option" onclick="selectOption(this, 3)">🗺️ I have land & need plans</div>
-          <div class="q-option" onclick="selectOption(this, 3)">📋 I have plans & need a contractor</div>
+          <div class="q-option" onclick="selectOption(this, 3)" data-step="2">💡 Just an idea — starting from zero</div>
+          <div class="q-option" onclick="selectOption(this, 3)" data-step="2">💳 I need financing first</div>
+          <div class="q-option" onclick="selectOption(this, 3)" data-step="3">✅ I have financing — need land</div>
+          <div class="q-option" onclick="selectOption(this, 3)" data-step="4">🗺️ I have land — need plans</div>
+          <div class="q-option" onclick="selectOption(this, 3)" data-step="6">📋 I have plans — need a contractor</div>
         </div>
-        <button class="btn btn-primary" onclick="nextStep(3)" style="margin-top:24px">Continue →</button>
+        <button class="btn btn-primary q-continue" onclick="nextStep(3)">Continue →</button>
       </div>
+
+      <!-- Step 4: Land status -->
       <div class="modal-step" id="q-step-4">
-        <p class="modal-label">Step 4 of 4</p>
+        <p class="modal-label">Step 4 of 6</p>
+        <h2>Do you own your land?</h2>
+        <p class="q-sub">This helps us match you with the right agent if needed.</p>
+        <div class="q-options">
+          <div class="q-option" onclick="selectOption(this, 4)">✅ Yes — I own my land</div>
+          <div class="q-option" onclick="selectOption(this, 4)">🔍 Actively searching for land</div>
+          <div class="q-option" onclick="selectOption(this, 4)">❓ Haven't started looking yet</div>
+        </div>
+        <button class="btn btn-primary q-continue" onclick="nextStep(4)">Continue →</button>
+      </div>
+
+      <!-- Step 5: Style preference -->
+      <div class="modal-step" id="q-step-5">
+        <p class="modal-label">Step 5 of 6</p>
+        <h2>What's your home style preference?</h2>
+        <p class="q-sub">We'll surface matching plans in the marketplace.</p>
+        <div class="q-options">
+          <div class="q-option" onclick="selectOption(this, 5)">🏙️ Modern / Contemporary</div>
+          <div class="q-option" onclick="selectOption(this, 5)">🌾 Farmhouse / Rustic</div>
+          <div class="q-option" onclick="selectOption(this, 5)">🏡 Craftsman / Traditional</div>
+          <div class="q-option" onclick="selectOption(this, 5)">🏚️ Ranch / Single-story</div>
+          <div class="q-option" onclick="selectOption(this, 5)">🏗️ Shouse / Barndominium</div>
+          <div class="q-option" onclick="selectOption(this, 5)">🤷 Not sure yet</div>
+        </div>
+        <button class="btn btn-primary q-continue" onclick="nextStep(5)">Continue →</button>
+      </div>
+
+      <!-- Step 6: Location + Timeline -->
+      <div class="modal-step" id="q-step-6">
+        <p class="modal-label">Step 6 of 6</p>
         <h2>Where do you want to build?</h2>
+        <p class="q-sub">We'll match you with contractors, agents, and lenders in your region.</p>
         <div class="form-group"><label>City / Region</label><input type="text" id="qCity" placeholder="e.g. Austin, TX"></div>
         <div class="form-group"><label>Target Timeline</label>
           <select id="qTimeline">
@@ -269,12 +316,14 @@ function openQuestionnaire(session) {
         </div>
         <button class="btn btn-primary btn-lg" onclick="submitQuestionnaire()" style="width:100%;margin-top:12px">Build My Path →</button>
       </div>
+
+      <!-- Success -->
       <div class="modal-step" id="q-success">
         <div style="text-align:center;padding:40px 0">
           <div style="font-size:3rem;margin-bottom:16px">🏠</div>
-          <h2>Your journey starts now!</h2>
-          <p style="color:#6B7280;margin:12px 0 24px">Your personalized path is ready. Head to your dashboard to start building.</p>
-          <a href="dashboard.html" class="btn btn-primary">Go to My Dashboard →</a>
+          <h2>Your path is ready!</h2>
+          <p id="q-success-msg" style="color:#6B7280;margin:12px 0 24px">Your dashboard has been customized based on your answers.</p>
+          <a href="dashboard.html" class="btn btn-primary btn-lg">Go to My Dashboard →</a>
         </div>
       </div>
     </div>
@@ -288,14 +337,18 @@ function openQuestionnaire(session) {
     s.textContent = `
       #journeyModal { position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px; }
       .modal-overlay { position:absolute;inset:0;background:rgba(18,40,80,0.75);backdrop-filter:blur(4px); }
-      .modal-box { position:relative;background:#fff;border-radius:16px;padding:48px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.3); }
+      .modal-box { position:relative;background:#fff;border-radius:16px;padding:48px;max-width:540px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.3); }
       .modal-close { position:absolute;top:16px;right:20px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#6B7280; }
       .modal-label { font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2D6A4F;margin-bottom:8px; }
       .modal-step { display:none; } .modal-step.active { display:block; }
-      .q-options { display:grid;gap:12px;margin-top:20px; }
-      .q-option { padding:16px 20px;border:2px solid #E5E7EB;border-radius:10px;cursor:pointer;font-weight:500;transition:all 0.2s;font-family:'DM Sans',sans-serif; }
+      .q-sub { font-size:0.88rem;color:#6B7280;margin:4px 0 0; }
+      .q-options { display:grid;gap:10px;margin-top:20px; }
+      .q-option { padding:14px 20px;border:2px solid #E5E7EB;border-radius:10px;cursor:pointer;font-weight:500;transition:all 0.18s;font-family:'DM Sans',sans-serif;font-size:0.95rem; }
       .q-option:hover { border-color:#1B3A6B;background:#F0F4FF; }
-      .q-option.selected { border-color:#1B3A6B;background:#EEF2FF;color:#1B3A6B; }
+      .q-option.selected { border-color:#1B3A6B;background:#EEF2FF;color:#1B3A6B;font-weight:700; }
+      .q-continue { margin-top:24px; }
+      .q-progress-track { height:4px;background:#E5E7EB;border-radius:99px;margin-bottom:32px;overflow:hidden; }
+      .q-progress-fill { height:100%;background:linear-gradient(90deg,#1B3A6B,#2D6A4F);border-radius:99px;transition:width 0.4s ease; }
     `;
     document.head.appendChild(s);
   }
@@ -303,11 +356,16 @@ function openQuestionnaire(session) {
 
 // Questionnaire state
 let qAnswers = {};
+let qComputedStartStep = 2; // default — will be overridden by step 3 answer
 
 window.selectOption = function(el, step) {
   el.closest('.q-options').querySelectorAll('.q-option').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   qAnswers['q' + step] = el.textContent.trim();
+  // Step 3 drives the starting dashboard step
+  if (step === 3 && el.dataset.step) {
+    qComputedStartStep = parseInt(el.dataset.step);
+  }
 };
 
 window.nextStep = function(from) {
@@ -316,6 +374,9 @@ window.nextStep = function(from) {
   if (!next) return;
   step.classList.remove('active');
   next.classList.add('active');
+  // Advance progress bar (6 steps total)
+  const fill = document.getElementById('qProgressFill');
+  if (fill) fill.style.width = ((from + 1) / 6 * 100) + '%';
 };
 
 window.submitQuestionnaire = async function() {
@@ -325,12 +386,32 @@ window.submitQuestionnaire = async function() {
   const timeline = document.getElementById('qTimeline')?.value || '';
   qAnswers.city = city;
   qAnswers.timeline = timeline;
+  qAnswers.computedStartStep = qComputedStartStep;
 
   const { data: { session } } = await narrowSupabase.auth.getSession();
   if (!session) return;
 
+  // Build steps_done array: all steps before the computed start are pre-completed
+  // Step 1 (questionnaire) is always done after submitting
+  const stepsDone = [1];
+  for (let i = 2; i < qComputedStartStep; i++) {
+    stepsDone.push(i);
+  }
+
+  // Build success message based on where they land
+  const stepLabels = {
+    2: 'Your first step is securing financing.',
+    3: 'Your first step is finding land.',
+    4: 'Your first step is choosing your home plans.',
+    6: 'Your first step is finding and bidding contractors.'
+  };
+  const successMsg = document.getElementById('q-success-msg');
+  if (successMsg) {
+    successMsg.textContent = `You're starting at Step ${qComputedStartStep}. ${stepLabels[qComputedStartStep] || 'Your personalized path is ready.'}`;
+  }
+
   try {
-    // Save questionnaire to Supabase
+    // Save questionnaire response
     const { error: qErr } = await narrowSupabase.from('questionnaire_responses').upsert({
       user_id: session.user.id,
       answers: qAnswers,
@@ -338,7 +419,7 @@ window.submitQuestionnaire = async function() {
     });
     if (qErr) console.warn('Questionnaire save error:', qErr.message);
 
-    // Create initial build + journey
+    // Create or update the build with the computed starting step
     const { data: existingBuilds } = await narrowSupabase
       .from('user_builds')
       .select('id')
@@ -348,20 +429,33 @@ window.submitQuestionnaire = async function() {
       const { error: buildErr } = await narrowSupabase.from('user_builds').insert({
         user_id: session.user.id,
         name: 'My First Build',
-        current_step: 2,
-        steps_done: [1],
+        current_step: qComputedStartStep,
+        steps_done: stepsDone,
         questionnaire: qAnswers,
         created_at: new Date().toISOString()
       });
       if (buildErr) console.warn('Build create error:', buildErr.message);
+    } else {
+      // Update existing build's starting step based on new questionnaire answers
+      const { error: updateErr } = await narrowSupabase
+        .from('user_builds')
+        .update({
+          current_step: qComputedStartStep,
+          steps_done: stepsDone,
+          questionnaire: qAnswers
+        })
+        .eq('id', existingBuilds[0].id);
+      if (updateErr) console.warn('Build update error:', updateErr.message);
     }
   } catch (err) {
     console.error('Questionnaire submit error:', err);
   }
 
-  // Show success regardless — user can still proceed to dashboard
-  document.getElementById('q-step-4').classList.remove('active');
+  // Show success screen
+  document.getElementById('q-step-6').classList.remove('active');
   document.getElementById('q-success').classList.add('active');
+  const fill = document.getElementById('qProgressFill');
+  if (fill) fill.style.width = '100%';
 };
 
 window.closeQuestionnaire = function() {
@@ -369,6 +463,7 @@ window.closeQuestionnaire = function() {
   if (modal) modal.remove();
   document.body.style.overflow = '';
   qAnswers = {};
+  qComputedStartStep = 2;
 };
 
 // ── FILTER SYSTEM ─────────────────────────────
@@ -486,27 +581,68 @@ async function handleLandContact(e) {
 
 // ── PLAN DETAIL MODAL ─────────────────────────
 window.openPlanDetail = function(planData) {
+  // Build gallery slides — use planData.images if provided, else show elegant placeholders
+  const images = planData.images || [
+    { type: 'render',     label: 'Front Rendering',      bg: planData.gradient, content: `<div style="font-size:3rem;margin-bottom:8px">${planData.emoji}</div><p style="font-size:0.8rem;opacity:0.7;margin:0">3D Rendering</p>` },
+    { type: 'floorplan',  label: 'Floor Plan',           bg: 'linear-gradient(135deg,#1e293b,#334155)', content: `<div style="font-size:2.5rem;margin-bottom:8px">📐</div><p style="font-size:0.8rem;opacity:0.7;margin:0">Floor Plan</p>` },
+    { type: 'elevation',  label: 'Front Elevation',      bg: 'linear-gradient(135deg,#1f2937,#374151)', content: `<div style="font-size:2.5rem;margin-bottom:8px">🏗️</div><p style="font-size:0.8rem;opacity:0.7;margin:0">Front Elevation</p>` },
+    { type: 'rear',       label: 'Rear Elevation',       bg: 'linear-gradient(135deg,#1a2e1a,#2d4a2d)', content: `<div style="font-size:2.5rem;margin-bottom:8px">🌲</div><p style="font-size:0.8rem;opacity:0.7;margin:0">Rear Elevation</p>` },
+    { type: 'side',       label: 'Side Elevation',       bg: 'linear-gradient(135deg,#292524,#44403c)', content: `<div style="font-size:2.5rem;margin-bottom:8px">📏</div><p style="font-size:0.8rem;opacity:0.7;margin:0">Side Elevation</p>` },
+  ];
+
+  const gallerySlides = images.map((img, i) => {
+    if (img.url) {
+      // Real image
+      return `<div class="plan-gallery__slide ${i===0?'plan-gallery__slide--active':''}">
+        <img src="${img.url}" alt="${img.label}" style="width:100%;height:100%;object-fit:cover">
+        <span class="plan-gallery__caption">${img.label}</span>
+      </div>`;
+    }
+    // Placeholder
+    return `<div class="plan-gallery__slide ${i===0?'plan-gallery__slide--active':''}" style="background:${img.bg};display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;text-align:center">
+      ${img.content}
+      <span class="plan-gallery__caption">${img.label}</span>
+    </div>`;
+  }).join('');
+
+  const thumbs = images.map((img, i) => {
+    const thumbBg = img.url ? `background:url(${img.url}) center/cover` : `background:${img.bg}`;
+    return `<button class="plan-gallery__thumb ${i===0?'active':''}" onclick="gallerySwitchTo(${i})" style="${thumbBg}" title="${img.label}"></button>`;
+  }).join('');
+
   const overlay = document.createElement('div');
   overlay.className = 'plan-modal-overlay';
   overlay.onclick = function(e) { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
   overlay.innerHTML = `
     <div class="plan-modal">
       <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
-      <div class="plan-modal__img" style="background:${planData.gradient}">
-        <span>${planData.emoji}</span>
+
+      <!-- ── IMAGE GALLERY ── -->
+      <div class="plan-gallery">
+        <div class="plan-gallery__track" id="planGalleryTrack">
+          ${gallerySlides}
+        </div>
+        <!-- Nav arrows -->
+        <button class="plan-gallery__arrow plan-gallery__arrow--prev" onclick="galleryNav(-1)" aria-label="Previous">‹</button>
+        <button class="plan-gallery__arrow plan-gallery__arrow--next" onclick="galleryNav(1)" aria-label="Next">›</button>
+        <!-- Slide counter -->
+        <div class="plan-gallery__counter"><span id="galleryCurrentNum">1</span> / ${images.length}</div>
       </div>
+      <!-- Thumbnails -->
+      <div class="plan-gallery__thumbs" id="planGalleryThumbs">
+        ${thumbs}
+      </div>
+      <p class="plan-gallery__note">🔒 Full stamped drawings included after purchase. Previews shown without dimensions or stamps.</p>
+
       <div class="plan-modal__body">
         <span class="section-label" style="margin-bottom:12px">${planData.style}</span>
         <h2 style="margin-bottom:8px">${planData.name}</h2>
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
-          <p style="color:var(--green);font-weight:600;font-size:0.9rem;margin:0">✓ Verified · ${planData.architect}</p>
-          ${planData.architectId ? `<a href="architect-profile.html?id=${planData.architectId}" style="font-size:0.82rem;color:var(--navy);font-weight:500;border:1px solid var(--gray-light);padding:3px 10px;border-radius:99px;transition:background 0.2s" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='transparent'">View Profile →</a>` : ''}
-        </div>
-        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px">
-          <span style="font-size:0.88rem;color:var(--gray);display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${planData.beds} bed</span>
-          <span style="font-size:0.88rem;color:var(--gray);display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px"><path d="M4 12h16M4 12a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v4a2 2 0 01-2 2M4 12v4a2 2 0 002 2h12a2 2 0 002-2v-4"/></svg>${planData.baths} bath</span>
-          <span style="font-size:0.88rem;color:var(--gray);display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>${planData.sqft} sq ft</span>
-          <span style="font-size:0.88rem;color:var(--gray);display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px"><line x1="12" y1="2" x2="12" y2="6"/><path d="M5 10l-2 12h18l-2-12"/><path d="M5 10h14"/></svg>${planData.stories}</span>
+        <p style="color:var(--green);font-weight:600;font-size:0.9rem;margin-bottom:20px">✓ Verified · ${planData.architect}</p>
+        <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:24px">
+          <span style="font-size:0.9rem;color:var(--gray)">🛏️ ${planData.beds} bed</span>
+          <span style="font-size:0.9rem;color:var(--gray)">🚿 ${planData.baths} bath</span>
+          <span style="font-size:0.9rem;color:var(--gray)">📐 ${planData.sqft} sq ft</span>
+          <span style="font-size:0.9rem;color:var(--gray)">🏗️ ${planData.stories}</span>
         </div>
         <div style="margin-bottom:24px">
           <span class="stars">${planData.stars}</span>
@@ -529,6 +665,54 @@ window.openPlanDetail = function(planData) {
   `;
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
+
+  // Inject gallery styles once
+  if (!document.getElementById('gallery-styles')) {
+    const gs = document.createElement('style');
+    gs.id = 'gallery-styles';
+    gs.textContent = `
+      .plan-modal { max-width:640px;width:calc(100% - 32px);background:#fff;border-radius:20px;position:relative;overflow:hidden;max-height:92vh;overflow-y:auto; }
+      .plan-modal__close { position:absolute;top:16px;right:16px;z-index:10;background:rgba(0,0,0,0.45);color:white;border:none;width:32px;height:32px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1; }
+      .plan-modal__body { padding:28px 32px 36px; }
+      .plan-gallery { position:relative;width:100%;height:320px;overflow:hidden;background:#111;flex-shrink:0; }
+      .plan-gallery__track { display:flex;height:100%;transition:none; }
+      .plan-gallery__slide { min-width:100%;height:100%;position:absolute;top:0;left:0;opacity:0;transition:opacity 0.35s ease; }
+      .plan-gallery__slide--active { opacity:1;position:relative;flex-shrink:0; }
+      .plan-gallery__caption { position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.55);color:white;font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:4px 12px;border-radius:99px;white-space:nowrap; }
+      .plan-gallery__counter { position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.5);color:white;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:99px; }
+      .plan-gallery__arrow { position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.4);color:white;border:none;width:36px;height:36px;border-radius:50%;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background 0.2s;z-index:2; }
+      .plan-gallery__arrow:hover { background:rgba(0,0,0,0.7); }
+      .plan-gallery__arrow--prev { left:12px; }
+      .plan-gallery__arrow--next { right:12px; }
+      .plan-gallery__thumbs { display:flex;gap:8px;padding:10px 12px;overflow-x:auto;background:#f8f8f8;scrollbar-width:none; }
+      .plan-gallery__thumbs::-webkit-scrollbar { display:none; }
+      .plan-gallery__thumb { width:52px;height:40px;border-radius:6px;border:2px solid transparent;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;opacity:0.65; }
+      .plan-gallery__thumb.active { border-color:#1B3A6B;opacity:1; }
+      .plan-gallery__thumb:hover { opacity:1; }
+      .plan-gallery__note { font-size:0.75rem;color:#9CA3AF;text-align:center;padding:6px 12px 0;margin:0;background:#f8f8f8; }
+    `;
+    document.head.appendChild(gs);
+  }
+
+  // Gallery state
+  let currentSlide = 0;
+  const totalSlides = images.length;
+
+  window.gallerySwitchTo = function(idx) {
+    const slides = overlay.querySelectorAll('.plan-gallery__slide');
+    const thumbButtons = overlay.querySelectorAll('.plan-gallery__thumb');
+    const counter = overlay.querySelector('#galleryCurrentNum');
+    slides[currentSlide].classList.remove('plan-gallery__slide--active');
+    thumbButtons[currentSlide].classList.remove('active');
+    currentSlide = (idx + totalSlides) % totalSlides;
+    slides[currentSlide].classList.add('plan-gallery__slide--active');
+    thumbButtons[currentSlide].classList.add('active');
+    if (counter) counter.textContent = currentSlide + 1;
+  };
+
+  window.galleryNav = function(dir) {
+    window.gallerySwitchTo(currentSlide + dir);
+  };
 };
 
 // ── STRIPE CHECKOUT ────────────────────────────
