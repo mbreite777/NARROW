@@ -159,7 +159,7 @@ Deno.serve(async (req) => {
       try {
         const urlObj = new URL(validPurchase.download_url);
         r2Key = decodeURIComponent(urlObj.pathname.replace(/^\//, ''));
-      } catch(e) {
+      } catch {
         r2Key = null;
       }
     }

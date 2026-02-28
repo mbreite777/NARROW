@@ -218,7 +218,7 @@
         errorEl.style.display   = 'block';
         errorEl.innerHTML = `
           <h3 style="color:var(--amber-dark)">⚠️ Please Log In to Download</h3>
-          <p>Your payment was received. <a href="login.html?redirect=purchase-success.html?session_id=${sessionId}&plan_id=${planId}" style="color:var(--navy);font-weight:600">Log in here</a> to access your download, or find it anytime in your dashboard.</p>`;
+          <p>Your payment was received. <a href="login.html?redirect=${encodeURIComponent("purchase-success.html?session_id=" + sessionId + "&plan_id=" + planId)}" style="color:var(--navy);font-weight:600">Log in here</a> to access your download, or find it anytime in your dashboard.</p>`;
         return;
       }
 

@@ -765,7 +765,7 @@ window.handlePurchase = async function(planData) {
         body: JSON.stringify({
           planId:        planData.planId,
           planName:      planData.name,
-          planPrice:     planData.price,
+          planPrice:     Math.round(parseFloat(planData.price.replace(/[^0-9.]/g, '')) * 100),
           architectName: planData.architect,
           buyerEmail:    session.user.email,
         }),
