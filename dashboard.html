@@ -1632,12 +1632,14 @@ async function loadMyPlans(email) {
             ${new Date(p.purchased_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </p>
         </div>
-        ${p.download_url ? `
-          <a href="${p.download_url}" target="_blank" rel="noopener"
-             style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:white;padding:10px 20px;border-radius:var(--radius-sm);font-weight:700;font-size:0.875rem;text-decoration:none;white-space:nowrap;transition:background 0.2s"
-             onmouseover="this.style.background='#1B4332'" onmouseout="this.style.background='var(--green)'">
+        ${p.plan_id ? `
+          <button
+            onclick="downloadPlan('${p.plan_id}', '${(p.plan_name || 'Plan').replace(/'/g, '')}')"
+            style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:white;padding:10px 20px;border-radius:var(--radius-sm);font-weight:700;font-size:0.875rem;border:none;cursor:pointer;white-space:nowrap;transition:background 0.2s"
+            onmouseover="this.style.background='#1B4332'" onmouseout="this.style.background='var(--green)'"
+            id="dlBtn_${p.plan_id}">
             ⬇️ Download PDF
-          </a>
+          </button>
         ` : `
           <span style="font-size:0.82rem;color:var(--gray);font-style:italic">
             Contact <a href="mailto:info@buildnarrow.com" style="color:var(--navy)">info@buildnarrow.com</a> for download
@@ -1646,7 +1648,7 @@ async function loadMyPlans(email) {
       </div>
     `).join('') + `
       <p style="font-size:0.78rem;color:var(--gray);margin-top:16px;margin-bottom:0;text-align:center">
-        Your plans are always available here. Download anytime.
+        Your plans are always available here. Download anytime — each link is freshly generated and expires after 1 hour for security.
       </p>
     `;
 
@@ -1655,6 +1657,50 @@ async function loadMyPlans(email) {
     panel.style.display = 'none';
   }
 }
+
+// ── Presigned download handler ───────────────────────────────────────────────
+window.downloadPlan = async function(planId, planName) {
+  const btn = document.getElementById(`dlBtn_${planId}`);
+  if (btn) { btn.textContent = '⏳ Generating link…'; btn.disabled = true; }
+
+  try {
+    const { data: { session } } = await narrowSupabase.auth.getSession();
+    if (!session) throw new Error('Not logged in');
+
+    const res = await fetch(
+      'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/get-download-url',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM'
+        },
+        body: JSON.stringify({ plan_id: planId })
+      }
+    );
+
+    const data = await res.json();
+    if (!res.ok || !data.url) throw new Error(data.error || 'Failed to generate download link');
+
+    // Open the presigned URL in a new tab
+    window.open(data.url, '_blank');
+
+    if (btn) { btn.textContent = '✓ Opened!'; btn.style.background = 'var(--green)'; }
+    setTimeout(() => {
+      if (btn) { btn.textContent = '⬇️ Download PDF'; btn.disabled = false; btn.style.background = ''; }
+    }, 3000);
+
+  } catch(err) {
+    console.error('Download error:', err);
+    if (btn) {
+      btn.textContent = '✗ Failed — try again';
+      btn.style.background = '#DC2626';
+      btn.disabled = false;
+      setTimeout(() => { btn.textContent = '⬇️ Download PDF'; btn.style.background = ''; }, 3000);
+    }
+  }
+};
 
 // ── Move In Day / Journey Complete Contact Modal ──
 window.openMoveInContact = function() {

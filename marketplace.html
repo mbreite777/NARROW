@@ -48,33 +48,14 @@
 <!-- ── MARKETPLACE ─────────────────────────── -->
 <section class="section">
   <div class="container">
-    <p style="margin-bottom:24px"><strong>1 plan</strong> available — more architect plans coming soon</p>
+    <p style="margin-bottom:24px" id="planCount">Loading plans…</p>
 
-    <!-- Plan grid -->
+    <!-- Plan grid — populated dynamically from Supabase -->
     <div class="plan-grid" id="planGrid">
-
-      <div class="plan-card" onclick="openPlanDetail({planId:'breite_shouse',name:'The Shouse Plan',architect:'Breite Design',beds:'3',baths:'2',sqft:'2,400',stories:'1 story',price:'$695',style:'Modern Shouse',stars:'★★★★★',reviews:'',emoji:'🏠',gradient:'linear-gradient(135deg,#1B3A6B,#2D6A4F)'})">
-        <div class="plan-card__img" style="background:linear-gradient(135deg,#1B3A6B,#2D6A4F)">
-          <span class="plan-card__badge">Featured</span>
-          <div style="text-align:center"><span style="font-size:2.5rem">🏠</span><br><span>Plan image</span></div>
-        </div>
-        <div class="plan-card__body">
-          <h3 class="plan-card__title">The Shouse Plan</h3>
-          <p class="plan-card__arch">✓ Verified · Breite Design</p>
-          <div class="plan-card__specs">
-            <span class="plan-card__spec">🛏️ 3 bed</span>
-            <span class="plan-card__spec">🚿 2 bath</span>
-            <span class="plan-card__spec">📐 2,400 sq ft</span>
-            <span class="plan-card__spec">🏗️ 1 story</span>
-          </div>
-          <div style="margin-bottom:10px"><span class="stars">★★★★★</span></div>
-          <div class="plan-card__footer">
-            <span class="plan-card__price">$695</span>
-            <span class="btn btn-primary plan-card__btn">View Plan</span>
-          </div>
-        </div>
+      <div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--gray)">
+        <div style="font-size:2rem;margin-bottom:12px">⏳</div>
+        <p>Loading plans…</p>
       </div>
-
     </div>
 
     <!-- Customization callout -->
@@ -271,5 +252,123 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
+<script>
+// ── Dynamic Plan Marketplace ─────────────────────────────
+document.addEventListener('DOMContentLoaded', async function() {
+  const grid      = document.getElementById('planGrid');
+  const countEl   = document.getElementById('planCount');
+
+  // Placeholder gradients for cards without a cover image
+  const gradients = [
+    'linear-gradient(135deg,#1B3A6B,#2D6A4F)',
+    'linear-gradient(135deg,#2D6A4F,#B7791F)',
+    'linear-gradient(135deg,#1B3A6B,#6B3A2D)',
+    'linear-gradient(135deg,#4A3728,#2D6A4F)',
+  ];
+
+  try {
+    const { data: plans, error } = await narrowSupabase
+      .from('plans')
+      .select('*')
+      .eq('status', 'active')
+      .order('featured', { ascending: false })
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    if (!plans || plans.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--gray)">
+          <div style="font-size:2rem;margin-bottom:12px">📐</div>
+          <p>Plans coming soon — check back shortly.</p>
+        </div>`;
+      countEl.innerHTML = '<strong>0 plans</strong> available — more architect plans coming soon';
+      return;
+    }
+
+    countEl.innerHTML = `<strong>${plans.length} plan${plans.length > 1 ? 's' : ''}</strong> available — more architect plans coming soon`;
+
+    grid.innerHTML = plans.map((plan, idx) => {
+      const images   = plan.images || [];
+      const coverUrl = images.length > 0 ? images[0].url : null;
+      const gradient = plan.gradient || gradients[idx % gradients.length];
+      const stars    = plan.stars || '★★★★★';
+
+      const cardImg = coverUrl
+        ? `<img src="${coverUrl}" alt="${plan.name}" style="width:100%;height:100%;object-fit:cover">`
+        : `<div style="width:100%;height:100%;background:${gradient};display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;text-align:center"><span style="font-size:2.5rem">${plan.emoji || '🏠'}</span><br><span style="font-size:0.8rem;opacity:0.7">Plan preview</span></div>`;
+
+      // Safely encode plan data for onclick
+      const planJson = JSON.stringify({
+        planId:    plan.plan_id,
+        name:      plan.name,
+        architect: plan.architect,
+        beds:      plan.beds,
+        baths:     plan.baths,
+        sqft:      plan.sqft,
+        stories:   plan.stories,
+        price:     plan.price,
+        style:     plan.style,
+        stars:     plan.stars,
+        reviews:   plan.reviews || '',
+        emoji:     plan.emoji || '🏠',
+        gradient:  gradient,
+        images:    images,
+        description: plan.description || '',
+      }).replace(/'/g, '&#39;');
+
+      return `
+        <div class="plan-card" onclick='openPlanDetail(${planJson})'>
+          <div class="plan-card__img" style="background:${gradient}">
+            ${plan.featured ? '<span class="plan-card__badge">Featured</span>' : ''}
+            ${cardImg}
+          </div>
+          <div class="plan-card__body">
+            <h3 class="plan-card__title">${plan.name}</h3>
+            <p class="plan-card__arch">✓ Verified · ${plan.architect}</p>
+            <div class="plan-card__specs">
+              <span class="plan-card__spec">🛏️ ${plan.beds} bed</span>
+              <span class="plan-card__spec">🚿 ${plan.baths} bath</span>
+              <span class="plan-card__spec">📐 ${plan.sqft} sq ft</span>
+              <span class="plan-card__spec">🏗️ ${plan.stories}</span>
+            </div>
+            <div style="margin-bottom:10px"><span class="stars">${stars}</span></div>
+            <div class="plan-card__footer">
+              <span class="plan-card__price">${plan.price}</span>
+              <span class="btn btn-primary plan-card__btn">View Plan</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch(err) {
+    console.error('Failed to load plans:', err);
+    // Fallback to hardcoded Shouse Plan if Supabase fails
+    countEl.innerHTML = '<strong>1 plan</strong> available — more architect plans coming soon';
+    grid.innerHTML = `
+      <div class="plan-card" onclick="openPlanDetail({planId:'breite_shouse',name:'The Shouse Plan',architect:'Breite Design',beds:'3',baths:'2',sqft:'2,400',stories:'1 story',price:'$695',style:'Modern Shouse',stars:'★★★★★',reviews:'',emoji:'🏠',gradient:'linear-gradient(135deg,#1B3A6B,#2D6A4F)'})">
+        <div class="plan-card__img" style="background:linear-gradient(135deg,#1B3A6B,#2D6A4F)">
+          <span class="plan-card__badge">Featured</span>
+          <div style="text-align:center"><span style="font-size:2.5rem">🏠</span><br><span>Plan preview</span></div>
+        </div>
+        <div class="plan-card__body">
+          <h3 class="plan-card__title">The Shouse Plan</h3>
+          <p class="plan-card__arch">✓ Verified · Breite Design</p>
+          <div class="plan-card__specs">
+            <span class="plan-card__spec">🛏️ 3 bed</span>
+            <span class="plan-card__spec">🚿 2 bath</span>
+            <span class="plan-card__spec">📐 2,400 sq ft</span>
+            <span class="plan-card__spec">🏗️ 1 story</span>
+          </div>
+          <div style="margin-bottom:10px"><span class="stars">★★★★★</span></div>
+          <div class="plan-card__footer">
+            <span class="plan-card__price">$695</span>
+            <span class="btn btn-primary plan-card__btn">View Plan</span>
+          </div>
+        </div>
+      </div>`;
+  }
+});
+</script>
 </body>
 </html>

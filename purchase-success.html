@@ -186,20 +186,10 @@
 
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  // Plan ID → download URL map (matches webhook PLAN_FILE_MAP)
-  const PLAN_DOWNLOADS = {
-    'breite_shouse': {
-      url:  'https://files.buildnarrow.com/architects/breite_design/THE%20SHOUSE%20PLAN.pdf',
-      name: 'The Shouse Plan — Breite Design',
-    },
-    // Add more as architects upload:
-    // 'heritage': { url: '...', name: 'The Heritage' },
-  };
-
   async function loadPurchase() {
-    const params    = new URLSearchParams(window.location.search);
-    const sessionId = params.get('session_id');
-    const planId    = params.get('plan_id');
+    const params          = new URLSearchParams(window.location.search);
+    const sessionId       = params.get('session_id');
+    const planId          = params.get('plan_id');
 
     const loadingEl  = document.getElementById('loadingState');
     const downloadEl = document.getElementById('downloadContent');
@@ -213,47 +203,55 @@
       return;
     }
 
-    // Try to get download URL from our map first (instant)
-    const planInfo = PLAN_DOWNLOADS[planId];
-
-    if (planInfo) {
-      loadingEl.style.display  = 'none';
-      downloadEl.style.display = 'block';
-      linkEl.href              = planInfo.url;
-      linkEl.setAttribute('download', planInfo.name + '.pdf');
-      descEl.textContent       = planInfo.name + ' — Full architectural plan set (PDF)';
-      return;
-    }
-
-    // Fallback: check Supabase purchases table (webhook may have recorded it)
     try {
-      // Poll up to 10 seconds for webhook to process
-      let purchase = null;
-      for (let i = 0; i < 5; i++) {
-        const { data } = await sb
-          .from('purchases')
-          .select('download_url, plan_name')
-          .eq('stripe_session_id', sessionId)
-          .single();
-
-        if (data?.download_url) {
-          purchase = data;
-          break;
-        }
-        await new Promise(r => setTimeout(r, 2000));
+      // Wait for user session (Supabase may need a moment after redirect)
+      let session = null;
+      for (let i = 0; i < 10; i++) {
+        const { data } = await sb.auth.getSession();
+        if (data?.session) { session = data.session; break; }
+        await new Promise(r => setTimeout(r, 500));
       }
 
-      if (purchase?.download_url) {
-        loadingEl.style.display  = 'none';
-        downloadEl.style.display = 'block';
-        linkEl.href              = purchase.download_url;
-        descEl.textContent       = (purchase.plan_name || 'Your Plan') + ' — Full architectural plan set (PDF)';
-      } else {
+      if (!session) {
+        // Not logged in — show error with dashboard link
         loadingEl.style.display = 'none';
         errorEl.style.display   = 'block';
+        errorEl.innerHTML = `
+          <h3 style="color:var(--amber-dark)">⚠️ Please Log In to Download</h3>
+          <p>Your payment was received. <a href="login.html?redirect=purchase-success.html?session_id=${sessionId}&plan_id=${planId}" style="color:var(--navy);font-weight:600">Log in here</a> to access your download, or find it anytime in your dashboard.</p>`;
+        return;
       }
+
+      // Call edge function to get presigned URL
+      const res = await fetch(
+        `${SUPABASE_URL}/functions/v1/get-download-url`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': SUPABASE_ANON
+          },
+          body: JSON.stringify({ plan_id: planId, stripe_session_id: sessionId })
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok && data.url) {
+        loadingEl.style.display  = 'none';
+        downloadEl.style.display = 'block';
+        linkEl.href              = data.url;
+        descEl.textContent       = (data.plan_name || 'Your Plan') + ' — Full architectural plan set (PDF)';
+
+        // Auto-trigger download after short delay
+        setTimeout(() => { linkEl.click(); }, 800);
+      } else {
+        throw new Error(data.error || 'Could not generate download link');
+      }
+
     } catch (err) {
-      console.error('Purchase lookup error:', err);
+      console.error('Purchase download error:', err);
       loadingEl.style.display = 'none';
       errorEl.style.display   = 'block';
     }
