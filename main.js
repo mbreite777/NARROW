@@ -142,12 +142,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Auto-open questionnaire after login redirect ──
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('openQuestionnaire') === '1') {
-    // Clean URL
     window.history.replaceState({}, '', window.location.pathname);
-    // Wait for auth to resolve, then open questionnaire
     setTimeout(async () => {
       const { data: { session } } = await narrowSupabase.auth.getSession();
-      if (session) openQuestionnaire(session);
+      if (!session) return;
+      // If they've already completed the questionnaire, go straight to dashboard
+      const { data: builds } = await narrowSupabase
+        .from('user_builds')
+        .select('id, questionnaire')
+        .eq('user_id', session.user.id)
+        .limit(1);
+      const hasCompleted = builds && builds.length > 0 && builds[0].questionnaire;
+      if (hasCompleted) {
+        window.location.href = 'dashboard.html';
+      } else {
+        openQuestionnaire(session);
+      }
     }, 800);
   }
 
@@ -206,11 +216,21 @@ window.startJourney = async function() {
   if (!narrowSupabase) return;
   const { data: { session } } = await narrowSupabase.auth.getSession();
   if (!session) {
-    // Redirect to login
     window.location.href = 'login.html?redirect=questionnaire';
     return;
   }
-  // Logged in → open questionnaire
+  // Check if they've already completed the questionnaire
+  const { data: builds } = await narrowSupabase
+    .from('user_builds')
+    .select('id, questionnaire')
+    .eq('user_id', session.user.id)
+    .limit(1);
+  const hasCompleted = builds && builds.length > 0 && builds[0].questionnaire;
+  if (hasCompleted) {
+    window.location.href = 'dashboard.html';
+    return;
+  }
+  // First time — open questionnaire
   openQuestionnaire(session);
 };
 
