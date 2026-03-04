@@ -49,8 +49,8 @@
 <section class="hero" style="min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden">
   <!-- 3 VIDEO CAROUSEL: Replace src values with your video files -->
   <video autoplay muted loop playsinline class="hero-video active" src="hero-1.mp4"></video>
-  <video autoplay muted loop playsinline class="hero-video" src="hero-2.mp4"></video>
-  <video autoplay muted loop playsinline class="hero-video" src="hero-3.mp4"></video>
+  <video muted loop playsinline class="hero-video" data-src="hero-2.mp4"></video>
+  <video muted loop playsinline class="hero-video" data-src="hero-3.mp4"></video>
   <div class="hero-overlay"></div>
 
   <div class="container" style="position:relative;z-index:2">
@@ -592,12 +592,30 @@ function toggleAccordion(btn) {
   let current = 0;
 
   setInterval(() => {
+    const next = (current + 1) % videos.length;
+    // Lazy-load video if not yet loaded
+    if (videos[next].dataset.src && !videos[next].src) {
+      videos[next].src = videos[next].dataset.src;
+      videos[next].load();
+    }
     videos[current].classList.remove('active');
-    current = (current + 1) % videos.length;
-    videos[current].classList.add('active');
-    videos[current].currentTime = 0;
-    videos[current].play().catch(() => {});
+    videos[next].classList.add('active');
+    videos[next].currentTime = 0;
+    videos[next].play().catch(() => {});
+    current = next;
   }, 6000);
+
+  // Preload next video after first one starts playing
+  setTimeout(() => {
+    if (videos[1] && videos[1].dataset.src) {
+      videos[1].src = videos[1].dataset.src;
+      videos[1].load();
+    }
+    if (videos[2] && videos[2].dataset.src) {
+      videos[2].src = videos[2].dataset.src;
+      videos[2].load();
+    }
+  }, 2000);
 })();
 
 // Load coverage stats
