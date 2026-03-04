@@ -2,15 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="manifest" href="site.webmanifest">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Narrow — Build A to Z</title>
   <meta name="description" content="Narrow connects homebuilders with architects, contractors, mortgage companies, and real estate agents in one trusted, streamlined platform.">
   <link rel="stylesheet" href="styles.css">
+<style>
+/* Accordion styles */
+.accordion { border:1.5px solid var(--cream-dark); border-radius:var(--radius-md); margin-bottom:12px; overflow:hidden; background:var(--white); transition:box-shadow 0.2s; }
+.accordion:hover { box-shadow:var(--shadow-sm); }
+.accordion__trigger { display:flex; align-items:center; justify-content:space-between; width:100%; padding:20px 24px; background:none; border:none; cursor:pointer; font-family:var(--font-body); font-size:1.05rem; color:var(--charcoal); text-align:left; transition:background 0.15s; }
+.accordion__trigger:hover { background:var(--cream); }
+.accordion__title { font-weight:600; }
+.accordion__chevron { width:20px; height:20px; flex-shrink:0; color:var(--gray); transition:transform 0.3s ease; }
+.accordion.open .accordion__chevron { transform:rotate(180deg); }
+.accordion__body { max-height:0; overflow:hidden; transition:max-height 0.4s ease, padding 0.3s ease; padding:0 24px; }
+.accordion.open .accordion__body { max-height:2000px; padding:0 24px 24px; }
+@media(max-width:768px) {
+  .accordion__trigger { padding:16px 18px; font-size:0.95rem; }
+  .accordion__body { padding:0 18px; }
+  .accordion.open .accordion__body { padding:0 18px 18px; }
+}
+</style>
 </head>
 <body>
 
@@ -216,212 +228,226 @@
   </div>
 </section>
 
-<!-- ── WHO WE SERVE ──────────────────────── -->
-<section class="section">
-  <div class="container">
-    <div style="text-align:center;margin-bottom:56px">
-      <span class="section-label">Who We Serve</span>
-      <h2>Built for builders at every stage</h2>
+<!-- ── LEARN MORE ACCORDIONS ────────────── -->
+<section class="section" id="learn-more">
+  <div class="container" style="max-width:860px">
+    <div style="text-align:center;margin-bottom:40px">
+      <span class="section-label">Learn More</span>
+      <h2>Explore Narrow</h2>
     </div>
-    <div class="grid-3">
-      <div class="card">
-        <div class="card__icon">🏠</div>
-        <h3>First-Time Homebuilders</h3>
-        <p>Never built before? Your questionnaire guides every step — from financing to final walkthrough — with professional support at every turn.</p>
-      </div>
-      <div class="card">
-        <div class="card__icon card__icon--green">🔨</div>
-        <h3>Experienced Builders</h3>
-        <p>Building in a new location or want verified local contractors and architects fast? Skip steps you know and dive into the marketplace.</p>
-      </div>
-      <div class="card">
-        <div class="card__icon card__icon--amber">🏗️</div>
-        <h3>Industry Professionals</h3>
-        <p>Architects, contractors, and mortgage professionals — Narrow connects you with pre-qualified homebuilders actively seeking your services.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- ── REAL PEOPLE, REAL BUILDS ───────────── -->
-<section class="section section--cream" id="reviews">
-  <div class="container">
-    <div style="text-align:center;margin-bottom:56px">
-      <span class="section-label">Real People, Real Builds</span>
-      <h2>Hear from homebuilders like you</h2>
-      <p style="max-width:500px;margin:12px auto 0">Every review comes from a verified Narrow user who completed their build journey.</p>
+    <!-- Accordion: Who We Serve -->
+    <div class="accordion">
+      <button class="accordion__trigger" onclick="toggleAccordion(this)">
+        <span class="accordion__title">🏠 Who We Serve</span>
+        <svg class="accordion__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="accordion__body">
+        <div class="grid-3" style="gap:24px;padding:8px 0 16px">
+          <div class="card">
+            <div class="card__icon">🏠</div>
+            <h3>First-Time Homebuilders</h3>
+            <p>Never built before? Your questionnaire guides every step — from financing to final walkthrough — with professional support at every turn.</p>
+          </div>
+          <div class="card">
+            <div class="card__icon card__icon--green">🔨</div>
+            <h3>Experienced Builders</h3>
+            <p>Building in a new location or want verified local contractors and architects fast? Skip steps you know and dive into the marketplace.</p>
+          </div>
+          <div class="card">
+            <div class="card__icon card__icon--amber">🏗️</div>
+            <h3>Industry Professionals</h3>
+            <p>Architects, contractors, and mortgage professionals — Narrow connects you with pre-qualified homebuilders actively seeking your services.</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="grid-3" id="reviewsGrid">
-      <div class="review-card">
-        <div class="review-card__stars">★★★★★</div>
-        <p class="review-card__text">"We were completely lost trying to coordinate everything ourselves. Narrow walked us through every step — financing, land, plans, contractor. We couldn't have done it without this platform."</p>
-        <div class="review-card__author">
-          <div class="review-card__avatar">S</div>
+
+    <!-- Accordion: Real People, Real Builds -->
+    <div class="accordion" id="reviews">
+      <button class="accordion__trigger" onclick="toggleAccordion(this)">
+        <span class="accordion__title">⭐ Real People, Real Builds</span>
+        <svg class="accordion__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="accordion__body">
+        <div class="grid-3" style="gap:24px;padding:8px 0 16px" id="reviewsGrid">
+          <div class="review-card">
+            <div class="review-card__stars">★★★★★</div>
+            <p class="review-card__text">"We were completely lost trying to coordinate everything ourselves. Narrow walked us through every step — financing, land, plans, contractor. We couldn't have done it without this platform."</p>
+            <div class="review-card__author">
+              <div class="review-card__avatar">S</div>
+              <div>
+                <p class="review-card__name">Sarah &amp; Michael T.</p>
+                <p class="review-card__meta">First-time builders · Austin, TX</p>
+              </div>
+            </div>
+          </div>
+          <div class="review-card">
+            <div class="review-card__stars">★★★★★</div>
+            <p class="review-card__text">"I've built three homes before, but never with this level of organization. The bid portal alone saved us $40K by getting competitive quotes from vetted contractors."</p>
+            <div class="review-card__author">
+              <div class="review-card__avatar" style="background:var(--green)">J</div>
+              <div>
+                <p class="review-card__name">James R.</p>
+                <p class="review-card__meta">Experienced builder · Nashville, TN</p>
+              </div>
+            </div>
+          </div>
+          <div class="review-card">
+            <div class="review-card__stars">★★★★★</div>
+            <p class="review-card__text">"As an architect, listing my plans on Narrow gave me exposure I never had. The platform handles everything — I just design. My client base has grown 3x since joining."</p>
+            <div class="review-card__author">
+              <div class="review-card__avatar" style="background:var(--amber);color:var(--navy-dark)">L</div>
+              <div>
+                <p class="review-card__name">Lisa Chen, AIA</p>
+                <p class="review-card__meta">Architect · Portland, OR</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accordion: Our Story -->
+    <div class="accordion" id="about">
+      <button class="accordion__trigger" onclick="toggleAccordion(this)">
+        <span class="accordion__title">📖 Our Story</span>
+        <svg class="accordion__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="accordion__body">
+        <div class="grid-2" style="gap:48px;padding:8px 0 16px">
           <div>
-            <p class="review-card__name">Sarah &amp; Michael T.</p>
-            <p class="review-card__meta">First-time builders · Austin, TX</p>
+            <h3 style="margin-bottom:16px">Built by a family, for families</h3>
+            <p style="margin:16px 0">Narrow was born from firsthand experience with the fragmented home building process. The Breite Family built Narrow to be the platform they wished had existed — a trusted, guided hub from concept to move-in day.</p>
+            <div class="mission-block" style="padding:32px 28px;margin-top:20px">
+              <div style="position:relative;z-index:1">
+                <span class="section-label section-label--light" style="font-size:0.65rem">Mission</span>
+                <p class="text-white" style="font-size:1rem;color:rgba(255,255,255,0.85);margin-top:8px">Narrow connects homebuilders, architects, contractors, mortgage companies, and real estate agents into one trusted, streamlined platform that simplifies the journey from concept to construction.</p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="review-card">
-        <div class="review-card__stars">★★★★★</div>
-        <p class="review-card__text">"I've built three homes before, but never with this level of organization. The bid portal alone saved us $40K by getting competitive quotes from vetted contractors."</p>
-        <div class="review-card__author">
-          <div class="review-card__avatar" style="background:var(--green)">J</div>
-          <div>
-            <p class="review-card__name">James R.</p>
-            <p class="review-card__meta">Experienced builder · Nashville, TN</p>
-          </div>
-        </div>
-      </div>
-      <div class="review-card">
-        <div class="review-card__stars">★★★★★</div>
-        <p class="review-card__text">"As an architect, listing my plans on Narrow gave me exposure I never had. The platform handles everything — I just design. My client base has grown 3x since joining."</p>
-        <div class="review-card__author">
-          <div class="review-card__avatar" style="background:var(--amber);color:var(--navy-dark)">L</div>
-          <div>
-            <p class="review-card__name">Lisa Chen, AIA</p>
-            <p class="review-card__meta">Architect · Portland, OR</p>
+          <div style="display:grid;gap:16px">
+            <div class="verse-card">
+              <p class="verse-value">🚪 The Narrow Way</p>
+              <p class="verse-text">"Enter through the narrow gate. For wide is the gate and broad is the road that leads to destruction, and many enter through it."</p>
+              <p class="verse-ref">Matthew 7:13</p>
+              <p style="font-size:0.85rem;margin-top:14px">We chose the name Narrow on purpose. The right way to build a home is intentional, guided, and disciplined — not scattered.</p>
+            </div>
+            <div class="verse-card green">
+              <p class="verse-value">📐 Excellence</p>
+              <p class="verse-text">"Whatever you do, work at it with all your heart."</p>
+              <p class="verse-ref">Colossians 3:23</p>
+            </div>
+            <div class="verse-card amber">
+              <p class="verse-value">🔗 Community</p>
+              <p class="verse-text">"As iron sharpens iron, so one person sharpens another."</p>
+              <p class="verse-ref">Proverbs 27:17</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- ── ABOUT ──────────────────────────────── -->
-<section class="section" id="about">
-  <div class="container">
-    <div class="grid-2" style="gap:64px">
-      <div>
-        <span class="section-label">Our Story</span>
-        <h2>Built by a family, for families</h2>
-        <p style="margin:20px 0">Narrow was born from firsthand experience with the fragmented home building process. The Breite Family built Narrow to be the platform they wished had existed — a trusted, guided hub from concept to move-in day.</p>
-        <div class="mission-block" style="padding:36px 32px;margin-top:24px">
-          <div style="position:relative;z-index:1">
-            <span class="section-label section-label--light" style="font-size:0.65rem">Mission</span>
-            <p class="text-white" style="font-size:1rem;color:rgba(255,255,255,0.85);margin-top:8px">Narrow connects homebuilders, architects, contractors, mortgage companies, and real estate agents into one trusted, streamlined platform that simplifies the journey from concept to construction.</p>
+    <!-- Accordion: Growing Nationwide -->
+    <div class="accordion">
+      <button class="accordion__trigger" onclick="toggleAccordion(this)">
+        <span class="accordion__title">🗺️ Growing Nationwide</span>
+        <svg class="accordion__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="accordion__body">
+        <div style="padding:8px 0 16px">
+          <p style="max-width:520px;margin:0 auto 24px;text-align:center">Our network of verified contractors and licensed architects is expanding across the country.</p>
+          <div class="coverage-stats" id="coverageStats">
+            <div class="coverage-stat">
+              <div class="coverage-stat__num" id="statContractors">—</div>
+              <div class="coverage-stat__label">Verified Contractors</div>
+            </div>
+            <div class="coverage-stat">
+              <div class="coverage-stat__num" id="statArchStates">—</div>
+              <div class="coverage-stat__label">States with Licensed Architects</div>
+            </div>
+            <div class="coverage-stat">
+              <div class="coverage-stat__num" id="statCoveredStates">—</div>
+              <div class="coverage-stat__label">States with Contractor Coverage</div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div>
-        <div style="display:grid;gap:20px">
-          <div class="verse-card">
-            <p class="verse-value">🚪 The Narrow Way</p>
-            <p class="verse-text">"Enter through the narrow gate. For wide is the gate and broad is the road that leads to destruction, and many enter through it."</p>
-            <p class="verse-ref">Matthew 7:13</p>
-            <p style="font-size:0.85rem;margin-top:14px">We chose the name Narrow on purpose. The right way to build a home is intentional, guided, and disciplined — not scattered. We built the platform to reflect that.</p>
-          </div>
-          <div class="verse-card green">
-            <p class="verse-value">📐 Excellence</p>
-            <p class="verse-text">"Whatever you do, work at it with all your heart."</p>
-            <p class="verse-ref">Colossians 3:23</p>
-            <p style="font-size:0.85rem;margin-top:14px">Each professional maintains their own business identity and pricing. Narrow ensures quality.</p>
-          </div>
-          <div class="verse-card amber">
-            <p class="verse-value">🔗 Community</p>
-            <p class="verse-text">"As iron sharpens iron, so one person sharpens another."</p>
-            <p class="verse-ref">Proverbs 27:17</p>
-            <p style="font-size:0.85rem;margin-top:14px">Every completed home makes the platform better. Reviews, referrals, and collaboration drive continuous improvement.</p>
+          <p id="coverageMessage" style="text-align:center;margin-top:20px;font-size:0.9rem;color:var(--gray)"></p>
+          <div style="text-align:center;margin-top:20px">
+            <a href="professionals.html#contractors" class="btn btn-outline">Join as a Contractor →</a>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- ── COMPETITIVE ADVANTAGE ─────────────── -->
-<section class="section section--cream">
-  <div class="container">
-    <div style="text-align:center;margin-bottom:56px">
-      <span class="section-label">Why Narrow Wins</span>
-      <h2>No competitor offers everything in one place</h2>
+    <!-- Accordion: Why Narrow Wins -->
+    <div class="accordion">
+      <button class="accordion__trigger" onclick="toggleAccordion(this)">
+        <span class="accordion__title">🏆 Why Narrow Wins</span>
+        <svg class="accordion__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="accordion__body">
+        <div style="padding:8px 0 16px">
+          <p style="text-align:center;margin-bottom:24px">No competitor offers everything in one place.</p>
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;background:var(--white);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-md)">
+              <thead>
+                <tr style="background:var(--navy);color:white">
+                  <th style="padding:16px 16px;text-align:left;font-family:var(--font-body);font-weight:600">Platform</th>
+                  <th style="padding:16px 10px;text-align:center;font-size:0.82rem">Mortgage</th>
+                  <th style="padding:16px 10px;text-align:center;font-size:0.82rem">Agent</th>
+                  <th style="padding:16px 10px;text-align:center;font-size:0.82rem">Plans</th>
+                  <th style="padding:16px 10px;text-align:center;font-size:0.82rem">Customize</th>
+                  <th style="padding:16px 10px;text-align:center;font-size:0.82rem">Contractors</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background:rgba(232,168,56,0.08);border-bottom:2px solid var(--amber)">
+                  <td style="padding:14px 16px;font-weight:700;color:var(--navy);font-family:var(--font-display)">Narrow ★</td>
+                  <td style="padding:14px;text-align:center;font-size:1.1rem">✅</td>
+                  <td style="padding:14px;text-align:center;font-size:1.1rem">✅</td>
+                  <td style="padding:14px;text-align:center;font-size:1.1rem">✅</td>
+                  <td style="padding:14px;text-align:center;font-size:1.1rem">✅</td>
+                  <td style="padding:14px;text-align:center;font-size:1.1rem">✅</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--cream-dark)">
+                  <td style="padding:12px 16px;color:var(--gray)">PlanTribe</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center">✅</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--cream-dark)">
+                  <td style="padding:12px 16px;color:var(--gray)">Angi / HomeAdvisor</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center">✅</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--cream-dark)">
+                  <td style="padding:12px 16px;color:var(--gray)">Houzz</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center">✅</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 16px;color:var(--gray)">The Plan Collection</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center">✅</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                  <td style="padding:12px;text-align:center;color:var(--gray-light)">❌</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
-    <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;background:var(--white);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-md)">
-        <thead>
-          <tr style="background:var(--navy);color:white">
-            <th style="padding:18px 20px;text-align:left;font-family:var(--font-body);font-weight:600">Platform</th>
-            <th style="padding:18px 12px;text-align:center;font-size:0.82rem">Mortgage</th>
-            <th style="padding:18px 12px;text-align:center;font-size:0.82rem">Agent</th>
-            <th style="padding:18px 12px;text-align:center;font-size:0.82rem">Plans</th>
-            <th style="padding:18px 12px;text-align:center;font-size:0.82rem">Customize</th>
-            <th style="padding:18px 12px;text-align:center;font-size:0.82rem">Contractors</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="background:rgba(232,168,56,0.08);border-bottom:2px solid var(--amber)">
-            <td style="padding:16px 20px;font-weight:700;color:var(--navy);font-family:var(--font-display)">Narrow ★</td>
-            <td style="padding:16px;text-align:center;font-size:1.2rem">✅</td>
-            <td style="padding:16px;text-align:center;font-size:1.2rem">✅</td>
-            <td style="padding:16px;text-align:center;font-size:1.2rem">✅</td>
-            <td style="padding:16px;text-align:center;font-size:1.2rem">✅</td>
-            <td style="padding:16px;text-align:center;font-size:1.2rem">✅</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--cream-dark)">
-            <td style="padding:14px 20px;color:var(--gray)">PlanTribe</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center">✅</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--cream-dark)">
-            <td style="padding:14px 20px;color:var(--gray)">Angi / HomeAdvisor</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center">✅</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--cream-dark)">
-            <td style="padding:14px 20px;color:var(--gray)">Houzz</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center">✅</td>
-          </tr>
-          <tr>
-            <td style="padding:14px 20px;color:var(--gray)">The Plan Collection</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center">✅</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-            <td style="padding:14px;text-align:center;color:var(--gray-light)">❌</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
 
-<!-- ── NATIONAL COVERAGE ─────────────────── -->
-<section class="section">
-  <div class="container">
-    <div style="text-align:center;margin-bottom:32px">
-      <span class="section-label">Growing Nationwide</span>
-      <h2>Narrow's national coverage</h2>
-      <p style="max-width:520px;margin:12px auto 0">Our network of verified contractors and licensed architects is expanding across the country.</p>
-    </div>
-    <div class="coverage-stats" id="coverageStats">
-      <div class="coverage-stat">
-        <div class="coverage-stat__num" id="statContractors">—</div>
-        <div class="coverage-stat__label">Verified Contractors</div>
-      </div>
-      <div class="coverage-stat">
-        <div class="coverage-stat__num" id="statArchStates">—</div>
-        <div class="coverage-stat__label">States with Licensed Architects</div>
-      </div>
-      <div class="coverage-stat">
-        <div class="coverage-stat__num" id="statCoveredStates">—</div>
-        <div class="coverage-stat__label">States with Contractor Coverage</div>
-      </div>
-    </div>
-    <p id="coverageMessage" style="text-align:center;margin-top:24px;font-size:0.9rem;color:var(--gray)"></p>
-    <div style="text-align:center;margin-top:24px">
-      <a href="professionals.html#contractors" class="btn btn-outline">Join as a Contractor →</a>
-    </div>
   </div>
 </section>
 
@@ -557,6 +583,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
+<script>
+// Accordion toggle
+function toggleAccordion(btn) {
+  const accordion = btn.parentElement;
+  const isOpen = accordion.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.accordion.open').forEach(a => a.classList.remove('open'));
+  // Open clicked (if it was closed)
+  if (!isOpen) accordion.classList.add('open');
+}
+</script>
 <script>
 // Hero video carousel — cycles every 6 seconds with crossfade
 (function() {

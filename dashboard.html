@@ -2,11 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="manifest" href="site.webmanifest">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard — Narrow</title>
   <link rel="stylesheet" href="styles.css">
@@ -109,10 +104,7 @@
       <div class="dash-panel">
         <div class="dash-panel__header">
           <h3>📐 Public Profile</h3>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <span id="archFolderStatus"></span>
-            <button class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem" onclick="saveArchProfile()">Save Changes</button>
-          </div>
+          <button class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem" onclick="saveArchProfile()">Save Changes</button>
         </div>
         <div class="grid-2" style="gap:24px;align-items:start">
           <div class="form-group">
@@ -122,6 +114,22 @@
           <div class="form-group">
             <label>License Number</label>
             <input type="text" id="archLicense" placeholder="State license #">
+          </div>
+          <div class="form-group">
+            <label>License State</label>
+            <select id="archLicenseState" style="width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem;background:white">
+              <option value="">Select state</option>
+              <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option>
+              <option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option>
+              <option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option>
+              <option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+              <option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option>
+              <option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option>
+              <option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option>
+              <option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+              <option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option>
+              <option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+            </select>
           </div>
           <div class="form-group">
             <label>Specialties</label>
@@ -152,10 +160,10 @@
       <div class="dash-panel">
         <div class="dash-panel__header">
           <h3>📋 Plan Library</h3>
-          <button class="btn btn-green" style="padding:8px 16px;font-size:0.82rem" onclick="showUploadPlan()">+ Upload New Plan</button>
+          <button class="btn btn-green" style="padding:8px 16px;font-size:0.82rem" onclick="showUploadPlan()">+ Upload Plan</button>
         </div>
         <div id="archPlanList">
-          <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">Loading your plans…</p>
+          <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">Your uploaded plans will appear here. Click "Upload Plan" to add your first listing.</p>
         </div>
       </div>
 
@@ -1141,10 +1149,8 @@ window.openBidPortal = async function() {
 // ═══════════════════════════════════════════
 // ARCHITECT — Profile management
 // ═══════════════════════════════════════════
-let architectArchSlug = null;
-let architectFoldersReady = false;
-
 async function loadArchitectProfile() {
+  // Build states grid
   const states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
   const grid = document.getElementById('archStatesGrid');
   if (grid) {
@@ -1153,97 +1159,50 @@ async function loadArchitectProfile() {
 
   try {
     const { data, error } = await narrowSupabase
-      .from('architect_profiles').select('*').eq('user_id', userSession.user.id).single();
+      .from('architect_profiles')
+      .select('*')
+      .eq('user_id', userSession.user.id)
+      .single();
 
     if (error && error.code === 'PGRST116') {
       const meta = userSession.user.user_metadata || {};
-      await narrowSupabase.from('architect_profiles').insert({ user_id: userSession.user.id, full_name: meta.full_name || '' });
+      await narrowSupabase.from('architect_profiles').insert({
+        user_id: userSession.user.id,
+        full_name: meta.full_name || '',
+      });
       console.log('Architect profile created on first dashboard visit');
-      loadArchPlanLibrary(); // Still load (empty) library
       return;
     }
 
     if (data) {
       document.getElementById('archCompany').value = data.company_name || '';
       document.getElementById('archLicense').value = data.license_number || '';
+      document.getElementById('archLicenseState').value = data.license_state || '';
       document.getElementById('archSpecialties').value = data.specialties || '';
       document.getElementById('archWebsite').value = data.website || '';
       document.getElementById('archBio').value = data.bio || '';
       document.getElementById('archYearsLicensed').value = data.years_licensed || '';
 
-      architectArchSlug = data.arch_slug || null;
-      architectFoldersReady = !!data.folders_initialized;
-
-      const folderBadge = document.getElementById('archFolderStatus');
-      if (folderBadge) {
-        if (architectFoldersReady && architectArchSlug) {
-          folderBadge.innerHTML = `<span style="font-size:0.78rem;color:var(--green);background:rgba(45,106,79,0.08);padding:4px 10px;border-radius:99px">✓ Folder: <strong>${architectArchSlug}</strong></span>`;
-        } else {
-          folderBadge.innerHTML = `<span style="font-size:0.78rem;color:#92400E;background:rgba(251,191,36,0.12);padding:4px 10px;border-radius:99px">⏳ Save your Firm Name to initialize folders</span>`;
-        }
-      }
-
+      // Check licensed state boxes
       const ls = data.licensed_states || [];
-      document.querySelectorAll('.archStateCheck').forEach(cb => { if (ls.includes(cb.value)) cb.checked = true; });
+      document.querySelectorAll('.archStateCheck').forEach(cb => {
+        if (ls.includes(cb.value)) cb.checked = true;
+      });
     }
   } catch (err) {
     console.warn('Could not load architect profile:', err);
-  }
-
-  loadArchPlanLibrary();
-}
-
-// ── Load architect's plans into the Plan Library panel ──
-async function loadArchPlanLibrary() {
-  const container = document.getElementById('archPlanList');
-  try {
-    const { data: plans, error } = await narrowSupabase
-      .from('plans').select('plan_id, name, status, price, beds, baths, sqft, stories, images, created_at')
-      .eq('user_id', userSession.user.id)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    if (!plans || plans.length === 0) {
-      container.innerHTML = `<p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">No plans uploaded yet. Click "+ Upload New Plan" to add your first listing.</p>`;
-      return;
-    }
-
-    container.innerHTML = plans.map(p => {
-      const statusBadge = p.status === 'active'
-        ? `<span style="font-size:0.72rem;font-weight:700;color:var(--green);background:rgba(45,106,79,0.1);padding:3px 10px;border-radius:99px">✓ Live</span>`
-        : `<span style="font-size:0.72rem;font-weight:700;color:#92400E;background:rgba(251,191,36,0.15);padding:3px 10px;border-radius:99px">⏳ Pending</span>`;
-
-      const coverImg = (p.images && p.images.length > 0 && p.images[0].url)
-        ? `<img src="${p.images[0].url}" style="width:60px;height:45px;object-fit:cover;border-radius:6px;border:1px solid var(--cream-dark)" onerror="this.style.display='none'">`
-        : `<div style="width:60px;height:45px;background:linear-gradient(135deg,#1B3A6B,#2D6A4F);border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.2rem">📐</div>`;
-
-      return `
-        <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--cream-dark)">
-          ${coverImg}
-          <div style="flex:1;min-width:0">
-            <p style="font-weight:700;color:var(--navy);margin:0 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</p>
-            <p style="font-size:0.8rem;color:var(--gray);margin:0">${p.beds || '?'} bed · ${p.baths || '?'} bath · ${p.sqft || '?'} sq ft · ${p.price || 'N/A'}</p>
-          </div>
-          ${statusBadge}
-        </div>`;
-    }).join('');
-
-  } catch (err) {
-    console.warn('Could not load plan library:', err);
-    container.innerHTML = `<p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">Could not load plans. Try refreshing.</p>`;
   }
 }
 
 window.saveArchProfile = async function() {
   const licensedStates = [];
   document.querySelectorAll('.archStateCheck:checked').forEach(cb => licensedStates.push(cb.value));
-  const companyName = document.getElementById('archCompany').value.trim();
 
   const { error } = await narrowSupabase.from('architect_profiles').upsert({
     user_id: userSession.user.id,
-    company_name: companyName,
+    company_name: document.getElementById('archCompany').value,
     license_number: document.getElementById('archLicense').value,
+    license_state: document.getElementById('archLicenseState').value || null,
     specialties: document.getElementById('archSpecialties').value,
     website: document.getElementById('archWebsite').value,
     bio: document.getElementById('archBio').value,
@@ -1251,193 +1210,79 @@ window.saveArchProfile = async function() {
     licensed_states: licensedStates.length > 0 ? licensedStates : null,
     updated_at: new Date().toISOString()
   }, { onConflict: 'user_id' });
-
-  if (error) { console.error('Save error:', error); alert('Error saving profile.'); return; }
-
-  // Auto-initialize R2 folders if company name is set and folders don't exist yet
-  if (companyName && !architectFoldersReady) {
-    try {
-      const { data: { session } } = await narrowSupabase.auth.getSession();
-      const initRes = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/init-architect-folders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
-        },
-        body: JSON.stringify({ company_name: companyName }),
-      });
-      const initData = await initRes.json();
-      if (initRes.ok && initData.success) {
-        architectArchSlug = initData.arch_slug;
-        architectFoldersReady = true;
-        const folderBadge = document.getElementById('archFolderStatus');
-        if (folderBadge) folderBadge.innerHTML = `<span style="font-size:0.78rem;color:var(--green);background:rgba(45,106,79,0.08);padding:4px 10px;border-radius:99px">✓ Folder: <strong>${architectArchSlug}</strong></span>`;
-        alert(`Profile saved! Your upload folders have been created.\n\nYou can now upload plans.`);
-      } else {
-        alert('Profile saved! Folder setup had an issue — try saving again.');
-      }
-    } catch (initErr) {
-      console.warn('Folder init error:', initErr);
-      alert('Profile saved! Folder setup will complete on next save.');
-    }
+  if (error) {
+    console.error('Save error:', error);
+    alert('Error saving profile. Check console for details.');
   } else {
     alert('Profile saved!');
   }
 };
 
 window.showUploadPlan = function() {
-  // Block if folders not initialized
-  if (!architectFoldersReady || !architectArchSlug) {
-    alert('Please save your profile with a Firm / Company Name first. This creates your secure upload folders.');
-    return;
-  }
-
   const overlay = document.createElement('div');
   overlay.className = 'plan-modal-overlay';
   overlay.onclick = e => { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
 
   overlay.innerHTML = `
-    <div class="plan-modal" style="max-width:640px;max-height:92vh;overflow-y:auto">
+    <div class="plan-modal" style="max-width:580px">
       <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
       <div style="padding:40px">
-
-        <h2 style="margin-bottom:6px">📐 Upload a New Plan</h2>
-        <p style="font-size:0.9rem;color:var(--gray);margin-bottom:16px">Submit your plan for review. Narrow will approve and publish it within 1 business day.</p>
-
-        <!-- ── Instructions Box ── -->
-        <div style="background:linear-gradient(135deg,rgba(27,58,107,0.05),rgba(45,106,79,0.05));border:1.5px solid rgba(27,58,107,0.15);border-radius:10px;padding:20px 24px;margin-bottom:28px">
-          <p style="font-weight:700;color:var(--navy);margin:0 0 10px;font-size:0.92rem">📋 What to upload:</p>
-          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px">
-            <span style="font-size:1.1rem;flex-shrink:0">📄</span>
-            <div>
-              <p style="font-weight:600;color:var(--charcoal);margin:0 0 2px;font-size:0.88rem">1 PDF — Your full plan set</p>
-              <p style="font-size:0.8rem;color:var(--gray);margin:0">This is the stamped, dimensioned file customers receive after purchase. It stays private and is never shown publicly. Max 50MB.</p>
-            </div>
-          </div>
-          <div style="display:flex;gap:12px;align-items:flex-start">
-            <span style="font-size:1.1rem;flex-shrink:0">🖼️</span>
-            <div>
-              <p style="font-weight:600;color:var(--charcoal);margin:0 0 2px;font-size:0.88rem">1–5 Preview Images — Renderings, floor plans, elevations</p>
-              <p style="font-size:0.8rem;color:var(--gray);margin:0">These are shown publicly on the marketplace. <strong>Do NOT include dimensions, stamps, or signatures.</strong> JPG, PNG, or WebP — max 10MB each.</p>
-            </div>
-          </div>
+        <h2 style="margin-bottom:6px">📐 Upload Plan Image</h2>
+        <p style="font-size:0.9rem;color:var(--gray);margin-bottom:8px">Images are scanned for content quality and published immediately.</p>
+        <div style="background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.3);border-radius:8px;padding:12px 16px;margin-bottom:24px;font-size:0.82rem;color:#166534">
+          ✅ <strong>Instant publish:</strong> Your image goes live as soon as it passes our content scan. No review wait.
         </div>
-
-        <!-- ── Security Badge ── -->
-        <div style="background:rgba(45,106,79,0.06);border:1px solid rgba(45,106,79,0.2);border-radius:8px;padding:10px 16px;margin-bottom:24px;font-size:0.82rem;color:var(--charcoal)">
-          🔒 Uploading to: <code style="background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px">${architectArchSlug}</code>
-          <span style="color:var(--gray)">— secured to your account</span>
-        </div>
-
-        <!-- ═══ PLAN DETAILS ═══ -->
-        <h3 style="font-size:0.95rem;color:var(--navy);margin:0 0 16px;padding-bottom:8px;border-bottom:1px solid var(--cream-dark)">Plan Details</h3>
 
         <div class="form-group">
           <label>Plan Name *</label>
           <input type="text" id="upPlanName" placeholder="e.g. The Shouse Plan">
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <div class="form-group">
-            <label>Plan Slug *</label>
-            <input type="text" id="upPlanSlug" placeholder="e.g. shouse-plan">
-            <p style="font-size:0.72rem;color:var(--gray);margin:4px 0 0">Lowercase, hyphens only — used in file paths</p>
-          </div>
-          <div class="form-group">
-            <label>Price *</label>
-            <input type="text" id="upPrice" placeholder="e.g. $695">
-          </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px">
-          <div class="form-group">
-            <label>Beds</label>
-            <input type="text" id="upBeds" placeholder="3">
-          </div>
-          <div class="form-group">
-            <label>Baths</label>
-            <input type="text" id="upBaths" placeholder="2">
-          </div>
-          <div class="form-group">
-            <label>Sq Ft</label>
-            <input type="text" id="upSqft" placeholder="2,400">
-          </div>
-          <div class="form-group">
-            <label>Stories</label>
-            <select id="upStories" style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.9rem;background:white">
-              <option value="1 story">1 story</option>
-              <option value="1.5 stories">1.5 stories</option>
-              <option value="2 stories">2 stories</option>
-              <option value="3 stories">3 stories</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label>Plan Folder Slug *</label>
+          <input type="text" id="upPlanSlug" placeholder="e.g. shouse-plan">
+          <p style="font-size:0.75rem;color:var(--gray);margin:4px 0 0">Lowercase, hyphens only — used in the file path</p>
         </div>
 
         <div class="form-group">
-          <label>Style</label>
-          <input type="text" id="upStyle" placeholder="e.g. Modern Shouse, Farmhouse, Ranch, Craftsman">
+          <label>Image Type *</label>
+          <select id="upImageLabel" style="width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem;background:white">
+            <option value="render-front">Front Rendering</option>
+            <option value="floorplan">Floor Plan</option>
+            <option value="elevation-front">Front Elevation</option>
+            <option value="elevation-rear">Rear Elevation</option>
+            <option value="elevation-side">Side Elevation</option>
+            <option value="render-rear">Rear Rendering</option>
+            <option value="detail">Detail / Other</option>
+          </select>
         </div>
 
         <div class="form-group">
-          <label>Description</label>
-          <textarea id="upDescription" rows="3" placeholder="Describe your plan — layout highlights, special features, what makes it unique…" style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
-        </div>
-
-        <!-- ═══ PDF UPLOAD ═══ -->
-        <h3 style="font-size:0.95rem;color:var(--navy);margin:24px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--cream-dark)">📄 Plan PDF <span style="font-size:0.8rem;color:var(--gray);font-weight:400">(Full stamped plan set — max 50MB)</span></h3>
-
-        <div class="form-group">
-          <div id="upPdfZone" style="border:2px dashed var(--gray-light);border-radius:var(--radius-md);padding:24px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:#fafafa" onclick="document.getElementById('upPdfInput').click()">
-            <div style="font-size:1.5rem;margin-bottom:6px">📄</div>
-            <p style="font-weight:600;color:var(--navy);margin:0 0 4px;font-size:0.9rem">Click to select your plan PDF</p>
-            <p style="font-size:0.78rem;color:var(--gray);margin:0">This file is private — customers receive it after purchase only</p>
+          <label>Image File * <span style="font-size:0.78rem;color:var(--gray);font-weight:400">(JPG, PNG or WebP — max 10MB)</span></label>
+          <div id="upDropZone" style="border:2px dashed var(--gray-light);border-radius:var(--radius-md);padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:#fafafa" onclick="document.getElementById('upFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--navy)'" ondragleave="this.style.borderColor='var(--gray-light)'" ondrop="handleUpDrop(event)">
+            <div style="font-size:2rem;margin-bottom:8px">🖼️</div>
+            <p style="font-weight:600;color:var(--navy);margin:0 0 4px">Click to select or drag & drop</p>
+            <p style="font-size:0.8rem;color:var(--gray);margin:0">JPG, PNG, WebP — max 10MB</p>
           </div>
-          <input type="file" id="upPdfInput" accept="application/pdf" style="display:none">
-          <div id="upPdfPreview" style="display:none;margin-top:8px;padding:10px 14px;background:rgba(45,106,79,0.06);border-radius:8px;font-size:0.85rem;color:var(--charcoal)">
-            <span id="upPdfFileName"></span>
-            <button onclick="clearPdf()" style="float:right;background:none;border:none;color:var(--gray);cursor:pointer;font-size:0.85rem">✕ Remove</button>
-          </div>
+          <input type="file" id="upFileInput" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="handleUpFileSelect(this)">
         </div>
 
-        <!-- ═══ IMAGE UPLOADS ═══ -->
-        <h3 style="font-size:0.95rem;color:var(--navy);margin:24px 0 4px;padding-bottom:8px;border-bottom:1px solid var(--cream-dark)">🖼️ Preview Images <span style="font-size:0.8rem;color:var(--gray);font-weight:400">(1–5 images, no dimensions/stamps/signatures)</span></h3>
-        <p style="font-size:0.8rem;color:#92400E;margin:0 0 14px;background:rgba(251,191,36,0.1);padding:8px 12px;border-radius:6px">⚠️ <strong>Important:</strong> Preview images must NOT contain dimensions, stamps, or signatures. These are public-facing marketing images only.</p>
-
-        <div id="upImageSlots" style="display:grid;gap:12px">
-          ${[0,1,2,3,4].map(i => `
-            <div class="up-img-slot" id="upImgSlot${i}" style="border:1.5px dashed var(--gray-light);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color 0.2s;background:white" onclick="document.getElementById('upImgInput${i}').click()">
-              <div id="upImgThumb${i}" style="width:56px;height:42px;border-radius:6px;background:var(--cream);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
-                <span style="font-size:1.2rem;color:var(--gray)">+</span>
-              </div>
-              <div style="flex:1;min-width:0">
-                <select id="upImgLabel${i}" onclick="event.stopPropagation()" style="width:100%;padding:6px 10px;border:1px solid var(--cream-dark);border-radius:6px;font-size:0.82rem;background:white;font-family:var(--font-body)">
-                  <option value="">— Select image type —</option>
-                  <option value="render-front">Front Rendering</option>
-                  <option value="render-rear">Rear Rendering</option>
-                  <option value="floorplan">Floor Plan</option>
-                  <option value="elevation-front">Front Elevation</option>
-                  <option value="elevation-rear">Rear Elevation</option>
-                  <option value="elevation-side">Side Elevation</option>
-                  <option value="detail">Detail / Other</option>
-                </select>
-                <p id="upImgName${i}" style="font-size:0.75rem;color:var(--gray);margin:4px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${i === 0 ? 'Required — this will be the cover image' : 'Optional'}</p>
-              </div>
-              <input type="file" id="upImgInput${i}" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="handleImgSelect(${i}, this)">
-            </div>
-          `).join('')}
+        <!-- Preview -->
+        <div id="upPreviewWrap" style="display:none;margin-bottom:20px">
+          <img id="upPreview" style="width:100%;max-height:220px;object-fit:cover;border-radius:var(--radius-md);border:1px solid var(--cream-dark)">
+          <p id="upPreviewName" style="font-size:0.8rem;color:var(--gray);margin:6px 0 0;text-align:center"></p>
         </div>
 
-        <!-- ═══ PROGRESS + SUBMIT ═══ -->
-        <div id="upProgressWrap" style="display:none;margin-top:24px">
+        <!-- Progress bar -->
+        <div id="upProgressWrap" style="display:none;margin-bottom:20px">
           <div style="height:6px;background:var(--cream-dark);border-radius:99px;overflow:hidden">
             <div id="upProgressBar" style="height:100%;background:linear-gradient(90deg,var(--navy),var(--green));border-radius:99px;width:0%;transition:width 0.3s"></div>
           </div>
           <p id="upProgressLabel" style="font-size:0.8rem;color:var(--gray);margin:6px 0 0;text-align:center">Uploading…</p>
         </div>
 
-        <button id="upSubmitBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:24px" onclick="submitFullPlan()">Submit Plan for Review →</button>
-        <p style="font-size:0.75rem;color:var(--gray);text-align:center;margin-top:10px">Narrow reviews all plans within 1 business day. You'll receive an email when it goes live.</p>
+        <button id="upSubmitBtn" class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitPlanImage()">Publish Image →</button>
+        <p style="font-size:0.75rem;color:var(--gray);text-align:center;margin-top:10px">Images are scanned by Google Vision AI for content quality before publishing.</p>
       </div>
     </div>
   `;
@@ -1445,144 +1290,103 @@ window.showUploadPlan = function() {
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
 
-  // ── State ──
-  let selectedPdf = null;
-  const selectedImages = [null, null, null, null, null];
+  let selectedFile = null;
 
-  // ── PDF handlers ──
-  document.getElementById('upPdfInput').addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) return;
-    if (file.type !== 'application/pdf') { alert('Please select a PDF file.'); return; }
-    if (file.size > 50 * 1024 * 1024) { alert('PDF too large. Maximum 50MB.'); return; }
-    selectedPdf = file;
-    overlay.querySelector('#upPdfZone').style.borderColor = 'var(--green)';
-    overlay.querySelector('#upPdfPreview').style.display = 'block';
-    overlay.querySelector('#upPdfFileName').textContent = `📄 ${file.name} — ${(file.size / 1024 / 1024).toFixed(1)}MB`;
-  });
-
-  window.clearPdf = function() {
-    selectedPdf = null;
-    overlay.querySelector('#upPdfZone').style.borderColor = 'var(--gray-light)';
-    overlay.querySelector('#upPdfPreview').style.display = 'none';
-    document.getElementById('upPdfInput').value = '';
-  };
-
-  // ── Image handlers ──
-  window.handleImgSelect = function(idx, input) {
+  window.handleUpFileSelect = function(input) {
     const file = input.files[0];
     if (!file) return;
-    const allowed = ['image/jpeg','image/jpg','image/png','image/webp'];
-    if (!allowed.includes(file.type)) { alert('Please select a JPG, PNG, or WebP image.'); return; }
-    if (file.size > 10 * 1024 * 1024) { alert('Image too large. Maximum 10MB.'); return; }
-    selectedImages[idx] = file;
-    const slot = overlay.querySelector(`#upImgSlot${idx}`);
-    slot.style.borderColor = 'var(--green)';
-    slot.style.background = 'rgba(45,106,79,0.03)';
-    overlay.querySelector(`#upImgName${idx}`).textContent = `${file.name} — ${(file.size / 1024 / 1024).toFixed(1)}MB`;
-    // Show thumbnail
-    const reader = new FileReader();
-    reader.onload = e => {
-      overlay.querySelector(`#upImgThumb${idx}`).innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
-    };
-    reader.readAsDataURL(file);
+    previewUpFile(file);
   };
 
-  // ── Submit ──
-  window.submitFullPlan = async function() {
-    const planName    = overlay.querySelector('#upPlanName').value.trim();
-    const planSlug    = overlay.querySelector('#upPlanSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
-    const price       = overlay.querySelector('#upPrice').value.trim();
-    const beds        = overlay.querySelector('#upBeds').value.trim();
-    const baths       = overlay.querySelector('#upBaths').value.trim();
-    const sqft        = overlay.querySelector('#upSqft').value.trim();
-    const stories     = overlay.querySelector('#upStories').value;
-    const style       = overlay.querySelector('#upStyle').value.trim();
-    const description = overlay.querySelector('#upDescription').value.trim();
+  window.handleUpDrop = function(e) {
+    e.preventDefault();
+    overlay.querySelector('#upDropZone').style.borderColor = 'var(--gray-light)';
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    previewUpFile(file);
+  };
 
-    // Validate
-    if (!planName) { alert('Please enter the plan name.'); return; }
-    if (!planSlug) { alert('Please enter a plan slug (e.g. shouse-plan).'); return; }
-    if (!price)    { alert('Please enter a price.'); return; }
-    if (!selectedPdf) { alert('Please upload your plan PDF.'); return; }
-
-    // At least one image with a label
-    const hasImage = selectedImages.some((f, i) => f && overlay.querySelector(`#upImgLabel${i}`).value);
-    if (!hasImage) { alert('Please upload at least one preview image and select its type.'); return; }
-
-    // Check all uploaded images have labels
-    for (let i = 0; i < 5; i++) {
-      if (selectedImages[i] && !overlay.querySelector(`#upImgLabel${i}`).value) {
-        alert(`Please select an image type for image ${i + 1}.`);
-        return;
-      }
+  function previewUpFile(file) {
+    const allowed = ['image/jpeg','image/jpg','image/png','image/webp'];
+    if (!allowed.includes(file.type)) {
+      alert('Please upload a JPG, PNG, or WebP image.');
+      return;
     }
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File is too large. Maximum size is 10MB.');
+      return;
+    }
+    selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      overlay.querySelector('#upPreview').src = e.target.result;
+      overlay.querySelector('#upPreviewName').textContent = `${file.name} — ${(file.size / 1024 / 1024).toFixed(2)}MB`;
+      overlay.querySelector('#upPreviewWrap').style.display = 'block';
+      overlay.querySelector('#upDropZone').style.borderColor = 'var(--green)';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  window.submitPlanImage = async function() {
+    const planName   = overlay.querySelector('#upPlanName').value.trim();
+    const planSlug   = overlay.querySelector('#upPlanSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
+    const imageLabel = overlay.querySelector('#upImageLabel').value;
+
+    if (!planName)    { alert('Please enter the plan name.'); return; }
+    if (!planSlug)    { alert('Please enter the plan folder slug (e.g. shouse-plan).'); return; }
+    if (!selectedFile) { alert('Please select an image file.'); return; }
 
     const btn = overlay.querySelector('#upSubmitBtn');
     btn.disabled = true;
-    btn.textContent = 'Uploading…';
+    btn.textContent = 'Scanning & uploading…';
     overlay.querySelector('#upProgressWrap').style.display = 'block';
-    overlay.querySelector('#upProgressBar').style.width = '10%';
-    overlay.querySelector('#upProgressLabel').textContent = 'Preparing upload…';
+    overlay.querySelector('#upProgressBar').style.width = '20%';
+    overlay.querySelector('#upProgressLabel').textContent = 'Scanning image with Google Vision AI…';
 
     const fd = new FormData();
+    fd.append('file', selectedFile);
     fd.append('plan_name', planName);
     fd.append('plan_slug', planSlug);
-    fd.append('price', price);
-    fd.append('beds', beds);
-    fd.append('baths', baths);
-    fd.append('sqft', sqft);
-    fd.append('stories', stories);
-    fd.append('style', style);
-    fd.append('description', description);
-    fd.append('pdf', selectedPdf);
-
-    for (let i = 0; i < 5; i++) {
-      if (selectedImages[i]) {
-        fd.append(`image_${i}`, selectedImages[i]);
-        fd.append(`image_label_${i}`, overlay.querySelector(`#upImgLabel${i}`).value);
-      }
-    }
+    fd.append('image_label', imageLabel);
 
     const { data: { session } } = await narrowSupabase.auth.getSession();
 
     try {
-      overlay.querySelector('#upProgressBar').style.width = '40%';
-      overlay.querySelector('#upProgressLabel').textContent = 'Uploading PDF and images…';
+      overlay.querySelector('#upProgressBar').style.width = '50%';
+      overlay.querySelector('#upProgressLabel').textContent = 'Uploading to Narrow…';
 
-      const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/upload-plan', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
-        },
-        body: fd,
-      });
+      const res = await fetch(
+        'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/upload-plan-image',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
+          },
+          body: fd,
+        }
+      );
 
       overlay.querySelector('#upProgressBar').style.width = '100%';
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || 'Upload failed');
 
-      overlay.querySelector('#upProgressLabel').textContent = '✓ Submitted for review!';
+      overlay.querySelector('#upProgressLabel').textContent = '✓ Published!';
       overlay.querySelector('#upProgressBar').style.background = 'var(--green)';
-      btn.textContent = '✓ Submitted!';
+      btn.textContent = '✓ Published!';
       btn.style.background = 'var(--green)';
 
       setTimeout(() => {
         overlay.innerHTML = `
-          <div class="plan-modal" style="max-width:500px">
+          <div class="plan-modal" style="max-width:480px">
             <div style="padding:48px;text-align:center">
               <div style="font-size:3rem;margin-bottom:16px">✅</div>
-              <h2 style="margin-bottom:12px">Plan Submitted!</h2>
-              <p style="color:var(--gray);margin-bottom:8px"><strong>${planName}</strong> is now in the pending review queue.</p>
-              <p style="font-size:0.85rem;color:var(--gray);margin-bottom:24px">Narrow will review your plan and preview images within 1 business day. You'll receive an email when it goes live on the marketplace.</p>
-              <div style="background:var(--cream);padding:12px 16px;border-radius:8px;margin-bottom:24px;text-align:left;font-size:0.82rem;color:var(--gray)">
-                <p style="margin:0 0 4px"><strong>Plan ID:</strong> <code>${data.plan_id || ''}</code></p>
-                <p style="margin:0 0 4px"><strong>PDF:</strong> Uploaded to private vault</p>
-                <p style="margin:0"><strong>Images:</strong> Uploaded to pending review</p>
-              </div>
-              <button class="btn btn-primary" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow='';loadArchPlanLibrary()">Done →</button>
+              <h2 style="margin-bottom:12px">Image Published!</h2>
+              <p style="color:var(--gray);margin-bottom:8px"><strong>${planName} — ${imageLabel}</strong> is now live.</p>
+              <p style="font-size:0.85rem;color:var(--gray);margin-bottom:16px">Your image passed content scanning and has been published to the marketplace.</p>
+              ${data.public_url ? `<p style="font-size:0.8rem;color:var(--gray);margin-bottom:24px;font-family:monospace;background:var(--cream);padding:10px;border-radius:6px;word-break:break-all">${data.public_url}</p>` : ''}
+              <button class="btn btn-primary" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">Done →</button>
             </div>
           </div>
         `;
@@ -1591,8 +1395,8 @@ window.showUploadPlan = function() {
     } catch(err) {
       console.error('Upload error:', err);
       overlay.querySelector('#upProgressBar').style.background = '#DC2626';
-      overlay.querySelector('#upProgressLabel').textContent = '✗ Upload failed — ' + err.message;
-      btn.textContent = 'Submit Plan for Review →';
+      overlay.querySelector('#upProgressLabel').textContent = err.message || '✗ Upload failed — try again';
+      btn.textContent = 'Publish Image →';
       btn.style.background = '';
       btn.disabled = false;
     }
@@ -1990,17 +1794,15 @@ window.openMoveInContact = function() {
 // INIT
 // ═══════════════════════════════════════════
 // Wait for narrowSupabase to be initialized by main.js before running dashboard.
-// main.js creates narrowSupabase at the top level (not inside DOMContentLoaded),
-// so it should be available as soon as main.js executes.
+// main.js sets narrowSupabase inside a DOMContentLoaded listener, so we poll
+// until it exists rather than racing with a fixed timeout.
 function waitForSupabase(callback, tries) {
   tries = tries || 0;
-  if ((typeof narrowSupabase !== 'undefined' && narrowSupabase) || window.narrowSupabase) {
-    // Ensure it's globally accessible
-    if (typeof narrowSupabase === 'undefined') window.narrowSupabase = window.narrowSupabase;
+  if (typeof narrowSupabase !== 'undefined' && narrowSupabase) {
     callback();
-  } else if (tries > 150) {
-    // Fallback after ~7.5s: initialize Supabase directly
-    console.warn('narrowSupabase not found via main.js — initializing directly.');
+  } else if (tries > 80) {
+    // Fallback: try to initialize Supabase directly if main.js failed to do so
+    console.warn('narrowSupabase not found via main.js — attempting direct init.');
     try {
       window.narrowSupabase = window.supabase.createClient(
         'https://okalotfqhmwiyckhvcmk.supabase.co',
