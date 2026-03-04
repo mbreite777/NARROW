@@ -451,16 +451,6 @@
   </div>
 </section>
 
-<!-- ── CTA ────────────────────────────────── -->
-<section style="background:linear-gradient(135deg,var(--navy-dark),var(--navy));padding:96px 0;text-align:center">
-  <div class="container">
-    <h2 class="text-white" style="margin-bottom:16px">Ready to build your dream home?</h2>
-    <p style="color:rgba(255,255,255,0.7);font-size:1.1rem;margin-bottom:40px;max-width:500px;margin-left:auto;margin-right:auto">Answer 4 quick questions. We'll build your personalized A to Z path — completely free.</p>
-    <button class="btn btn-primary btn-lg" onclick="startJourney()">Start Your Journey — It's Free →</button>
-    <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:16px">No credit card. No commitment. Just your path.</p>
-  </div>
-</section>
-
 <!-- ── CONTACT ────────────────────────────── -->
 <section class="section" id="contact">
   <div class="container">
@@ -576,12 +566,12 @@
     <div class="footer__bottom" style="justify-content:center;gap:24px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1)">
       <a href="terms.html" style="color:rgba(255,255,255,0.5);font-size:0.82rem">Terms of Service</a>
       <a href="privacy.html" style="color:rgba(255,255,255,0.5);font-size:0.82rem">Privacy Policy</a>
-      <a href="mailto:info@buildnarrow.com" style="color:rgba(255,255,255,0.5);font-size:0.82rem">Contact</a>
+      <a href="/cdn-cgi/l/email-protection#0a63646c654a687f63666e646b7878657d24696567" style="color:rgba(255,255,255,0.5);font-size:0.82rem">Contact</a>
     </div>
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
 <script>
 // Accordion toggle
@@ -633,13 +623,4 @@ function toggleAccordion(btn) {
       msg.textContent = `Contractors needed in: ${stats.uncovered_states.join(', ')}`;
     } else if (msg && stats.covered_states >= 50) {
       msg.textContent = 'Contractors available in all 50 states!';
-      msg.style.color = 'var(--green)';
-      msg.style.fontWeight = '600';
-    }
-  } catch (e) {
-    console.log('Coverage stats not yet available');
-  }
-})();
-</script>
-</body>
-</html>
+      msg.style.color = 'var(--green
