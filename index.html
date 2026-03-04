@@ -625,4 +625,13 @@ function toggleAccordion(btn) {
       msg.textContent = `Contractors needed in: ${stats.uncovered_states.join(', ')}`;
     } else if (msg && stats.covered_states >= 50) {
       msg.textContent = 'Contractors available in all 50 states!';
-      msg.style.color = 'var(--green
+      msg.style.color = 'var(--green)';
+      msg.style.fontWeight = '600';
+    }
+  } catch (e) {
+    console.log('Coverage stats not yet available');
+  }
+})();
+</script>
+</body>
+</html>
