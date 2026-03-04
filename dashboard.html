@@ -317,7 +317,7 @@
       <span style="display:flex;gap:16px;margin-top:8px">
         <a href="terms.html" style="color:rgba(255,255,255,0.5);font-size:0.82rem">Terms of Service</a>
         <a href="privacy.html" style="color:rgba(255,255,255,0.5);font-size:0.82rem">Privacy Policy</a>
-        <a href="mailto:info@buildnarrow.com" style="color:rgba(255,255,255,0.5);font-size:0.82rem">Contact</a>
+        <a href="/cdn-cgi/l/email-protection#30595e565f705245595c545e5142425f471e535f5d" style="color:rgba(255,255,255,0.5);font-size:0.82rem">Contact</a>
       </span>
     </div>
   </div>
@@ -1813,13 +1813,4 @@ function waitForSupabase(callback, tries) {
       console.error('Supabase failed to initialize. Check CDN and main.js loaded correctly.', e);
     }
   } else {
-    setTimeout(function() { waitForSupabase(callback, tries + 1); }, 50);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  waitForSupabase(initDashboard);
-});
-</script>
-</body>
-</html>
+    setTimeout(function() { waitForSupabase(callback,
