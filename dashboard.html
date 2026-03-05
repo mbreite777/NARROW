@@ -1052,7 +1052,8 @@ window.openBidPortal = async function() {
           <div style="flex:1;min-width:0">
             <p style="font-weight:700;color:var(--navy);margin:0 0 2px">${c.company_name || 'Contractor'}${distBadge}</p>
             <p style="font-size:0.8rem;color:var(--gray);margin:0 0 4px">📍 ${c.service_area || 'Region not specified'} &nbsp;·&nbsp; ${c.experience_years ? c.experience_years + ' yrs exp' : ''} &nbsp;·&nbsp; Radius: ${c.service_radius || '?'} mi</p>
-            ${c.bio ? `<p style="font-size:0.8rem;color:var(--charcoal);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.bio.substring(0,80)}${c.bio.length>80?'…':''}</p>` : ''}
+            ${c.bio ? `<p style="font-size:0.8rem;color:var(--charcoal);margin:0 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.bio.substring(0,80)}${c.bio.length>80?'…':''}</p>` : ''}
+            <a href="contractor-profile.html?id=${c.user_id}" target="_blank" onclick="event.stopPropagation()" style="font-size:0.75rem;color:var(--navy);font-weight:600;text-decoration:underline">View Full Profile →</a>
           </div>
         </div>`;
     }).join('');

@@ -300,9 +300,22 @@ async function searchContractors() {
     // Contractor pins (amber)
     const bounds = L.latLngBounds([[searchLat, searchLng]]);
     data.forEach(c => {
-      // Approximate contractor location from distance + bearing (we don't have their exact coords from RPC)
-      // For now, place a pin at search location offset by distance — full coords require returning lat/lng from function
-      // We'll show them all as pins near the search area with popup info
+      if (c.lat && c.lng) {
+        const pin = L.marker([c.lat, c.lng], {
+          icon: L.divIcon({
+            className: '',
+            html: '<div style="width:12px;height:12px;background:var(--amber,#E8A838);border:2px solid white;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.3)"></div>',
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+          })
+        }).addTo(searchMap);
+        pin.bindPopup(`
+          <strong>${c.company_name || 'Contractor'}</strong><br>
+          <span style="font-size:0.82rem;color:#6B7280">${c.service_area || ''} · ${c.service_radius || '?'} mi radius</span><br>
+          <a href="contractor-profile.html?id=${c.user_id}" style="font-size:0.82rem;color:#1B3A6B;font-weight:600">View Profile →</a>
+        `);
+        bounds.extend([c.lat, c.lng]);
+      }
     });
 
     // Fit to radius circle bounds
