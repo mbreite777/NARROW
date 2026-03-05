@@ -1866,7 +1866,8 @@ function waitForSupabase(callback, tries) {
       console.error('Supabase failed to initialize. Check CDN and main.js loaded correctly.', e);
     }
   } else {
-    setTimeout(function() { waitForSupabase(callback, 10); }
+    setTimeout(function() { waitForSupabase(callback, tries + 1); }, 100);
+  }
 }
 
 // ── Stripe Connect ─────────────────────────────────────────────
