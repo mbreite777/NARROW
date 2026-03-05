@@ -23,21 +23,27 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabase = createClient(
+    // Use anon key client to verify the user's access token
+    const supabaseAnon = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
     );
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: userError } = await supabaseAnon.auth.getUser();
     if (userError || !user) {
       return new Response(JSON.stringify({ error: 'Invalid token' }), {
         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Get architect's Connect account ID
-    const { data: profile } = await supabase
+    // Use service role client for DB queries
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    const { data: profile } = await supabaseAdmin
       .from('architect_profiles')
       .select('stripe_connect_id, stripe_connect_status')
       .eq('user_id', user.id)
@@ -54,14 +60,12 @@ Deno.serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
-    // Check the actual status with Stripe
     const account = await stripe.accounts.retrieve(profile.stripe_connect_id);
     const isActive = account.charges_enabled && account.payouts_enabled;
     const newStatus = isActive ? 'active' : 'pending';
 
-    // Update status in Supabase if it changed
     if (newStatus !== profile.stripe_connect_status) {
-      await supabase
+      await supabaseAdmin
         .from('architect_profiles')
         .update({ stripe_connect_status: newStatus, updated_at: new Date().toISOString() })
         .eq('user_id', user.id);
