@@ -458,7 +458,7 @@ async function loadProfile() {
     const { data: plans } = await narrowSupabase
       .from('plans')
       .select('*')
-      .eq('architect_user_id', userId)
+      .eq('user_id', userId)
       .eq('status', 'active')
       .order('created_at', { ascending: false });
 

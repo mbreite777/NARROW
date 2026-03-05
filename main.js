@@ -657,7 +657,12 @@ window.openPlanDetail = function(planData) {
       <div class="plan-modal__body">
         <span class="section-label" style="margin-bottom:12px">${planData.style}</span>
         <h2 style="margin-bottom:8px">${planData.name}</h2>
-        <p style="color:var(--green);font-weight:600;font-size:0.9rem;margin-bottom:20px">✓ Verified · ${planData.architect}</p>
+        <p style="color:var(--green);font-weight:600;font-size:0.9rem;margin-bottom:20px">
+          ${planData.architectUserId
+            ? `<a href="architect-profile.html?id=${planData.architectUserId}" style="color:var(--green);text-decoration:underline">✓ Verified · ${planData.architect}</a>`
+            : `✓ Verified · ${planData.architect}`
+          }
+        </p>
         <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:24px">
           <span style="font-size:0.9rem;color:var(--gray)">🛏️ ${planData.beds} bed</span>
           <span style="font-size:0.9rem;color:var(--gray)">🚿 ${planData.baths} bath</span>

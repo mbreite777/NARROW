@@ -305,22 +305,27 @@ document.addEventListener('DOMContentLoaded', async function() {
 
       // Safely encode plan data for onclick
       const planJson = JSON.stringify({
-        planId:    plan.plan_id,
-        name:      plan.name,
-        architect: plan.architect,
-        beds:      plan.beds,
-        baths:     plan.baths,
-        sqft:      plan.sqft,
-        stories:   plan.stories,
-        price:     plan.price,
-        style:     plan.style,
-        stars:     plan.stars,
-        reviews:   plan.reviews || '',
-        emoji:     plan.emoji || '🏠',
-        gradient:  gradient,
-        images:    images,
-        description: plan.description || '',
+        planId:          plan.plan_id,
+        name:            plan.name,
+        architect:       plan.architect,
+        beds:            plan.beds,
+        baths:           plan.baths,
+        sqft:            plan.sqft,
+        stories:         plan.stories,
+        price:           plan.price,
+        style:           plan.style,
+        stars:           plan.stars,
+        reviews:         plan.reviews || '',
+        emoji:           plan.emoji || '🏠',
+        gradient:        gradient,
+        images:          images,
+        description:     plan.description || '',
+        architectUserId: plan.user_id || '',
       }).replace(/'/g, '&#39;');
+
+      const archProfileLink = plan.user_id
+        ? `<a href="architect-profile.html?id=${plan.user_id}" onclick="event.stopPropagation()" style="color:var(--green);font-size:0.82rem">✓ Verified · ${plan.architect}</a>`
+        : `<p class="plan-card__arch">✓ Verified · ${plan.architect}</p>`;
 
       return `
         <div class="plan-card" onclick='openPlanDetail(${planJson})'>
@@ -330,7 +335,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           </div>
           <div class="plan-card__body">
             <h3 class="plan-card__title">${plan.name}</h3>
-            <p class="plan-card__arch">✓ Verified · ${plan.architect}</p>
+            ${archProfileLink}
             <div class="plan-card__specs">
               <span class="plan-card__spec">🛏️ ${plan.beds} bed</span>
               <span class="plan-card__spec">🚿 ${plan.baths} bath</span>
