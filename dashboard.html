@@ -100,6 +100,58 @@
   <section class="section" style="padding-top:48px">
     <div class="container" style="max-width:900px">
 
+      <!-- Stripe Connect Payout Setup -->
+      <div class="dash-panel" id="stripeConnectPanel">
+        <div class="dash-panel__header">
+          <h3>💳 Payout Setup</h3>
+          <span id="stripeConnectBadge" style="font-size:0.75rem;padding:4px 12px;border-radius:99px;background:var(--cream);color:var(--gray)">Loading...</span>
+        </div>
+
+        <!-- Not connected state -->
+        <div id="stripeNotConnected" style="display:none">
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:20px;background:rgba(232,168,56,0.08);border-radius:10px;border-left:4px solid var(--amber);margin-bottom:20px">
+            <span style="font-size:1.4rem">⚠️</span>
+            <div>
+              <p style="font-weight:600;color:var(--charcoal);margin:0 0 4px">Connect your bank account to receive payments</p>
+              <p style="font-size:0.85rem;color:var(--gray);margin:0">When a homebuilder purchases your plan, 88% is deposited directly to your bank account via Stripe. You must connect your account before your plans can be sold.</p>
+            </div>
+          </div>
+          <button class="btn btn-green" onclick="startStripeConnect()" id="stripeConnectBtn">
+            Connect Bank Account via Stripe →
+          </button>
+          <p style="font-size:0.78rem;color:var(--gray);margin-top:10px">Powered by Stripe. Narrow never sees your banking details. Takes about 5 minutes.</p>
+        </div>
+
+        <!-- Pending state -->
+        <div id="stripePending" style="display:none">
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:20px;background:rgba(232,168,56,0.08);border-radius:10px;border-left:4px solid var(--amber);margin-bottom:20px">
+            <span style="font-size:1.4rem">⏳</span>
+            <div>
+              <p style="font-weight:600;color:var(--charcoal);margin:0 0 4px">Setup incomplete</p>
+              <p style="font-size:0.85rem;color:var(--gray);margin:0">Your Stripe account needs a few more details before you can receive payouts. Click below to finish setup.</p>
+            </div>
+          </div>
+          <button class="btn btn-outline" onclick="startStripeConnect()" id="stripeContinueBtn">
+            Finish Stripe Setup →
+          </button>
+        </div>
+
+        <!-- Connected state -->
+        <div id="stripeConnected" style="display:none">
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:20px;background:rgba(45,106,79,0.06);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.4rem">✅</span>
+            <div>
+              <p style="font-weight:600;color:var(--charcoal);margin:0 0 4px">Payouts active</p>
+              <p style="font-size:0.85rem;color:var(--gray);margin:0">Your bank account is connected. You'll automatically receive 88% of every plan sale within 2 business days of purchase.</p>
+            </div>
+          </div>
+          <p style="font-size:0.78rem;color:var(--gray);margin-top:12px">
+            View your earnings and payout history in your
+            <a href="https://connect.stripe.com/express_login" target="_blank" style="color:var(--navy)">Stripe Express Dashboard →</a>
+          </p>
+        </div>
+      </div>
+
       <!-- Public Profile Editor -->
       <div class="dash-panel">
         <div class="dash-panel__header">
@@ -410,6 +462,7 @@ async function initDashboard() {
       document.getElementById('architectDash').style.display = 'block';
       document.getElementById('archGreeting').textContent = `Welcome back, ${firstName}!`;
       await loadArchitectProfile();
+      loadStripeConnectStatus();
     } else if (role === 'contractor') {
       document.getElementById('contractorDash').style.display = 'block';
       document.getElementById('contGreeting').textContent = `Welcome back, ${firstName}!`;
@@ -1813,4 +1866,102 @@ function waitForSupabase(callback, tries) {
       console.error('Supabase failed to initialize. Check CDN and main.js loaded correctly.', e);
     }
   } else {
-    setTimeout(function() { waitForSupabase(callback,
+    setTimeout(function() { waitForSupabase(callback, 10); }
+}
+
+// ── Stripe Connect ─────────────────────────────────────────────
+async function loadStripeConnectStatus() {
+  const badge     = document.getElementById('stripeConnectBadge');
+  const notConn   = document.getElementById('stripeNotConnected');
+  const pending   = document.getElementById('stripePending');
+  const connected = document.getElementById('stripeConnected');
+  if (!badge) return;
+
+  try {
+    const { data: { session } } = await narrowSupabase.auth.getSession();
+    if (!session) return;
+
+    const res = await fetch(
+      'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/check-connect-status',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
+        },
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.connected) {
+      badge.textContent = '✓ Connected';
+      badge.style.background = 'rgba(45,106,79,0.1)';
+      badge.style.color = 'var(--green)';
+      notConn.style.display   = 'none';
+      pending.style.display   = 'none';
+      connected.style.display = 'block';
+    } else if (data.status === 'pending') {
+      badge.textContent = '⚠ Setup Incomplete';
+      badge.style.background = 'rgba(232,168,56,0.12)';
+      badge.style.color = 'var(--amber-dark)';
+      notConn.style.display   = 'none';
+      pending.style.display   = 'block';
+      connected.style.display = 'none';
+    } else {
+      badge.textContent = '○ Not Connected';
+      badge.style.background = 'var(--cream)';
+      badge.style.color = 'var(--gray)';
+      notConn.style.display   = 'block';
+      pending.style.display   = 'none';
+      connected.style.display = 'none';
+    }
+  } catch (err) {
+    console.warn('Could not load Stripe Connect status:', err);
+    if (badge) badge.textContent = 'Unavailable';
+  }
+}
+
+window.startStripeConnect = async function() {
+  const btn = document.getElementById('stripeConnectBtn') || document.getElementById('stripeContinueBtn');
+  if (btn) { btn.textContent = 'Redirecting to Stripe…'; btn.disabled = true; }
+
+  try {
+    const { data: { session } } = await narrowSupabase.auth.getSession();
+    if (!session) throw new Error('Not logged in');
+
+    const res = await fetch(
+      'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/connect-architect',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
+        },
+      }
+    );
+
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'No onboarding URL returned');
+    }
+  } catch (err) {
+    console.error('Stripe Connect error:', err);
+    if (btn) { btn.textContent = '✗ Error — try again'; btn.disabled = false; }
+  }
+};
+
+// Handle return from Stripe onboarding
+const _scParams = new URLSearchParams(window.location.search);
+if (_scParams.get('stripe_return') === '1' || _scParams.get('stripe_refresh') === '1') {
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
+waitForSupabase(initDashboard);
+</script>
+</body>
+</html>
