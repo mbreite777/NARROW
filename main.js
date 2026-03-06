@@ -675,7 +675,13 @@ window.openPlanDetail = function(planData) {
         </div>
         <p style="margin-bottom:32px">This plan is designed by ${planData.architect} and includes full architectural drawings. Plans are priced by the architect and sold through Narrow. After purchase, customization services are available through the architect.</p>
         <div style="display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid var(--cream-dark)">
-          <span style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy)">${planData.price}</span>
+          <div style="display:flex;align-items:center;gap:16px">
+            <span style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy)">${planData.price}</span>
+            <button class="fav-btn" style="position:static;box-shadow:none;background:var(--cream);width:40px;height:40px;font-size:1.2rem"
+              data-fav-type="plan" data-fav-id="${planData.planId}"
+              onclick="handleFavClick(event, 'plan', '${planData.planId}', '${(planData.name||'').replace(/'/g, "\\'")}', ${JSON.stringify({beds:planData.beds,baths:planData.baths,sqft:planData.sqft,price:planData.price,style:planData.style,architect:planData.architect,emoji:planData.emoji||'🏠',gradient:planData.gradient||'',architectUserId:planData.architectUserId||''}).replace(/"/g, '&quot;')})"
+              title="Save to favorites">${typeof isFavorited === 'function' && isFavorited('plan', planData.planId) ? '❤️' : '🤍'}</button>
+          </div>
           <button
             id="purchaseBtn"
             class="btn btn-primary btn-lg"
@@ -797,3 +803,171 @@ window.handlePurchase = async function(planData) {
     }, 3000);
   }
 };
+
+// ═══════════════════════════════════════════════════════════════
+// FAVORITES / SAVED ITEMS SYSTEM
+// ═══════════════════════════════════════════════════════════════
+
+// In-memory cache of user's favorites (loaded once per page)
+let _favoritesCache = null;
+let _favoritesCacheUserId = null;
+
+// Load all favorites for the current user (cached)
+window.loadFavorites = async function(forceRefresh) {
+  try {
+    const { data: { session } } = await narrowSupabase.auth.getSession();
+    if (!session) { _favoritesCache = []; return []; }
+
+    if (_favoritesCache && _favoritesCacheUserId === session.user.id && !forceRefresh) {
+      return _favoritesCache;
+    }
+
+    const { data, error } = await narrowSupabase
+      .from('favorites')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) { console.warn('Favorites load error:', error); return []; }
+
+    _favoritesCache = data || [];
+    _favoritesCacheUserId = session.user.id;
+    return _favoritesCache;
+  } catch (e) {
+    console.warn('Favorites load failed:', e);
+    return [];
+  }
+};
+
+// Check if a specific item is favorited
+window.isFavorited = function(itemType, itemId) {
+  if (!_favoritesCache) return false;
+  return _favoritesCache.some(f => f.item_type === itemType && f.item_id === itemId);
+};
+
+// Toggle favorite on/off — returns true if now favorited, false if removed
+window.toggleFavorite = async function(itemType, itemId, itemName, itemMeta) {
+  const { data: { session } } = await narrowSupabase.auth.getSession();
+  if (!session) {
+    // Prompt login
+    if (confirm('Sign in to save items to your favorites. Go to login?')) {
+      window.location.href = 'login.html';
+    }
+    return null;
+  }
+
+  const existing = (_favoritesCache || []).find(f => f.item_type === itemType && f.item_id === itemId);
+
+  if (existing) {
+    // Remove
+    await narrowSupabase.from('favorites').delete().eq('id', existing.id);
+    _favoritesCache = _favoritesCache.filter(f => f.id !== existing.id);
+    return false;
+  } else {
+    // Add
+    const row = {
+      user_id: session.user.id,
+      item_type: itemType,
+      item_id: itemId,
+      item_name: itemName || '',
+      item_meta: itemMeta || {},
+    };
+    const { data, error } = await narrowSupabase.from('favorites').insert(row).select().single();
+    if (error) {
+      console.error('Favorite save error:', error);
+      return null;
+    }
+    _favoritesCache = _favoritesCache || [];
+    _favoritesCache.unshift(data);
+    return true;
+  }
+};
+
+// Update all heart icons on the page for a given item
+window.updateHeartIcons = function(itemType, itemId, isFav) {
+  document.querySelectorAll(`[data-fav-type="${itemType}"][data-fav-id="${itemId}"]`).forEach(btn => {
+    btn.innerHTML = isFav ? '❤️' : '🤍';
+    btn.title = isFav ? 'Remove from saved' : 'Save to favorites';
+    btn.classList.toggle('fav-active', isFav);
+  });
+};
+
+// Click handler for heart buttons
+window.handleFavClick = async function(e, itemType, itemId, itemName, itemMeta) {
+  e.stopPropagation();
+  e.preventDefault();
+  const btn = e.currentTarget;
+  btn.style.transform = 'scale(1.3)';
+  setTimeout(() => btn.style.transform = '', 200);
+
+  const result = await toggleFavorite(itemType, itemId, itemName, itemMeta);
+  if (result !== null) {
+    updateHeartIcons(itemType, itemId, result);
+  }
+};
+
+// Inject the favorites CSS once
+(function injectFavStyles() {
+  if (document.getElementById('fav-styles')) return;
+  const s = document.createElement('style');
+  s.id = 'fav-styles';
+  s.textContent = `
+    .fav-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
+      background: rgba(255,255,255,0.85);
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transition: transform 0.2s, background 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .fav-btn:hover { background: rgba(255,255,255,1); transform: scale(1.1); }
+    .fav-btn.fav-active { background: rgba(255,255,255,0.95); }
+    .saved-item-card {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 16px;
+      background: white;
+      border-radius: 10px;
+      border: 1px solid rgba(27,58,107,0.06);
+      box-shadow: 0 1px 3px rgba(27,58,107,0.06);
+      transition: box-shadow 0.2s;
+    }
+    .saved-item-card:hover { box-shadow: 0 4px 12px rgba(27,58,107,0.1); }
+    .saved-item-card__img {
+      width: 72px;
+      height: 56px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+    }
+    .saved-item-card__info { flex: 1; min-width: 0; }
+    .saved-item-card__name {
+      font-weight: 600;
+      color: #1B3A6B;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .saved-item-card__meta { font-size: 0.82rem; color: #6B7280; }
+    .saved-item-card__actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+  `;
+  document.head.appendChild(s);
+})();

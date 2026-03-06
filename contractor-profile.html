@@ -285,6 +285,11 @@
               <div class="profile-stat__num" id="statReviews">—</div>
               <div class="profile-stat__label">Reviews</div>
             </div>
+            <div class="profile-stat">
+              <button id="saveContractorBtn" onclick="toggleSaveContractor()" style="background:none;border:1.5px solid var(--cream-dark);border-radius:var(--radius-sm);padding:8px 16px;font-size:0.82rem;font-weight:600;cursor:pointer;color:var(--navy);font-family:var(--font-body);transition:all 0.2s;display:flex;align-items:center;gap:6px">
+                <span>🤍</span> Save
+              </button>
+            </div>
           </div>
         </div>
 
@@ -500,6 +505,16 @@ async function loadProfile() {
 
     document.getElementById('profileLoading').style.display = 'none';
     document.getElementById('profileWrap').style.display = 'block';
+
+    // Check if contractor is saved
+    await loadFavorites();
+    if (isFavorited('contractor', userId)) {
+      const btn = document.getElementById('saveContractorBtn');
+      btn.innerHTML = '<span>❤️</span> Saved';
+      btn.style.background = 'rgba(45,106,79,0.06)';
+      btn.style.borderColor = 'var(--green)';
+      btn.style.color = 'var(--green)';
+    }
 
   } catch(err) {
     console.error('Profile load error:', err);
@@ -747,6 +762,23 @@ function waitForClient(tries) {
     setTimeout(() => waitForClient(tries + 1).then(resolve).catch(reject), 100);
   });
 }
+
+window.toggleSaveContractor = async function() {
+  const name = contractorProfile?.company || contractorProfile?.company_name || 'Contractor';
+  const result = await toggleFavorite('contractor', contractorUserId, name, {});
+  const btn = document.getElementById('saveContractorBtn');
+  if (result === true) {
+    btn.innerHTML = '<span>❤️</span> Saved';
+    btn.style.background = 'rgba(45,106,79,0.06)';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.color = 'var(--green)';
+  } else if (result === false) {
+    btn.innerHTML = '<span>🤍</span> Save';
+    btn.style.background = '';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }
+};
 
 loadProfile();
 </script>

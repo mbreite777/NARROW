@@ -138,6 +138,11 @@
               <div class="profile-stat__num" id="statReviews">—</div>
               <div class="profile-stat__label">Reviews</div>
             </div>
+            <div class="profile-stat" id="saveArchitectWrap">
+              <button id="saveArchitectBtn" onclick="toggleSaveArchitect()" style="background:none;border:1.5px solid var(--cream-dark);border-radius:var(--radius-sm);padding:8px 16px;font-size:0.82rem;font-weight:600;cursor:pointer;color:var(--navy);font-family:var(--font-body);transition:all 0.2s;display:flex;align-items:center;gap:6px">
+                <span id="saveArchHeart">🤍</span> Save
+              </button>
+            </div>
           </div>
         </div>
         <div class="profile-tabs">
@@ -315,6 +320,16 @@ async function loadProfile() {
     renderProfile(profile, plans || [], reviews || []);
     document.getElementById('profileLoading').style.display = 'none';
     document.getElementById('profileWrap').style.display = 'block';
+
+    // Check if architect is saved
+    await loadFavorites();
+    if (isFavorited('architect', userId)) {
+      document.getElementById('saveArchHeart').textContent = '❤️';
+      document.getElementById('saveArchitectBtn').innerHTML = '<span id="saveArchHeart">❤️</span> Saved';
+      document.getElementById('saveArchitectBtn').style.background = 'rgba(45,106,79,0.06)';
+      document.getElementById('saveArchitectBtn').style.borderColor = 'var(--green)';
+      document.getElementById('saveArchitectBtn').style.color = 'var(--green)';
+    }
   } catch(err) {
     console.error('Profile load error:', err);
     document.getElementById('profileLoading').style.display = 'none';
@@ -468,6 +483,23 @@ function waitForClient(tries) {
     setTimeout(() => waitForClient(tries + 1).then(resolve).catch(reject), 100);
   });
 }
+window.toggleSaveArchitect = async function() {
+  const name = archProfile?.company_name || archProfile?.company || 'Architect';
+  const result = await toggleFavorite('architect', architectUserId, name, {});
+  const btn = document.getElementById('saveArchitectBtn');
+  if (result === true) {
+    btn.innerHTML = '<span>❤️</span> Saved';
+    btn.style.background = 'rgba(45,106,79,0.06)';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.color = 'var(--green)';
+  } else if (result === false) {
+    btn.innerHTML = '<span>🤍</span> Save';
+    btn.style.background = '';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }
+};
+
 loadProfile();
 </script>
 </body>

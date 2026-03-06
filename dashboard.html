@@ -69,6 +69,32 @@
     </div>
   </section>
 
+  <!-- Saved Items -->
+  <section class="section" style="padding-top:0;padding-bottom:0">
+    <div class="container" style="max-width:740px">
+      <div class="dash-panel" id="savedItemsPanel" style="display:none">
+        <div class="dash-panel__header">
+          <h3>❤️ Saved Items</h3>
+          <span id="savedCount" style="font-size:0.75rem;color:var(--gray);background:var(--cream);padding:4px 10px;border-radius:99px">0 saved</span>
+        </div>
+        <!-- Tabs for item types -->
+        <div id="savedTabs" style="display:flex;gap:8px;margin-bottom:16px">
+          <button class="filter-btn active" onclick="filterSaved('all', this)">All</button>
+          <button class="filter-btn" onclick="filterSaved('plan', this)">📐 Plans</button>
+          <button class="filter-btn" onclick="filterSaved('architect', this)">🏛️ Architects</button>
+          <button class="filter-btn" onclick="filterSaved('contractor', this)">🏗️ Contractors</button>
+        </div>
+        <div id="savedItemsList" style="display:grid;gap:12px">
+          <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:24px 0">Loading saved items...</p>
+        </div>
+        <div id="savedEmpty" style="display:none;text-align:center;padding:32px 0;color:var(--gray)">
+          <div style="font-size:2rem;margin-bottom:12px">❤️</div>
+          <p>No saved items yet. Browse the <a href="marketplace.html" style="color:var(--navy);font-weight:600">marketplace</a> and tap the heart to save plans you like.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- My Purchased Plans -->
   <section class="section" style="padding-top:0;padding-bottom:64px">
     <div class="container" style="max-width:740px">
@@ -550,6 +576,8 @@ async function initDashboard() {
       await loadBuilds();
       // Load purchased plans in the background
       loadMyPlans(session.user.email);
+      // Load saved items
+      loadSavedItems();
     }
   } catch (err) {
     console.error('Dashboard init error:', err);
@@ -2012,6 +2040,129 @@ async function loadMyPlans(email) {
 }
 
 // ── Presigned download handler ───────────────────────────────────────────────
+
+// ── Saved Items ─────────────────────────────────
+let _allSavedItems = [];
+
+async function loadSavedItems() {
+  const panel = document.getElementById('savedItemsPanel');
+  const list = document.getElementById('savedItemsList');
+  const empty = document.getElementById('savedEmpty');
+  const countEl = document.getElementById('savedCount');
+  if (!panel || !list) return;
+
+  try {
+    const favs = await loadFavorites(true);
+    _allSavedItems = favs;
+
+    if (!favs || favs.length === 0) {
+      panel.style.display = 'block';
+      list.style.display = 'none';
+      empty.style.display = 'block';
+      countEl.textContent = '0 saved';
+      return;
+    }
+
+    panel.style.display = 'block';
+    list.style.display = 'grid';
+    empty.style.display = 'none';
+    countEl.textContent = `${favs.length} saved`;
+
+    renderSavedItems(favs);
+  } catch (err) {
+    console.warn('Could not load saved items:', err);
+  }
+}
+
+function renderSavedItems(items) {
+  const list = document.getElementById('savedItemsList');
+  if (!list) return;
+
+  if (items.length === 0) {
+    document.getElementById('savedEmpty').style.display = 'block';
+    list.style.display = 'none';
+    return;
+  }
+
+  document.getElementById('savedEmpty').style.display = 'none';
+  list.style.display = 'grid';
+
+  list.innerHTML = items.map(fav => {
+    const meta = fav.item_meta || {};
+    const date = new Date(fav.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    if (fav.item_type === 'plan') {
+      const gradient = meta.gradient || 'linear-gradient(135deg,#1B3A6B,#2D6A4F)';
+      const link = `marketplace.html`; // Plans open in modal from marketplace
+      return `
+        <div class="saved-item-card">
+          <div class="saved-item-card__img" style="background:${gradient}">${meta.emoji || '🏠'}</div>
+          <div class="saved-item-card__info">
+            <div class="saved-item-card__name">${fav.item_name || 'Plan'}</div>
+            <div class="saved-item-card__meta">${meta.beds || '?'} bed · ${meta.baths || '?'} bath · ${meta.sqft || '?'} sqft · ${meta.price || ''} · Saved ${date}</div>
+          </div>
+          <div class="saved-item-card__actions">
+            <a href="${link}" class="btn btn-outline" style="padding:6px 14px;font-size:0.78rem">View</a>
+            <button style="background:none;border:none;font-size:1.1rem;cursor:pointer" title="Remove" onclick="removeSaved('${fav.id}')">✕</button>
+          </div>
+        </div>`;
+    } else if (fav.item_type === 'architect') {
+      return `
+        <div class="saved-item-card">
+          <div class="saved-item-card__img" style="background:linear-gradient(135deg,var(--navy),var(--green))">🏛️</div>
+          <div class="saved-item-card__info">
+            <div class="saved-item-card__name">${fav.item_name || 'Architect'}</div>
+            <div class="saved-item-card__meta">Architect · Saved ${date}</div>
+          </div>
+          <div class="saved-item-card__actions">
+            <a href="architect-profile.html?id=${fav.item_id}" class="btn btn-outline" style="padding:6px 14px;font-size:0.78rem">Profile</a>
+            <button style="background:none;border:none;font-size:1.1rem;cursor:pointer" title="Remove" onclick="removeSaved('${fav.id}')">✕</button>
+          </div>
+        </div>`;
+    } else if (fav.item_type === 'contractor') {
+      return `
+        <div class="saved-item-card">
+          <div class="saved-item-card__img" style="background:linear-gradient(135deg,var(--green),var(--navy))">🏗️</div>
+          <div class="saved-item-card__info">
+            <div class="saved-item-card__name">${fav.item_name || 'Contractor'}</div>
+            <div class="saved-item-card__meta">Contractor · Saved ${date}</div>
+          </div>
+          <div class="saved-item-card__actions">
+            <a href="contractor-profile.html?id=${fav.item_id}" class="btn btn-outline" style="padding:6px 14px;font-size:0.78rem">Profile</a>
+            <button style="background:none;border:none;font-size:1.1rem;cursor:pointer" title="Remove" onclick="removeSaved('${fav.id}')">✕</button>
+          </div>
+        </div>`;
+    }
+    return '';
+  }).join('');
+}
+
+window.filterSaved = function(type, btn) {
+  // Update active tab
+  document.querySelectorAll('#savedTabs .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const filtered = type === 'all' ? _allSavedItems : _allSavedItems.filter(f => f.item_type === type);
+  renderSavedItems(filtered);
+};
+
+window.removeSaved = async function(favId) {
+  await narrowSupabase.from('favorites').delete().eq('id', favId);
+  _allSavedItems = _allSavedItems.filter(f => f.id !== favId);
+  // Refresh cache
+  if (_favoritesCache) _favoritesCache = _favoritesCache.filter(f => f.id !== favId);
+  // Re-render
+  const activeTab = document.querySelector('#savedTabs .filter-btn.active');
+  const type = activeTab ? activeTab.textContent.trim() : 'All';
+  if (type === 'All') renderSavedItems(_allSavedItems);
+  else {
+    const typeMap = { '📐 Plans': 'plan', '🏛️ Architects': 'architect', '🏗️ Contractors': 'contractor' };
+    const filteredType = typeMap[type] || 'all';
+    renderSavedItems(filteredType === 'all' ? _allSavedItems : _allSavedItems.filter(f => f.item_type === filteredType));
+  }
+  document.getElementById('savedCount').textContent = `${_allSavedItems.length} saved`;
+};
+
 window.downloadPlan = async function(planId, planName) {
   const btn = document.getElementById(`dlBtn_${planId}`);
   if (btn) { btn.textContent = '⏳ Generating link…'; btn.disabled = true; }
