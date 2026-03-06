@@ -11,65 +11,218 @@
   <title>Architect Profile — Narrow</title>
   <meta name="description" content="View architect profile, plans, and reviews on Narrow.">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    .profile-hero{background:linear-gradient(135deg,var(--navy-dark),var(--navy));padding:100px 0 0;position:relative;overflow:hidden}
-    .profile-hero::before{content:'';position:absolute;inset:0;background:url('archbackground.jpg') center/cover no-repeat;opacity:0.08}
-    .profile-hero__inner{position:relative;z-index:1}
-    .profile-card{background:white;border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:40px 48px 0;margin-top:32px;box-shadow:0 -8px 40px rgba(27,58,107,0.15)}
-    .profile-card__top{display:flex;gap:32px;align-items:flex-start;padding-bottom:32px;border-bottom:1px solid var(--cream-dark);flex-wrap:wrap}
-    .profile-avatar{width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--green));display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0;border:4px solid white;box-shadow:var(--shadow-md);overflow:hidden}
-    .profile-avatar img{width:100%;height:100%;object-fit:cover}
-    .profile-card__info{flex:1;min-width:200px}
-    .profile-card__name{font-family:var(--font-display);font-size:1.9rem;font-weight:700;color:var(--navy);margin-bottom:4px}
-    .profile-card__verified{display:inline-flex;align-items:center;gap:6px;color:var(--green);font-size:0.85rem;font-weight:600;margin-bottom:12px}
-    .profile-card__meta{display:flex;gap:20px;flex-wrap:wrap}
-    .profile-meta-item{font-size:0.85rem;color:var(--gray);display:flex;align-items:center;gap:5px}
-    .profile-stats{display:flex;gap:32px;flex-wrap:wrap}
-    .profile-stat{text-align:center}
-    .profile-stat__num{font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--navy);line-height:1}
-    .profile-stat__label{font-size:0.75rem;color:var(--gray);margin-top:4px;text-transform:uppercase;letter-spacing:0.05em}
-    .profile-tabs{display:flex;gap:0;border-bottom:2px solid var(--cream-dark);margin-top:8px;overflow-x:auto}
-    .profile-tab{padding:16px 24px;font-size:0.9rem;font-weight:600;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font-body);white-space:nowrap}
-    .profile-tab.active{color:var(--navy);border-bottom-color:var(--navy)}
-    .profile-tab:hover:not(.active){color:var(--charcoal)}
-    .profile-body{background:var(--cream);min-height:400px}
-    .tab-panel{display:none;padding:48px 0}
-    .tab-panel.active{display:block}
-    .review-card{background:white;border-radius:var(--radius-md);padding:24px;box-shadow:var(--shadow-sm);border:1px solid rgba(27,58,107,0.06)}
-    .review-card__header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-    .review-card__author{font-weight:600;color:var(--charcoal);font-size:0.95rem}
-    .review-card__date{font-size:0.78rem;color:var(--gray)}
-    .review-card__stars{color:var(--amber);font-size:1rem;margin-bottom:8px}
-    .review-card__text{font-size:0.9rem;color:var(--gray);line-height:1.7}
-    .review-card__plan{font-size:0.78rem;color:var(--navy);margin-top:10px;font-weight:600}
-    .review-card__images{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .review-card__img{width:100px;height:80px;border-radius:var(--radius-sm);object-fit:cover;cursor:pointer;border:1px solid var(--cream-dark);transition:transform 0.2s}
-    .review-card__img:hover{transform:scale(1.05)}
-    .review-form{background:white;border-radius:var(--radius-md);padding:32px;box-shadow:var(--shadow-sm);border:1px solid rgba(27,58,107,0.06);margin-bottom:32px}
-    .star-rating{display:flex;gap:6px;margin:12px 0}
-    .star-rating__star{font-size:1.8rem;cursor:pointer;color:var(--gray-light);transition:color 0.15s;line-height:1}
-    .star-rating__star.active{color:var(--amber)}
-    .star-rating__star:hover{color:var(--amber)}
-    .states-wrap{display:flex;flex-wrap:wrap;gap:6px}
-    .state-tag{background:rgba(27,58,107,0.07);color:var(--navy);font-size:0.78rem;font-weight:600;padding:4px 10px;border-radius:99px}
-    .specialty-tag{background:rgba(45,106,79,0.08);color:var(--green);font-size:0.82rem;font-weight:600;padding:5px 12px;border-radius:99px}
-    .portfolio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
-    .portfolio-item{border-radius:var(--radius-md);overflow:hidden;aspect-ratio:4/3;cursor:pointer;position:relative;box-shadow:var(--shadow-sm);transition:transform 0.25s,box-shadow 0.25s}
-    .portfolio-item:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
-    .portfolio-item img{width:100%;height:100%;object-fit:cover}
-    .portfolio-item__caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.6));color:white;padding:16px 12px 10px;font-size:0.82rem;font-weight:500}
-    #archMap{width:100%;height:320px;border-radius:var(--radius-sm);background:var(--cream);border:1.5px solid var(--gray-light)}
-    .nationwide-badge-lg{display:inline-flex;align-items:center;gap:8px;font-size:0.95rem;font-weight:600;color:var(--green);background:rgba(45,106,79,0.08);padding:12px 20px;border-radius:var(--radius-sm);margin-bottom:16px}
-    .lightbox-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer}
-    .lightbox-overlay img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:var(--radius-md)}
-    .profile-loading{display:flex;align-items:center;justify-content:center;min-height:300px;flex-direction:column;gap:16px;color:var(--gray)}
-    @media(max-width:640px){
-      .profile-card{padding:28px 20px 0}
-      .profile-card__top{gap:20px}
-      .profile-stats{gap:20px}
-      .profile-tab{padding:12px 14px;font-size:0.82rem}
-      .portfolio-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+    .profile-hero {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      padding: 100px 0 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('archbackground.jpg') center/cover no-repeat;
+      opacity: 0.08;
+    }
+    .profile-hero__inner {
+      position: relative;
+      z-index: 1;
+    }
+    .profile-card {
+      background: white;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 40px 48px 0;
+      margin-top: 32px;
+      box-shadow: 0 -8px 40px rgba(27,58,107,0.15);
+    }
+    .profile-card__top {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--cream-dark);
+      flex-wrap: wrap;
+    }
+    .profile-avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy), var(--green));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      flex-shrink: 0;
+      border: 4px solid white;
+      box-shadow: var(--shadow-md);
+    }
+    .profile-card__info { flex: 1; min-width: 200px; }
+    .profile-card__name {
+      font-family: var(--font-display);
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .profile-card__verified {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--green);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .profile-card__meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .profile-meta-item {
+      font-size: 0.85rem;
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .profile-stats {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .profile-stat {
+      text-align: center;
+    }
+    .profile-stat__num {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1;
+    }
+    .profile-stat__label {
+      font-size: 0.75rem;
+      color: var(--gray);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .profile-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--cream-dark);
+      margin-top: 8px;
+    }
+    .profile-tab {
+      padding: 16px 24px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--gray);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-family: var(--font-body);
+    }
+    .profile-tab.active {
+      color: var(--navy);
+      border-bottom-color: var(--navy);
+    }
+    .profile-tab:hover:not(.active) { color: var(--charcoal); }
+    .profile-body {
+      background: var(--cream);
+      min-height: 400px;
+    }
+    .tab-panel { display: none; padding: 48px 0; }
+    .tab-panel.active { display: block; }
+
+    /* Review card */
+    .review-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(27,58,107,0.06);
+    }
+    .review-card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .review-card__author { font-weight: 600; color: var(--charcoal); font-size: 0.95rem; }
+    .review-card__date { font-size: 0.78rem; color: var(--gray); }
+    .review-card__stars { color: var(--amber); font-size: 1rem; margin-bottom: 8px; }
+    .review-card__text { font-size: 0.9rem; color: var(--gray); line-height: 1.7; }
+    .review-card__plan { font-size: 0.78rem; color: var(--navy); margin-top: 10px; font-weight: 600; }
+
+    /* Write review form */
+    .review-form {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(27,58,107,0.06);
+      margin-bottom: 32px;
+    }
+    .star-rating {
+      display: flex;
+      gap: 6px;
+      margin: 12px 0;
+    }
+    .star-rating__star {
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--gray-light);
+      transition: color 0.15s;
+      line-height: 1;
+    }
+    .star-rating__star.active { color: var(--amber); }
+    .star-rating__star:hover { color: var(--amber); }
+
+    /* States grid */
+    .states-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .state-tag {
+      background: rgba(27,58,107,0.07);
+      color: var(--navy);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 99px;
+    }
+    .specialty-tag {
+      background: rgba(45,106,79,0.08);
+      color: var(--green);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 99px;
+    }
+
+    /* Loading / empty */
+    .profile-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      flex-direction: column;
+      gap: 16px;
+      color: var(--gray);
+    }
+    @media(max-width:640px) {
+      .profile-card { padding: 28px 20px 0; }
+      .profile-card__top { gap: 20px; }
+      .profile-stats { gap: 20px; }
+      .profile-tab { padding: 12px 14px; font-size: 0.82rem; }
     }
   </style>
 </head>
@@ -83,6 +236,16 @@
     </a>
     <ul class="nav__links" id="nav-links">
       <li><a href="index.html" class="nav__link">Home</a></li>
+      <li>
+        <div class="nav__find-wrap">
+          <button class="nav__find-btn" onclick="toggleFindPros(event)">Find Professionals <span class="nav__find-chevron">▾</span></button>
+          <div class="nav__find-dropdown">
+            <a href="lenders.html"><span class="nav__find-dropdown__icon">💰</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Lenders</span><span class="nav__find-dropdown__desc">Find mortgage partners</span></span></a>
+            <a href="find-architect.html"><span class="nav__find-dropdown__icon">📐</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Architects</span><span class="nav__find-dropdown__desc">Search by location &amp; style</span></span></a>
+            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Bid your plans locally</span></span></a>
+          </div>
+        </div>
+      </li>
       <li><a href="marketplace.html" class="nav__link">Plan Marketplace</a></li>
       <li><a href="professionals.html" class="nav__link">For Professionals</a></li>
     </ul>
@@ -94,11 +257,13 @@
 </nav>
 <div id="mobileMenu" class="nav__mobile-menu"></div>
 
+<!-- Loading state -->
 <div id="profileLoading" class="profile-loading" style="margin-top:120px">
   <div style="font-size:2rem">⏳</div>
   <p>Loading architect profile…</p>
 </div>
 
+<!-- Not found state -->
 <div id="profileNotFound" style="display:none;margin-top:120px">
   <div class="profile-loading">
     <div style="font-size:2.5rem">📐</div>
@@ -108,6 +273,7 @@
   </div>
 </div>
 
+<!-- Profile -->
 <div id="profileWrap" style="display:none">
   <div class="profile-hero">
     <div class="container profile-hero__inner">
@@ -122,7 +288,6 @@
               <span class="profile-meta-item" id="profileLicense">📋 License —</span>
               <span class="profile-meta-item" id="profileYears">🗓️ — years licensed</span>
               <span class="profile-meta-item" id="profileWebsite"></span>
-              <span class="profile-meta-item" id="profileNationwide" style="display:none;color:var(--green);font-weight:600">🌎 Works Nationwide</span>
             </div>
           </div>
           <div class="profile-stats">
@@ -138,18 +303,11 @@
               <div class="profile-stat__num" id="statReviews">—</div>
               <div class="profile-stat__label">Reviews</div>
             </div>
-            <div class="profile-stat" id="saveArchitectWrap">
-              <button id="saveArchitectBtn" onclick="toggleSaveArchitect()" style="background:none;border:1.5px solid var(--cream-dark);border-radius:var(--radius-sm);padding:8px 16px;font-size:0.82rem;font-weight:600;cursor:pointer;color:var(--navy);font-family:var(--font-body);transition:all 0.2s;display:flex;align-items:center;gap:6px">
-                <span id="saveArchHeart">🤍</span> Save
-              </button>
-            </div>
           </div>
         </div>
         <div class="profile-tabs">
           <button class="profile-tab active" onclick="switchTab('plans')">📐 Plans</button>
           <button class="profile-tab" onclick="switchTab('about')">About</button>
-          <button class="profile-tab" onclick="switchTab('portfolio')">📷 Portfolio</button>
-          <button class="profile-tab" onclick="switchTab('map')">📍 Service Area</button>
           <button class="profile-tab" onclick="switchTab('reviews')">⭐ Reviews</button>
         </div>
       </div>
@@ -162,7 +320,9 @@
       <!-- Plans Tab -->
       <div class="tab-panel active" id="tab-plans">
         <div id="profilePlanGrid" class="plan-grid">
-          <div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--gray)"><p>Loading plans…</p></div>
+          <div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--gray)">
+            <p>Loading plans…</p>
+          </div>
         </div>
       </div>
 
@@ -184,38 +344,11 @@
         </div>
       </div>
 
-      <!-- Portfolio Tab -->
-      <div class="tab-panel" id="tab-portfolio">
-        <div style="max-width:900px">
-          <div class="dash-panel">
-            <h3 style="margin-bottom:20px">Portfolio — Work Examples</h3>
-            <div id="portfolioGrid" class="portfolio-grid">
-              <div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--gray)">
-                <div style="font-size:2rem;margin-bottom:12px">📷</div>
-                <p>No portfolio images yet.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Service Area / Map Tab -->
-      <div class="tab-panel" id="tab-map">
-        <div style="max-width:720px">
-          <div class="dash-panel">
-            <h3 style="margin-bottom:8px">Service Area</h3>
-            <p style="font-size:0.85rem;color:var(--gray);margin-bottom:20px" id="mapSubtitle">Where this architect works</p>
-            <div id="nationwideBadgeWrap" style="display:none">
-              <div class="nationwide-badge-lg">🌎 This architect works nationwide</div>
-            </div>
-            <div id="archMap"></div>
-          </div>
-        </div>
-      </div>
-
       <!-- Reviews Tab -->
       <div class="tab-panel" id="tab-reviews">
         <div style="max-width:720px">
+
+          <!-- Write a review -->
           <div id="writeReviewWrap">
             <div class="review-form" id="reviewFormPanel">
               <h3 style="margin-bottom:4px">Leave a Review</h3>
@@ -236,15 +369,12 @@
                   <label>Your Review</label>
                   <textarea id="reviewText" rows="4" placeholder="Describe your experience — quality of plans, communication, customization process…" style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
                 </div>
-                <div class="form-group">
-                  <label>Attach Images (optional)</label>
-                  <input type="file" id="reviewImages" accept="image/*" multiple style="font-size:0.9rem;font-family:var(--font-body)">
-                  <p style="font-size:0.78rem;color:var(--gray);margin-top:4px">Upload photos of the finished build or your experience. Max 4 images.</p>
-                </div>
                 <button class="btn btn-green" onclick="submitReview()" id="reviewSubmitBtn">Submit Review →</button>
               </div>
             </div>
           </div>
+
+          <!-- Reviews list -->
           <div id="reviewsList"></div>
           <div id="reviewsEmpty" style="display:none;text-align:center;padding:48px 0;color:var(--gray)">
             <div style="font-size:2rem;margin-bottom:12px">⭐</div>
@@ -270,66 +400,91 @@
   </div>
 </footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="main.js"></script>
 <script>
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM';
-let currentRating = 0, architectUserId = null, currentSession = null, archProfile = null, leafletMap = null;
 
+let currentRating = 0;
+let architectUserId = null;
+let currentSession = null;
+
+// ── Tab switching ──────────────────────────────
 window.switchTab = function(tab) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   event.target.classList.add('active');
-  if (tab === 'map' && !leafletMap && archProfile) setTimeout(() => initMap(archProfile), 100);
 };
 
+// ── Star rating ────────────────────────────────
 window.setRating = function(val) {
   currentRating = val;
-  document.querySelectorAll('.star-rating__star').forEach((s, i) => s.classList.toggle('active', i < val));
+  document.querySelectorAll('.star-rating__star').forEach((s, i) => {
+    s.classList.toggle('active', i < val);
+  });
 };
 
-window.openLightbox = function(src) {
-  const o = document.createElement('div');
-  o.className = 'lightbox-overlay';
-  o.onclick = () => o.remove();
-  o.innerHTML = `<img src="${src}" alt="Full size">`;
-  document.body.appendChild(o);
-};
-
+// ── Load profile ───────────────────────────────
 async function loadProfile() {
   const params = new URLSearchParams(window.location.search);
   const userId = params.get('id');
-  if (!userId) { document.getElementById('profileLoading').style.display='none'; document.getElementById('profileNotFound').style.display='block'; return; }
+
+  if (!userId) {
+    document.getElementById('profileLoading').style.display = 'none';
+    document.getElementById('profileNotFound').style.display = 'block';
+    return;
+  }
+
   architectUserId = userId;
 
   try {
+    // Wait for narrowSupabase
     await waitForClient();
+
+    // Check session
     const { data: { session } } = await narrowSupabase.auth.getSession();
     currentSession = session;
-    if (!session) { document.getElementById('reviewAuthMsg').style.display='block'; document.getElementById('reviewFormFields').style.display='none'; }
 
-    const { data: profile, error: profErr } = await narrowSupabase.from('architect_profiles').select('*').eq('user_id', userId).single();
-    if (profErr || !profile) { document.getElementById('profileLoading').style.display='none'; document.getElementById('profileNotFound').style.display='block'; return; }
-    archProfile = profile;
+    if (!session) {
+      document.getElementById('reviewAuthMsg').style.display = 'block';
+      document.getElementById('reviewFormFields').style.display = 'none';
+    }
 
-    const { data: plans } = await narrowSupabase.from('plans').select('*').eq('user_id', userId).eq('status', 'active').order('created_at', { ascending: false });
-    const { data: reviews } = await narrowSupabase.from('architect_reviews').select('*').eq('architect_user_id', userId).order('created_at', { ascending: false });
+    // Load architect profile
+    const { data: profile, error: profErr } = await narrowSupabase
+      .from('architect_profiles')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
 
+    if (profErr || !profile) {
+      document.getElementById('profileLoading').style.display = 'none';
+      document.getElementById('profileNotFound').style.display = 'block';
+      return;
+    }
+
+    // Load their plans
+    const { data: plans } = await narrowSupabase
+      .from('plans')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .order('created_at', { ascending: false });
+
+    // Load reviews
+    const { data: reviews } = await narrowSupabase
+      .from('architect_reviews')
+      .select('*')
+      .eq('architect_user_id', userId)
+      .order('created_at', { ascending: false });
+
+    // Render
     renderProfile(profile, plans || [], reviews || []);
+
     document.getElementById('profileLoading').style.display = 'none';
     document.getElementById('profileWrap').style.display = 'block';
 
-    // Check if architect is saved
-    await loadFavorites();
-    if (isFavorited('architect', userId)) {
-      document.getElementById('saveArchHeart').textContent = '❤️';
-      document.getElementById('saveArchitectBtn').innerHTML = '<span id="saveArchHeart">❤️</span> Saved';
-      document.getElementById('saveArchitectBtn').style.background = 'rgba(45,106,79,0.06)';
-      document.getElementById('saveArchitectBtn').style.borderColor = 'var(--green)';
-      document.getElementById('saveArchitectBtn').style.color = 'var(--green)';
-    }
   } catch(err) {
     console.error('Profile load error:', err);
     document.getElementById('profileLoading').style.display = 'none';
@@ -338,143 +493,202 @@ async function loadProfile() {
 }
 
 function renderProfile(profile, plans, reviews) {
-  // Logo
-  const avatarEl = document.getElementById('profileAvatar');
-  if (profile.logo_url) avatarEl.innerHTML = `<img src="${profile.logo_url}" alt="${profile.company_name || 'Logo'}">`;
+  // Hero info
+  document.getElementById('profileName').textContent = profile.company || 'Architect Firm';
+  document.getElementById('profileLicense').textContent =
+    `📋 License #${profile.license_number || '—'} · ${profile.license_state || ''}`;
+  document.getElementById('profileYears').textContent =
+    profile.years_licensed ? `🗓️ ${profile.years_licensed} years licensed` : '';
 
-  document.getElementById('profileName').textContent = profile.company_name || profile.company || 'Architect Firm';
-  document.getElementById('profileLicense').textContent = `📋 License #${profile.license_number || '—'} · ${profile.license_state || ''}`;
-  document.getElementById('profileYears').textContent = profile.years_licensed ? `🗓️ ${profile.years_licensed} years licensed` : '';
   if (profile.website) {
-    document.getElementById('profileWebsite').innerHTML = `<a href="${profile.website}" target="_blank" rel="noopener" style="color:var(--navy);text-decoration:underline">🌐 Website</a>`;
+    const ws = document.getElementById('profileWebsite');
+    ws.innerHTML = `<a href="${profile.website}" target="_blank" rel="noopener" style="color:var(--navy);text-decoration:underline">🌐 Website</a>`;
   }
-  if (profile.works_nationwide) document.getElementById('profileNationwide').style.display = 'inline-flex';
 
-  const avgRating = reviews.length ? (reviews.reduce((s, r) => s + (r.rating || 5), 0) / reviews.length).toFixed(1) : '—';
+  // Stats
+  const avgRating = reviews.length
+    ? (reviews.reduce((s, r) => s + (r.rating || 5), 0) / reviews.length).toFixed(1)
+    : '—';
   document.getElementById('statPlans').textContent = plans.length;
   document.getElementById('statRating').textContent = avgRating !== '—' ? `${avgRating}★` : '—';
   document.getElementById('statReviews').textContent = reviews.length;
-  document.title = `${profile.company_name || profile.company || 'Architect'} — Narrow`;
 
+  // Page title
+  document.title = `${profile.company || 'Architect'} — Narrow`;
+
+  // Plans tab
   renderPlans(plans);
 
-  document.getElementById('profileBio').textContent = profile.bio || 'No description provided yet.';
+  // About tab
+  document.getElementById('profileBio').textContent =
+    profile.bio || 'No description provided yet.';
+
   const specialties = (profile.specialties || '').split(',').map(s => s.trim()).filter(Boolean);
-  document.getElementById('profileSpecialties').innerHTML = specialties.length ? specialties.map(s => `<span class="specialty-tag">${s}</span>`).join('') : '<p style="color:var(--gray);font-size:0.9rem">Not specified.</p>';
+  document.getElementById('profileSpecialties').innerHTML = specialties.length
+    ? specialties.map(s => `<span class="specialty-tag">${s}</span>`).join('')
+    : '<p style="color:var(--gray);font-size:0.9rem">Not specified.</p>';
+
   const states = Array.isArray(profile.licensed_states) ? profile.licensed_states : [];
-  document.getElementById('profileStates').innerHTML = states.length ? states.map(s => `<span class="state-tag">${s}</span>`).join('') : '<p style="color:var(--gray);font-size:0.9rem">Not specified.</p>';
+  document.getElementById('profileStates').innerHTML = states.length
+    ? states.map(s => `<span class="state-tag">${s}</span>`).join('')
+    : '<p style="color:var(--gray);font-size:0.9rem">Not specified.</p>';
 
-  renderPortfolio(profile.portfolio_images || []);
-
-  if (profile.works_nationwide) {
-    document.getElementById('mapSubtitle').textContent = 'This architect accepts projects across the United States';
-  } else if (profile.service_area && profile.service_radius) {
-    document.getElementById('mapSubtitle').textContent = `${profile.service_area} · ${profile.service_radius} mile service radius`;
-  }
-
+  // Reviews tab
   renderReviews(reviews);
-}
-
-function renderPortfolio(images) {
-  const grid = document.getElementById('portfolioGrid');
-  if (!images || images.length === 0) return;
-  grid.innerHTML = images.map((img, idx) => {
-    const url = typeof img === 'string' ? img : img.url;
-    const caption = typeof img === 'object' ? (img.caption || '') : '';
-    return `<div class="portfolio-item" onclick="openLightbox('${url}')"><img src="${url}" alt="Portfolio ${idx+1}" loading="lazy">${caption ? `<div class="portfolio-item__caption">${caption}</div>` : ''}</div>`;
-  }).join('');
-}
-
-function initMap(profile) {
-  if (profile.works_nationwide) document.getElementById('nationwideBadgeWrap').style.display = 'block';
-  if (!profile.service_lat || !profile.service_lng) {
-    if (!profile.works_nationwide) {
-      document.getElementById('archMap').innerHTML = '<p style="text-align:center;padding:48px;color:var(--gray)">Service area map not set by this architect.</p>';
-    } else {
-      leafletMap = L.map('archMap').setView([39.8, -98.5], 4);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(leafletMap);
-    }
-    return;
-  }
-  const lat = parseFloat(profile.service_lat), lng = parseFloat(profile.service_lng);
-  const radiusMeters = (parseFloat(profile.service_radius || 100)) * 1609.34;
-  leafletMap = L.map('archMap').setView([lat, lng], 8);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(leafletMap);
-  L.marker([lat, lng]).addTo(leafletMap).bindPopup(`<b>${profile.company_name || profile.company || 'Architect'}</b><br>${profile.service_area || ''}`).openPopup();
-  if (!profile.works_nationwide) {
-    const circle = L.circle([lat, lng], { radius: radiusMeters, color: '#1B3A6B', fillColor: '#1B3A6B', fillOpacity: 0.08, weight: 2 }).addTo(leafletMap);
-    leafletMap.fitBounds(circle.getBounds());
-  }
 }
 
 function renderPlans(plans) {
   const grid = document.getElementById('profilePlanGrid');
-  const gradients = ['linear-gradient(135deg,#1B3A6B,#2D6A4F)','linear-gradient(135deg,#2D6A4F,#B7791F)','linear-gradient(135deg,#1B3A6B,#6B3A2D)','linear-gradient(135deg,#4A3728,#2D6A4F)'];
-  if (!plans.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--gray)"><div style="font-size:2rem;margin-bottom:12px">📐</div><p>No plans listed yet.</p></div>'; return; }
+  const gradients = [
+    'linear-gradient(135deg,#1B3A6B,#2D6A4F)',
+    'linear-gradient(135deg,#2D6A4F,#B7791F)',
+    'linear-gradient(135deg,#1B3A6B,#6B3A2D)',
+    'linear-gradient(135deg,#4A3728,#2D6A4F)',
+  ];
+
+  if (!plans.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--gray)">
+      <div style="font-size:2rem;margin-bottom:12px">📐</div>
+      <p>No plans listed yet.</p>
+    </div>`;
+    return;
+  }
+
   grid.innerHTML = plans.map((plan, idx) => {
-    const images = plan.images || [], coverUrl = images.length > 0 ? images[0].url : null;
-    const gradient = plan.gradient || gradients[idx % gradients.length], stars = plan.stars || '★★★★★';
-    const cardImg = coverUrl ? `<img src="${coverUrl}" alt="${plan.name}" style="width:100%;height:100%;object-fit:cover">` : `<div style="width:100%;height:100%;background:${gradient};display:flex;flex-direction:column;align-items:center;justify-content:center;color:white"><span style="font-size:2.5rem">${plan.emoji||'🏠'}</span></div>`;
-    const planJson = JSON.stringify({ planId:plan.plan_id, name:plan.name, architect:plan.architect, beds:plan.beds, baths:plan.baths, sqft:plan.sqft, stories:plan.stories, price:plan.price, style:plan.style, stars:plan.stars, reviews:plan.reviews||'', emoji:plan.emoji||'🏠', gradient:gradient, images:images, description:plan.description||'', architectUserId:architectUserId }).replace(/'/g,'&#39;');
-    return `<div class="plan-card" onclick='openPlanDetail(${planJson})'><div class="plan-card__img" style="background:${gradient}">${plan.featured?'<span class="plan-card__badge">Featured</span>':''}${cardImg}</div><div class="plan-card__body"><h3 class="plan-card__title">${plan.name}</h3><p class="plan-card__arch">✓ Verified · ${plan.architect}</p><div class="plan-card__specs"><span class="plan-card__spec">🛏️ ${plan.beds} bed</span><span class="plan-card__spec">🚿 ${plan.baths} bath</span><span class="plan-card__spec">📐 ${plan.sqft} sq ft</span><span class="plan-card__spec">🏗️ ${plan.stories}</span></div><div style="margin-bottom:10px"><span class="stars">${stars}</span></div><div class="plan-card__footer"><span class="plan-card__price">${plan.price}</span><span class="btn btn-primary plan-card__btn">View Plan</span></div></div></div>`;
+    const images   = plan.images || [];
+    const coverUrl = images.length > 0 ? images[0].url : null;
+    const gradient = plan.gradient || gradients[idx % gradients.length];
+    const stars    = plan.stars || '★★★★★';
+
+    const cardImg = coverUrl
+      ? `<img src="${coverUrl}" alt="${plan.name}" style="width:100%;height:100%;object-fit:cover">`
+      : `<div style="width:100%;height:100%;background:${gradient};display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;text-align:center"><span style="font-size:2.5rem">${plan.emoji || '🏠'}</span></div>`;
+
+    const planJson = JSON.stringify({
+      planId:          plan.plan_id,
+      name:            plan.name,
+      architect:       plan.architect,
+      beds:            plan.beds,
+      baths:           plan.baths,
+      sqft:            plan.sqft,
+      stories:         plan.stories,
+      price:           plan.price,
+      style:           plan.style,
+      stars:           plan.stars,
+      reviews:         plan.reviews || '',
+      emoji:           plan.emoji || '🏠',
+      gradient:        gradient,
+      images:          images,
+      description:     plan.description || '',
+      architectUserId: architectUserId,
+    }).replace(/'/g, '&#39;');
+
+    return `
+      <div class="plan-card" onclick='openPlanDetail(${planJson})'>
+        <div class="plan-card__img" style="background:${gradient}">
+          ${plan.featured ? '<span class="plan-card__badge">Featured</span>' : ''}
+          ${cardImg}
+        </div>
+        <div class="plan-card__body">
+          <h3 class="plan-card__title">${plan.name}</h3>
+          <p class="plan-card__arch">✓ Verified · ${plan.architect}</p>
+          <div class="plan-card__specs">
+            <span class="plan-card__spec">🛏️ ${plan.beds} bed</span>
+            <span class="plan-card__spec">🚿 ${plan.baths} bath</span>
+            <span class="plan-card__spec">📐 ${plan.sqft} sq ft</span>
+            <span class="plan-card__spec">🏗️ ${plan.stories}</span>
+          </div>
+          <div style="margin-bottom:10px"><span class="stars">${stars}</span></div>
+          <div class="plan-card__footer">
+            <span class="plan-card__price">${plan.price}</span>
+            <span class="btn btn-primary plan-card__btn">View Plan</span>
+          </div>
+        </div>
+      </div>`;
   }).join('');
 }
 
 function renderReviews(reviews) {
-  const list = document.getElementById('reviewsList'), empty = document.getElementById('reviewsEmpty');
-  if (!reviews.length) { empty.style.display = 'block'; return; }
+  const list  = document.getElementById('reviewsList');
+  const empty = document.getElementById('reviewsEmpty');
+
+  if (!reviews.length) {
+    empty.style.display = 'block';
+    return;
+  }
+
   list.innerHTML = reviews.map(r => {
-    const stars = '★'.repeat(r.rating||5) + '☆'.repeat(5-(r.rating||5));
-    const date = new Date(r.created_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
-    const imgs = r.review_images || [];
-    const imgsHtml = imgs.length > 0 ? `<div class="review-card__images">${imgs.map(u => `<img src="${u}" class="review-card__img" onclick="openLightbox('${u}')" alt="Review photo">`).join('')}</div>` : '';
-    return `<div class="review-card" style="margin-bottom:16px"><div class="review-card__header"><div><div class="review-card__author">${r.reviewer_name||'Verified Buyer'}</div><div class="review-card__stars">${stars}</div></div><div class="review-card__date">${date}</div></div><div class="review-card__text">${r.review_text||''}</div>${imgsHtml}${r.plan_name?`<div class="review-card__plan">📐 Plan: ${r.plan_name}</div>`:''}</div>`;
+    const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
+    const date  = new Date(r.created_at).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
+    return `
+      <div class="review-card" style="margin-bottom:16px">
+        <div class="review-card__header">
+          <div>
+            <div class="review-card__author">${r.reviewer_name || 'Verified Buyer'}</div>
+            <div class="review-card__stars">${stars}</div>
+          </div>
+          <div class="review-card__date">${date}</div>
+        </div>
+        <div class="review-card__text">${r.review_text || ''}</div>
+        ${r.plan_name ? `<div class="review-card__plan">📐 Plan: ${r.plan_name}</div>` : ''}
+      </div>`;
   }).join('');
 }
 
+// ── Submit review ──────────────────────────────
 window.submitReview = async function() {
-  if (!currentSession) { window.location.href = 'login.html'; return; }
+  if (!currentSession) {
+    window.location.href = 'login.html';
+    return;
+  }
   if (!currentRating) { alert('Please select a star rating.'); return; }
   const text = document.getElementById('reviewText').value.trim();
   if (!text) { alert('Please write a review before submitting.'); return; }
+
   const btn = document.getElementById('reviewSubmitBtn');
-  btn.textContent = 'Submitting…'; btn.disabled = true;
+  btn.textContent = 'Submitting…';
+  btn.disabled = true;
 
   try {
-    let imageUrls = [];
-    const fileInput = document.getElementById('reviewImages');
-    if (fileInput && fileInput.files.length > 0) {
-      const fd = new FormData();
-      fd.append('asset_type', 'review-image');
-      fd.append('target_user_id', architectUserId);
-      Array.from(fileInput.files).slice(0, 4).forEach((f, i) => fd.append(`file_${i}`, f));
-      const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/upload-profile-asset', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${currentSession.access_token}`,
-          'apikey': SUPABASE_ANON,
-        },
-        body: fd,
+    const { error } = await narrowSupabase
+      .from('architect_reviews')
+      .insert({
+        architect_user_id: architectUserId,
+        reviewer_user_id:  currentSession.user.id,
+        reviewer_name:     currentSession.user.user_metadata?.full_name ||
+                           currentSession.user.email.split('@')[0],
+        rating:            currentRating,
+        review_text:       text,
+        created_at:        new Date().toISOString(),
       });
-      const data = await res.json();
-      if (res.ok && data.urls) imageUrls = data.urls;
-    }
-    const reviewData = { architect_user_id: architectUserId, reviewer_user_id: currentSession.user.id, reviewer_name: currentSession.user.user_metadata?.full_name || currentSession.user.email.split('@')[0], rating: currentRating, review_text: text, created_at: new Date().toISOString() };
-    if (imageUrls.length > 0) reviewData.review_images = imageUrls;
 
-    const { error } = await narrowSupabase.from('architect_reviews').insert(reviewData);
     if (error) throw error;
 
-    document.getElementById('reviewFormPanel').innerHTML = '<div style="text-align:center;padding:32px 0"><div style="font-size:2.5rem;margin-bottom:12px">✅</div><h3 style="margin-bottom:8px">Review submitted!</h3><p style="color:var(--gray)">Thank you for helping the Narrow community.</p></div>';
-    const { data: reviews } = await narrowSupabase.from('architect_reviews').select('*').eq('architect_user_id', architectUserId).order('created_at', { ascending: false });
+    document.getElementById('reviewFormPanel').innerHTML = `
+      <div style="text-align:center;padding:32px 0">
+        <div style="font-size:2.5rem;margin-bottom:12px">✅</div>
+        <h3 style="margin-bottom:8px">Review submitted!</h3>
+        <p style="color:var(--gray)">Thank you for helping the Narrow community.</p>
+      </div>`;
+
+    // Reload reviews
+    const { data: reviews } = await narrowSupabase
+      .from('architect_reviews')
+      .select('*')
+      .eq('architect_user_id', architectUserId)
+      .order('created_at', { ascending: false });
     renderReviews(reviews || []);
+
   } catch(err) {
     console.error('Review submit error:', err);
-    btn.textContent = '✗ Error — try again'; btn.style.background = '#DC2626'; btn.disabled = false;
+    btn.textContent = '✗ Error — try again';
+    btn.style.background = '#DC2626';
+    btn.disabled = false;
     setTimeout(() => { btn.textContent = 'Submit Review →'; btn.style.background = ''; }, 3000);
   }
 };
 
+// ── Wait for narrowSupabase ────────────────────
 function waitForClient(tries) {
   tries = tries || 0;
   return new Promise((resolve, reject) => {
@@ -483,22 +697,6 @@ function waitForClient(tries) {
     setTimeout(() => waitForClient(tries + 1).then(resolve).catch(reject), 100);
   });
 }
-window.toggleSaveArchitect = async function() {
-  const name = archProfile?.company_name || archProfile?.company || 'Architect';
-  const result = await toggleFavorite('architect', architectUserId, name, {});
-  const btn = document.getElementById('saveArchitectBtn');
-  if (result === true) {
-    btn.innerHTML = '<span>❤️</span> Saved';
-    btn.style.background = 'rgba(45,106,79,0.06)';
-    btn.style.borderColor = 'var(--green)';
-    btn.style.color = 'var(--green)';
-  } else if (result === false) {
-    btn.innerHTML = '<span>🤍</span> Save';
-    btn.style.background = '';
-    btn.style.borderColor = '';
-    btn.style.color = '';
-  }
-};
 
 loadProfile();
 </script>

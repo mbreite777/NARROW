@@ -356,6 +356,103 @@ p { color: var(--gray); line-height: 1.75; }
   margin: 4px 0;
 }
 
+/* Find Professionals nav dropdown */
+.nav__find-wrap {
+  position: relative;
+}
+.nav__find-btn {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.75);
+  transition: color 0.25s;
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+}
+.nav__find-btn:hover,
+.nav__find-wrap.open .nav__find-btn {
+  color: var(--white);
+}
+.nav__find-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 2px;
+  background: var(--amber);
+  transform: scaleX(0);
+  transition: transform 0.25s;
+  border-radius: 2px;
+}
+.nav__find-btn:hover::after,
+.nav__find-wrap.open .nav__find-btn::after {
+  transform: scaleX(1);
+}
+.nav__find-chevron {
+  font-size: 0.55rem;
+  opacity: 0.5;
+  transition: transform 0.2s;
+}
+.nav__find-wrap.open .nav__find-chevron {
+  transform: rotate(180deg);
+}
+.nav__find-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 12px;
+  padding: 8px 0;
+  min-width: 220px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+  z-index: 500;
+  border: 1px solid rgba(27,58,107,0.1);
+}
+.nav__find-wrap.open .nav__find-dropdown {
+  display: block;
+}
+.nav__find-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  transition: background 0.15s;
+}
+.nav__find-dropdown a:hover {
+  background: var(--cream);
+}
+.nav__find-dropdown__icon {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.nav__find-dropdown__text {
+  display: flex;
+  flex-direction: column;
+}
+.nav__find-dropdown__label {
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 0.88rem;
+}
+.nav__find-dropdown__desc {
+  font-size: 0.75rem;
+  color: var(--gray);
+  font-weight: 400;
+  margin-top: 1px;
+}
+
 /* Mobile nav toggle */
 .nav__hamburger {
   display: none;
@@ -397,6 +494,12 @@ p { color: var(--gray); line-height: 1.75; }
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 .nav__mobile-menu a:last-child { border-bottom: none; }
+
+/* Mobile Find Professionals dropdown */
+.mobile-find-pros { border-bottom: 1px solid rgba(255,255,255,0.08); }
+.mobile-find-pros.open .mobile-find-sub { display: block !important; }
+.mobile-find-pros.open .mobile-find-chevron { transform: rotate(180deg); display: inline-block; transition: transform 0.2s; }
+.mobile-find-sub a { padding-left: 8px !important; }
 
 /* ─── FOOTER ───────────────────────────────── */
 .footer {

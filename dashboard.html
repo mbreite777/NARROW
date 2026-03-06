@@ -17,6 +17,16 @@
     </a>
     <ul class="nav__links" id="nav-links">
       <li><a href="index.html" class="nav__link">Home</a></li>
+      <li>
+        <div class="nav__find-wrap">
+          <button class="nav__find-btn" onclick="toggleFindPros(event)">Find Professionals <span class="nav__find-chevron">▾</span></button>
+          <div class="nav__find-dropdown">
+            <a href="lenders.html"><span class="nav__find-dropdown__icon">💰</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Lenders</span><span class="nav__find-dropdown__desc">Find mortgage partners</span></span></a>
+            <a href="find-architect.html"><span class="nav__find-dropdown__icon">📐</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Architects</span><span class="nav__find-dropdown__desc">Search by location &amp; style</span></span></a>
+            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Bid your plans locally</span></span></a>
+          </div>
+        </div>
+      </li>
       <li><a href="marketplace.html" class="nav__link">Plan Marketplace</a></li>
       <li><a href="professionals.html" class="nav__link">For Professionals</a></li>
     </ul>
@@ -66,32 +76,6 @@
   <section>
     <div class="container" style="max-width:740px">
       <div class="steps-grid" id="stepsContainer"></div>
-    </div>
-  </section>
-
-  <!-- Saved Items -->
-  <section class="section" style="padding-top:0;padding-bottom:0">
-    <div class="container" style="max-width:740px">
-      <div class="dash-panel" id="savedItemsPanel" style="display:none">
-        <div class="dash-panel__header">
-          <h3>❤️ Saved Items</h3>
-          <span id="savedCount" style="font-size:0.75rem;color:var(--gray);background:var(--cream);padding:4px 10px;border-radius:99px">0 saved</span>
-        </div>
-        <!-- Tabs for item types -->
-        <div id="savedTabs" style="display:flex;gap:8px;margin-bottom:16px">
-          <button class="filter-btn active" onclick="filterSaved('all', this)">All</button>
-          <button class="filter-btn" onclick="filterSaved('plan', this)">📐 Plans</button>
-          <button class="filter-btn" onclick="filterSaved('architect', this)">🏛️ Architects</button>
-          <button class="filter-btn" onclick="filterSaved('contractor', this)">🏗️ Contractors</button>
-        </div>
-        <div id="savedItemsList" style="display:grid;gap:12px">
-          <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:24px 0">Loading saved items...</p>
-        </div>
-        <div id="savedEmpty" style="display:none;text-align:center;padding:32px 0;color:var(--gray)">
-          <div style="font-size:2rem;margin-bottom:12px">❤️</div>
-          <p>No saved items yet. Browse the <a href="marketplace.html" style="color:var(--navy);font-weight:600">marketplace</a> and tap the heart to save plans you like.</p>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -232,56 +216,6 @@
           <label>Bio / Description</label>
           <textarea id="archBio" rows="3" placeholder="Tell homebuilders about your firm..." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
         </div>
-
-        <!-- Logo Upload -->
-        <div class="form-group" style="margin-top:16px">
-          <label>🏛️ Company Logo</label>
-          <p style="font-size:0.82rem;color:var(--gray);margin-bottom:8px">Upload your firm's logo. It will appear on your public profile and in search results.</p>
-          <div style="display:flex;gap:16px;align-items:center">
-            <div id="archLogoPreview" style="width:64px;height:64px;border-radius:50%;background:var(--cream);border:1.5px solid var(--gray-light);display:flex;align-items:center;justify-content:center;font-size:1.5rem;overflow:hidden;flex-shrink:0">🏛️</div>
-            <div>
-              <input type="file" id="archLogoFile" accept="image/*" style="font-size:0.85rem;font-family:var(--font-body)">
-              <p style="font-size:0.75rem;color:var(--gray);margin-top:4px">PNG, JPG, or WebP. Max 2MB.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Portfolio Images Upload -->
-        <div class="form-group" style="margin-top:16px">
-          <label>📷 Portfolio Images</label>
-          <p style="font-size:0.82rem;color:var(--gray);margin-bottom:8px">Upload photos of your completed work. These will appear in a gallery on your profile.</p>
-          <div id="archPortfolioPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div>
-          <input type="file" id="archPortfolioFiles" accept="image/*" multiple style="font-size:0.85rem;font-family:var(--font-body)">
-          <p style="font-size:0.75rem;color:var(--gray);margin-top:4px">Upload up to 12 images. PNG, JPG, or WebP.</p>
-        </div>
-
-        <!-- Service Location -->
-        <div class="form-group" style="margin-top:16px">
-          <label>📍 Service Location</label>
-          <p style="font-size:0.82rem;color:var(--gray);margin-bottom:8px">Set your office location and how far you're willing to travel for projects.</p>
-
-          <!-- Nationwide Toggle -->
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:12px 16px;background:rgba(45,106,79,0.06);border-radius:var(--radius-sm);border:1px solid rgba(45,106,79,0.12)">
-            <input type="checkbox" id="archNationwide" style="width:18px;height:18px;accent-color:var(--green)">
-            <label for="archNationwide" style="font-weight:600;color:var(--charcoal);margin:0;cursor:pointer">🌎 I work nationwide</label>
-            <span style="font-size:0.78rem;color:var(--gray);margin-left:auto">Check this if you accept projects across the US</span>
-          </div>
-
-          <div id="archLocationFields">
-            <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">
-              <input type="text" id="archAddress" placeholder="123 Main St, Austin, TX" style="flex:1;min-width:200px">
-              <div class="form-group" style="margin:0;min-width:120px">
-                <input type="number" id="archRadius" placeholder="Travel radius (miles)" style="width:100%">
-              </div>
-              <button class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem;white-space:nowrap" onclick="geocodeArchitectAddress()">Set Location</button>
-            </div>
-            <div id="archMap" style="width:100%;height:280px;border-radius:var(--radius-sm);background:var(--cream);border:1.5px solid var(--gray-light);display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:0.85rem">
-              Map will appear after setting your location
-            </div>
-            <input type="hidden" id="archLat">
-            <input type="hidden" id="archLng">
-          </div>
-        </div>
       </div>
 
       <!-- Plan Library -->
@@ -408,29 +342,6 @@
           <label>About Your Company</label>
           <textarea id="contBio" rows="3" placeholder="Describe your services, specialties, and experience..." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
         </div>
-
-        <!-- Logo Upload -->
-        <div class="form-group" style="margin-top:16px">
-          <label>🏗️ Company Logo</label>
-          <p style="font-size:0.82rem;color:var(--gray);margin-bottom:8px">Upload your company logo. It appears on your public profile and in search results.</p>
-          <div style="display:flex;gap:16px;align-items:center">
-            <div id="contLogoPreview" style="width:64px;height:64px;border-radius:50%;background:var(--cream);border:1.5px solid var(--gray-light);display:flex;align-items:center;justify-content:center;font-size:1.5rem;overflow:hidden;flex-shrink:0">🏗️</div>
-            <div>
-              <input type="file" id="contLogoFile" accept="image/*" style="font-size:0.85rem;font-family:var(--font-body)">
-              <p style="font-size:0.75rem;color:var(--gray);margin-top:4px">PNG, JPG, or WebP. Max 2MB.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Portfolio Images Upload -->
-        <div class="form-group" style="margin-top:16px">
-          <label>📷 Portfolio Images</label>
-          <p style="font-size:0.82rem;color:var(--gray);margin-bottom:8px">Upload photos of your completed projects. These will appear in a gallery on your profile.</p>
-          <div id="contPortfolioPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div>
-          <input type="file" id="contPortfolioFiles" accept="image/*" multiple style="font-size:0.85rem;font-family:var(--font-body)">
-          <p style="font-size:0.75rem;color:var(--gray);margin-top:4px">Upload up to 12 images. PNG, JPG, or WebP.</p>
-        </div>
-
         <div style="display:flex;gap:16px;align-items:center;padding:16px;background:var(--cream);border-radius:var(--radius-sm);margin-top:8px">
           <span style="font-size:1.2rem">⭐</span>
           <div>
@@ -481,9 +392,6 @@
 // ═══════════════════════════════════════════
 // DASHBOARD INIT
 // ═══════════════════════════════════════════
-const NARROW_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM';
-const NARROW_FUNC_URL = 'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1';
-
 const STEPS = [
   {
     title: 'Questionnaire',
@@ -576,8 +484,6 @@ async function initDashboard() {
       await loadBuilds();
       // Load purchased plans in the background
       loadMyPlans(session.user.email);
-      // Load saved items
-      loadSavedItems();
     }
   } catch (err) {
     console.error('Dashboard init error:', err);
@@ -1346,53 +1252,6 @@ async function loadArchitectProfile() {
       document.querySelectorAll('.archStateCheck').forEach(cb => {
         if (ls.includes(cb.value)) cb.checked = true;
       });
-
-      // Service location fields
-      if (data.works_nationwide) {
-        document.getElementById('archNationwide').checked = true;
-      }
-      if (data.service_radius) {
-        document.getElementById('archRadius').value = data.service_radius;
-      }
-      if (data.service_lat && data.service_lng) {
-        document.getElementById('archLat').value = data.service_lat;
-        document.getElementById('archLng').value = data.service_lng;
-        if (data.service_area) document.getElementById('archAddress').value = data.service_area;
-        // Init map
-        setTimeout(() => {
-          const lat = parseFloat(data.service_lat), lng = parseFloat(data.service_lng);
-          const mapEl = document.getElementById('archMap');
-          if (mapEl && !archMap) {
-            mapEl.innerHTML = '';
-            archMap = L.map('archMap').setView([lat, lng], 9);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM' }).addTo(archMap);
-            archMarker = L.marker([lat, lng]).addTo(archMap);
-            const radius = (parseInt(data.service_radius) || 100) * 1609.34;
-            archCircle = L.circle([lat, lng], { radius, color: '#1B3A6B', fillColor: '#1B3A6B', fillOpacity: 0.08, weight: 2 }).addTo(archMap);
-            archMap.fitBounds(archCircle.getBounds());
-            document.getElementById('archRadius').onchange = function() {
-              if (archCircle && archMap) {
-                archCircle.setRadius((parseInt(this.value) || 100) * 1609.34);
-                archMap.fitBounds(archCircle.getBounds());
-              }
-            };
-          }
-        }, 200);
-      }
-
-      // Logo preview
-      if (data.logo_url) {
-        document.getElementById('archLogoPreview').innerHTML = `<img src="${data.logo_url}" style="width:100%;height:100%;object-fit:cover">`;
-      }
-
-      // Portfolio preview
-      const portfolioImgs = data.portfolio_images || [];
-      if (portfolioImgs.length > 0) {
-        document.getElementById('archPortfolioPreview').innerHTML = portfolioImgs.map(img => {
-          const url = typeof img === 'string' ? img : img.url;
-          return `<div style="width:60px;height:60px;border-radius:6px;overflow:hidden;border:1px solid var(--cream-dark)"><img src="${url}" style="width:100%;height:100%;object-fit:cover"></div>`;
-        }).join('');
-      }
     }
   } catch (err) {
     console.warn('Could not load architect profile:', err);
@@ -1403,46 +1262,7 @@ window.saveArchProfile = async function() {
   const licensedStates = [];
   document.querySelectorAll('.archStateCheck:checked').forEach(cb => licensedStates.push(cb.value));
 
-  const lat = parseFloat(document.getElementById('archLat').value) || null;
-  const lng = parseFloat(document.getElementById('archLng').value) || null;
-  const { data: { session } } = await narrowSupabase.auth.getSession();
-  if (!session) { alert('Please log in first.'); return; }
-
-  // Upload logo if selected
-  let logoUrl = null;
-  const logoFile = document.getElementById('archLogoFile').files[0];
-  if (logoFile) {
-    const fd = new FormData();
-    fd.append('asset_type', 'logo');
-    fd.append('file', logoFile);
-    const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/upload-profile-asset', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${session.access_token}`, 'apikey': NARROW_ANON_KEY },
-      body: fd,
-    });
-    const data = await res.json();
-    if (res.ok && data.url) logoUrl = data.url;
-    else if (!res.ok) console.warn('Logo upload failed:', data.error);
-  }
-
-  // Upload portfolio images if selected
-  let portfolioUrls = null;
-  const portfolioFiles = document.getElementById('archPortfolioFiles').files;
-  if (portfolioFiles && portfolioFiles.length > 0) {
-    const fd = new FormData();
-    fd.append('asset_type', 'portfolio');
-    Array.from(portfolioFiles).slice(0, 12).forEach((f, i) => fd.append(`file_${i}`, f));
-    const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/upload-profile-asset', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${session.access_token}`, 'apikey': NARROW_ANON_KEY },
-      body: fd,
-    });
-    const data = await res.json();
-    if (res.ok && data.urls) portfolioUrls = data.urls;
-    else if (!res.ok) console.warn('Portfolio upload failed:', data.error);
-  }
-
-  const profileData = {
+  const { error } = await narrowSupabase.from('architect_profiles').upsert({
     user_id: userSession.user.id,
     company_name: document.getElementById('archCompany').value,
     license_number: document.getElementById('archLicense').value,
@@ -1452,18 +1272,8 @@ window.saveArchProfile = async function() {
     bio: document.getElementById('archBio').value,
     years_licensed: parseInt(document.getElementById('archYearsLicensed').value) || null,
     licensed_states: licensedStates.length > 0 ? licensedStates : null,
-    works_nationwide: document.getElementById('archNationwide').checked,
-    service_radius: parseInt(document.getElementById('archRadius').value) || null,
-    service_area: document.getElementById('archAddress').value || null,
-    service_lat: lat,
-    service_lng: lng,
     updated_at: new Date().toISOString()
-  };
-
-  if (logoUrl) profileData.logo_url = logoUrl;
-  if (portfolioUrls) profileData.portfolio_images = portfolioUrls;
-
-  const { error } = await narrowSupabase.from('architect_profiles').upsert(profileData, { onConflict: 'user_id' });
+  }, { onConflict: 'user_id' });
   if (error) {
     console.error('Save error:', error);
     alert('Error saving profile. Check console for details.');
@@ -1734,24 +1544,6 @@ async function loadContractorProfile() {
         }, 200);
       }
     }
-
-    // Logo preview
-    if (data.logo_url) {
-      const preview = document.getElementById('contLogoPreview');
-      if (preview) preview.innerHTML = `<img src="${data.logo_url}" style="width:100%;height:100%;object-fit:cover">`;
-    }
-
-    // Portfolio preview
-    const portfolioImgs = data.portfolio_images || [];
-    if (portfolioImgs.length > 0) {
-      const preview = document.getElementById('contPortfolioPreview');
-      if (preview) {
-        preview.innerHTML = portfolioImgs.map(img => {
-          const url = typeof img === 'string' ? img : img.url;
-          return `<div style="width:60px;height:60px;border-radius:6px;overflow:hidden;border:1px solid var(--cream-dark)"><img src="${url}" style="width:100%;height:100%;object-fit:cover"></div>`;
-        }).join('');
-      }
-    }
   } catch (err) {
     console.warn('Could not load contractor profile:', err);
   }
@@ -1767,42 +1559,6 @@ window.saveContProfile = async function() {
 
   const lat = parseFloat(document.getElementById('contLat').value) || null;
   const lng = parseFloat(document.getElementById('contLng').value) || null;
-  const { data: { session } } = await narrowSupabase.auth.getSession();
-  if (!session) { alert('Please log in first.'); return; }
-
-  // Upload logo if selected
-  let logoUrl = null;
-  const logoFile = document.getElementById('contLogoFile')?.files[0];
-  if (logoFile) {
-    const fd = new FormData();
-    fd.append('asset_type', 'logo');
-    fd.append('file', logoFile);
-    const res = await fetch(`${NARROW_FUNC_URL}/upload-profile-asset`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${session.access_token}`, 'apikey': NARROW_ANON_KEY },
-      body: fd,
-    });
-    const data = await res.json();
-    if (res.ok && data.url) logoUrl = data.url;
-    else if (!res.ok) console.warn('Logo upload failed:', data.error);
-  }
-
-  // Upload portfolio images if selected
-  let portfolioUrls = null;
-  const portfolioFiles = document.getElementById('contPortfolioFiles')?.files;
-  if (portfolioFiles && portfolioFiles.length > 0) {
-    const fd = new FormData();
-    fd.append('asset_type', 'portfolio');
-    Array.from(portfolioFiles).slice(0, 12).forEach((f, i) => fd.append(`file_${i}`, f));
-    const res = await fetch(`${NARROW_FUNC_URL}/upload-profile-asset`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${session.access_token}`, 'apikey': NARROW_ANON_KEY },
-      body: fd,
-    });
-    const data = await res.json();
-    if (res.ok && data.urls) portfolioUrls = data.urls;
-    else if (!res.ok) console.warn('Portfolio upload failed:', data.error);
-  }
 
   const profileData = {
     user_id: userSession.user.id,
@@ -1821,9 +1577,6 @@ window.saveContProfile = async function() {
     service_lng: lng,
     updated_at: new Date().toISOString()
   };
-
-  if (logoUrl) profileData.logo_url = logoUrl;
-  if (portfolioUrls) profileData.portfolio_images = portfolioUrls;
 
   const { error } = await narrowSupabase.from('contractor_profiles').upsert(profileData, { onConflict: 'user_id' });
   if (error) {
@@ -1918,69 +1671,6 @@ window.geocodeContractorAddress = async function() {
 // ── Mortgage Lenders page (simple redirect) ──
 // Create lenders.html or handle inline
 
-// Geocode architect address + show Leaflet map
-let archMap = null;
-let archMarker = null;
-let archCircle = null;
-
-window.geocodeArchitectAddress = async function() {
-  const address = document.getElementById('archAddress').value.trim();
-  if (!address) { alert('Enter an address first.'); return; }
-
-  try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`);
-    const results = await res.json();
-    if (results.length === 0) { alert('Address not found. Try a more specific address.'); return; }
-
-    const lat = parseFloat(results[0].lat);
-    const lng = parseFloat(results[0].lon);
-    document.getElementById('archLat').value = lat;
-    document.getElementById('archLng').value = lng;
-
-    const mapEl = document.getElementById('archMap');
-
-    if (archMap) {
-      archMap.setView([lat, lng], 9);
-      if (archMarker) archMap.removeLayer(archMarker);
-      if (archCircle) archMap.removeLayer(archCircle);
-    } else {
-      mapEl.innerHTML = '';
-      mapEl.style.color = '';
-      archMap = L.map('archMap').setView([lat, lng], 9);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap',
-        maxZoom: 18
-      }).addTo(archMap);
-    }
-
-    archMarker = L.marker([lat, lng]).addTo(archMap)
-      .bindPopup(`<strong>${results[0].display_name}</strong>`).openPopup();
-
-    const radiusMiles = parseInt(document.getElementById('archRadius').value) || 100;
-    const radiusMeters = radiusMiles * 1609.34;
-    archCircle = L.circle([lat, lng], {
-      radius: radiusMeters,
-      color: '#1B3A6B',
-      fillColor: '#1B3A6B',
-      fillOpacity: 0.08,
-      weight: 2
-    }).addTo(archMap);
-
-    archMap.fitBounds(archCircle.getBounds());
-
-    document.getElementById('archRadius').onchange = function() {
-      if (archCircle && archMap) {
-        archCircle.setRadius((parseInt(this.value) || 100) * 1609.34);
-        archMap.fitBounds(archCircle.getBounds());
-      }
-    };
-
-  } catch (err) {
-    console.error('Architect geocoding error:', err);
-    alert('Geocoding failed. Please try again.');
-  }
-};
-
 // ── My Purchased Plans ───────────────────────
 async function loadMyPlans(email) {
   const panel = document.getElementById('myPlansPanel');
@@ -2040,129 +1730,6 @@ async function loadMyPlans(email) {
 }
 
 // ── Presigned download handler ───────────────────────────────────────────────
-
-// ── Saved Items ─────────────────────────────────
-let _allSavedItems = [];
-
-async function loadSavedItems() {
-  const panel = document.getElementById('savedItemsPanel');
-  const list = document.getElementById('savedItemsList');
-  const empty = document.getElementById('savedEmpty');
-  const countEl = document.getElementById('savedCount');
-  if (!panel || !list) return;
-
-  try {
-    const favs = await loadFavorites(true);
-    _allSavedItems = favs;
-
-    if (!favs || favs.length === 0) {
-      panel.style.display = 'block';
-      list.style.display = 'none';
-      empty.style.display = 'block';
-      countEl.textContent = '0 saved';
-      return;
-    }
-
-    panel.style.display = 'block';
-    list.style.display = 'grid';
-    empty.style.display = 'none';
-    countEl.textContent = `${favs.length} saved`;
-
-    renderSavedItems(favs);
-  } catch (err) {
-    console.warn('Could not load saved items:', err);
-  }
-}
-
-function renderSavedItems(items) {
-  const list = document.getElementById('savedItemsList');
-  if (!list) return;
-
-  if (items.length === 0) {
-    document.getElementById('savedEmpty').style.display = 'block';
-    list.style.display = 'none';
-    return;
-  }
-
-  document.getElementById('savedEmpty').style.display = 'none';
-  list.style.display = 'grid';
-
-  list.innerHTML = items.map(fav => {
-    const meta = fav.item_meta || {};
-    const date = new Date(fav.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
-    if (fav.item_type === 'plan') {
-      const gradient = meta.gradient || 'linear-gradient(135deg,#1B3A6B,#2D6A4F)';
-      const link = `marketplace.html`; // Plans open in modal from marketplace
-      return `
-        <div class="saved-item-card">
-          <div class="saved-item-card__img" style="background:${gradient}">${meta.emoji || '🏠'}</div>
-          <div class="saved-item-card__info">
-            <div class="saved-item-card__name">${fav.item_name || 'Plan'}</div>
-            <div class="saved-item-card__meta">${meta.beds || '?'} bed · ${meta.baths || '?'} bath · ${meta.sqft || '?'} sqft · ${meta.price || ''} · Saved ${date}</div>
-          </div>
-          <div class="saved-item-card__actions">
-            <a href="${link}" class="btn btn-outline" style="padding:6px 14px;font-size:0.78rem">View</a>
-            <button style="background:none;border:none;font-size:1.1rem;cursor:pointer" title="Remove" onclick="removeSaved('${fav.id}')">✕</button>
-          </div>
-        </div>`;
-    } else if (fav.item_type === 'architect') {
-      return `
-        <div class="saved-item-card">
-          <div class="saved-item-card__img" style="background:linear-gradient(135deg,var(--navy),var(--green))">🏛️</div>
-          <div class="saved-item-card__info">
-            <div class="saved-item-card__name">${fav.item_name || 'Architect'}</div>
-            <div class="saved-item-card__meta">Architect · Saved ${date}</div>
-          </div>
-          <div class="saved-item-card__actions">
-            <a href="architect-profile.html?id=${fav.item_id}" class="btn btn-outline" style="padding:6px 14px;font-size:0.78rem">Profile</a>
-            <button style="background:none;border:none;font-size:1.1rem;cursor:pointer" title="Remove" onclick="removeSaved('${fav.id}')">✕</button>
-          </div>
-        </div>`;
-    } else if (fav.item_type === 'contractor') {
-      return `
-        <div class="saved-item-card">
-          <div class="saved-item-card__img" style="background:linear-gradient(135deg,var(--green),var(--navy))">🏗️</div>
-          <div class="saved-item-card__info">
-            <div class="saved-item-card__name">${fav.item_name || 'Contractor'}</div>
-            <div class="saved-item-card__meta">Contractor · Saved ${date}</div>
-          </div>
-          <div class="saved-item-card__actions">
-            <a href="contractor-profile.html?id=${fav.item_id}" class="btn btn-outline" style="padding:6px 14px;font-size:0.78rem">Profile</a>
-            <button style="background:none;border:none;font-size:1.1rem;cursor:pointer" title="Remove" onclick="removeSaved('${fav.id}')">✕</button>
-          </div>
-        </div>`;
-    }
-    return '';
-  }).join('');
-}
-
-window.filterSaved = function(type, btn) {
-  // Update active tab
-  document.querySelectorAll('#savedTabs .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  const filtered = type === 'all' ? _allSavedItems : _allSavedItems.filter(f => f.item_type === type);
-  renderSavedItems(filtered);
-};
-
-window.removeSaved = async function(favId) {
-  await narrowSupabase.from('favorites').delete().eq('id', favId);
-  _allSavedItems = _allSavedItems.filter(f => f.id !== favId);
-  // Refresh cache
-  if (_favoritesCache) _favoritesCache = _favoritesCache.filter(f => f.id !== favId);
-  // Re-render
-  const activeTab = document.querySelector('#savedTabs .filter-btn.active');
-  const type = activeTab ? activeTab.textContent.trim() : 'All';
-  if (type === 'All') renderSavedItems(_allSavedItems);
-  else {
-    const typeMap = { '📐 Plans': 'plan', '🏛️ Architects': 'architect', '🏗️ Contractors': 'contractor' };
-    const filteredType = typeMap[type] || 'all';
-    renderSavedItems(filteredType === 'all' ? _allSavedItems : _allSavedItems.filter(f => f.item_type === filteredType));
-  }
-  document.getElementById('savedCount').textContent = `${_allSavedItems.length} saved`;
-};
-
 window.downloadPlan = async function(planId, planName) {
   const btn = document.getElementById(`dlBtn_${planId}`);
   if (btn) { btn.textContent = '⏳ Generating link…'; btn.disabled = true; }

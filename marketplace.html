@@ -23,6 +23,16 @@
     </a>
     <ul class="nav__links" id="nav-links">
       <li><a href="index.html" class="nav__link">Home</a></li>
+      <li>
+        <div class="nav__find-wrap">
+          <button class="nav__find-btn" onclick="toggleFindPros(event)">Find Professionals <span class="nav__find-chevron">▾</span></button>
+          <div class="nav__find-dropdown">
+            <a href="lenders.html"><span class="nav__find-dropdown__icon">💰</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Lenders</span><span class="nav__find-dropdown__desc">Find mortgage partners</span></span></a>
+            <a href="find-architect.html"><span class="nav__find-dropdown__icon">📐</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Architects</span><span class="nav__find-dropdown__desc">Search by location &amp; style</span></span></a>
+            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Bid your plans locally</span></span></a>
+          </div>
+        </div>
+      </li>
       <li><a href="marketplace.html" class="nav__link">Plan Marketplace</a></li>
       <li><a href="professionals.html" class="nav__link">For Professionals</a></li>
     </ul>
@@ -263,9 +273,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   const grid      = document.getElementById('planGrid');
   const countEl   = document.getElementById('planCount');
 
-  // Preload favorites
-  await loadFavorites();
-
   // Placeholder gradients for cards without a cover image
   const gradients = [
     'linear-gradient(135deg,#1B3A6B,#2D6A4F)',
@@ -330,17 +337,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         ? `<a href="architect-profile.html?id=${plan.user_id}" onclick="event.stopPropagation()" style="color:var(--green);font-size:0.82rem">✓ Verified · ${plan.architect}</a>`
         : `<p class="plan-card__arch">✓ Verified · ${plan.architect}</p>`;
 
-      const isFav = isFavorited('plan', plan.plan_id);
-      const heartIcon = isFav ? '❤️' : '🤍';
-
       return `
         <div class="plan-card" onclick='openPlanDetail(${planJson})'>
           <div class="plan-card__img" style="background:${gradient}">
             ${plan.featured ? '<span class="plan-card__badge">Featured</span>' : ''}
-            <button class="fav-btn ${isFav ? 'fav-active' : ''}"
-              data-fav-type="plan" data-fav-id="${plan.plan_id}"
-              onclick="handleFavClick(event, 'plan', '${plan.plan_id}', '${plan.name.replace(/'/g, "\\'")}', ${JSON.stringify({beds:plan.beds,baths:plan.baths,sqft:plan.sqft,price:plan.price,style:plan.style,architect:plan.architect,emoji:plan.emoji||'🏠',gradient:gradient,architectUserId:plan.user_id||''}).replace(/"/g, '&quot;')})"
-              title="${isFav ? 'Remove from saved' : 'Save to favorites'}">${heartIcon}</button>
             ${cardImg}
           </div>
           <div class="plan-card__body">

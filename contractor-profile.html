@@ -54,9 +54,7 @@
       flex-shrink: 0;
       border: 4px solid white;
       box-shadow: var(--shadow-md);
-      overflow: hidden;
     }
-    .profile-avatar img { width:100%; height:100%; object-fit:cover; }
     .profile-card__info { flex: 1; min-width: 200px; }
     .profile-card__name {
       font-family: var(--font-display);
@@ -201,17 +199,6 @@
     }
     #contMap { width:100%; height:320px; border-radius:var(--radius-md); z-index:0; }
 
-    .portfolio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
-    .portfolio-item{border-radius:var(--radius-md);overflow:hidden;aspect-ratio:4/3;cursor:pointer;position:relative;box-shadow:var(--shadow-sm);transition:transform 0.25s,box-shadow 0.25s}
-    .portfolio-item:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
-    .portfolio-item img{width:100%;height:100%;object-fit:cover}
-    .portfolio-item__caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.6));color:white;padding:16px 12px 10px;font-size:0.82rem;font-weight:500}
-    .review-card__images{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .review-card__img{width:100px;height:80px;border-radius:var(--radius-sm);object-fit:cover;cursor:pointer;border:1px solid var(--cream-dark);transition:transform 0.2s}
-    .review-card__img:hover{transform:scale(1.05)}
-    .lightbox-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer}
-    .lightbox-overlay img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:var(--radius-md)}
-
     @media(max-width:640px) {
       .profile-card { padding: 28px 20px 0; }
       .profile-card__top { gap: 20px; }
@@ -230,6 +217,16 @@
     </a>
     <ul class="nav__links" id="nav-links">
       <li><a href="index.html" class="nav__link">Home</a></li>
+      <li>
+        <div class="nav__find-wrap">
+          <button class="nav__find-btn" onclick="toggleFindPros(event)">Find Professionals <span class="nav__find-chevron">▾</span></button>
+          <div class="nav__find-dropdown">
+            <a href="lenders.html"><span class="nav__find-dropdown__icon">💰</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Lenders</span><span class="nav__find-dropdown__desc">Find mortgage partners</span></span></a>
+            <a href="find-architect.html"><span class="nav__find-dropdown__icon">📐</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Architects</span><span class="nav__find-dropdown__desc">Search by location &amp; style</span></span></a>
+            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Bid your plans locally</span></span></a>
+          </div>
+        </div>
+      </li>
       <li><a href="marketplace.html" class="nav__link">Plan Marketplace</a></li>
       <li><a href="professionals.html" class="nav__link">For Professionals</a></li>
     </ul>
@@ -261,7 +258,7 @@
       <a href="contractors.html" style="color:rgba(255,255,255,0.6);font-size:0.85rem;display:inline-flex;align-items:center;gap:6px;margin-bottom:24px">← Back to Contractors</a>
       <div class="profile-card">
         <div class="profile-card__top">
-          <div class="profile-avatar" id="profileAvatar">🏗️</div>
+          <div class="profile-avatar">🏗️</div>
           <div class="profile-card__info">
             <div class="profile-card__name" id="profileName">—</div>
             <div class="profile-card__verified">✓ Verified Contractor on Narrow</div>
@@ -285,11 +282,6 @@
               <div class="profile-stat__num" id="statReviews">—</div>
               <div class="profile-stat__label">Reviews</div>
             </div>
-            <div class="profile-stat">
-              <button id="saveContractorBtn" onclick="toggleSaveContractor()" style="background:none;border:1.5px solid var(--cream-dark);border-radius:var(--radius-sm);padding:8px 16px;font-size:0.82rem;font-weight:600;cursor:pointer;color:var(--navy);font-family:var(--font-body);transition:all 0.2s;display:flex;align-items:center;gap:6px">
-                <span>🤍</span> Save
-              </button>
-            </div>
           </div>
         </div>
 
@@ -301,7 +293,6 @@
 
         <div class="profile-tabs">
           <button class="profile-tab active" onclick="switchTab('about')">About</button>
-          <button class="profile-tab" onclick="switchTab('portfolio')">📷 Portfolio</button>
           <button class="profile-tab" onclick="switchTab('map')">📍 Service Area</button>
           <button class="profile-tab" onclick="switchTab('reviews')">⭐ Reviews</button>
         </div>
@@ -341,21 +332,6 @@
         </div>
       </div>
 
-      <!-- Portfolio Tab -->
-      <div class="tab-panel" id="tab-portfolio">
-        <div style="max-width:900px">
-          <div class="dash-panel">
-            <h3 style="margin-bottom:20px">Portfolio — Work Examples</h3>
-            <div id="portfolioGrid" class="portfolio-grid">
-              <div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--gray)">
-                <div style="font-size:2rem;margin-bottom:12px">📷</div>
-                <p>No portfolio images yet.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Map Tab -->
       <div class="tab-panel" id="tab-map">
         <div class="dash-panel" style="max-width:720px">
@@ -386,11 +362,6 @@
               <div class="form-group" style="margin-top:12px">
                 <label>Your Review</label>
                 <textarea id="reviewText" rows="4" placeholder="Describe your experience — quality of work, communication, timeline, professionalism…" style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
-              </div>
-              <div class="form-group">
-                <label>Attach Images (optional)</label>
-                <input type="file" id="reviewImages" accept="image/*" multiple style="font-size:0.9rem;font-family:var(--font-body)">
-                <p style="font-size:0.78rem;color:var(--gray);margin-top:4px">Upload photos of the finished build or your experience. Max 4 images.</p>
               </div>
               <button class="btn btn-green" onclick="submitReview()" id="reviewSubmitBtn">Submit Review →</button>
             </div>
@@ -450,14 +421,6 @@ window.setRating = function(val) {
   });
 };
 
-window.openLightbox = function(src) {
-  const o = document.createElement('div');
-  o.className = 'lightbox-overlay';
-  o.onclick = () => o.remove();
-  o.innerHTML = `<img src="${src}" alt="Full size">`;
-  document.body.appendChild(o);
-};
-
 async function loadProfile() {
   const params = new URLSearchParams(window.location.search);
   const userId = params.get('id');
@@ -506,16 +469,6 @@ async function loadProfile() {
     document.getElementById('profileLoading').style.display = 'none';
     document.getElementById('profileWrap').style.display = 'block';
 
-    // Check if contractor is saved
-    await loadFavorites();
-    if (isFavorited('contractor', userId)) {
-      const btn = document.getElementById('saveContractorBtn');
-      btn.innerHTML = '<span>❤️</span> Saved';
-      btn.style.background = 'rgba(45,106,79,0.06)';
-      btn.style.borderColor = 'var(--green)';
-      btn.style.color = 'var(--green)';
-    }
-
   } catch(err) {
     console.error('Profile load error:', err);
     document.getElementById('profileLoading').style.display = 'none';
@@ -525,11 +478,7 @@ async function loadProfile() {
 
 function renderProfile(profile, reviews) {
   document.title = `${profile.company || 'Contractor'} — Narrow`;
-  document.getElementById('profileName').textContent = profile.company || profile.company_name || 'Contractor';
-
-  // Logo
-  const avatarEl = document.getElementById('profileAvatar');
-  if (profile.logo_url) avatarEl.innerHTML = `<img src="${profile.logo_url}" alt="${profile.company || 'Logo'}">`;
+  document.getElementById('profileName').textContent = profile.company || 'Contractor';
 
   if (profile.license_number) {
     document.getElementById('profileLicense').textContent = `📋 License #${profile.license_number}`;
@@ -600,19 +549,6 @@ function renderProfile(profile, reviews) {
   }
 
   renderReviews(reviews);
-
-  // Portfolio
-  renderPortfolio(profile.portfolio_images || []);
-}
-
-function renderPortfolio(images) {
-  const grid = document.getElementById('portfolioGrid');
-  if (!images || images.length === 0) return;
-  grid.innerHTML = images.map((img, idx) => {
-    const url = typeof img === 'string' ? img : img.url;
-    const caption = typeof img === 'object' ? (img.caption || '') : '';
-    return `<div class="portfolio-item" onclick="openLightbox('${url}')"><img src="${url}" alt="Portfolio ${idx+1}" loading="lazy">${caption ? `<div class="portfolio-item__caption">${caption}</div>` : ''}</div>`;
-  }).join('');
 }
 
 function initMap(profile) {
@@ -656,8 +592,6 @@ function renderReviews(reviews) {
   list.innerHTML = reviews.map(r => {
     const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
     const date  = new Date(r.created_at).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
-    const imgs = r.review_images || [];
-    const imgsHtml = imgs.length > 0 ? `<div class="review-card__images">${imgs.map(u => `<img src="${u}" class="review-card__img" onclick="openLightbox('${u}')" alt="Review photo">`).join('')}</div>` : '';
     return `
       <div class="review-card" style="margin-bottom:16px">
         <div class="review-card__header">
@@ -668,7 +602,6 @@ function renderReviews(reviews) {
           <div class="review-card__date">${date}</div>
         </div>
         <div class="review-card__text">${r.review_text || ''}</div>
-        ${imgsHtml}
       </div>`;
   }).join('');
 }
@@ -684,28 +617,9 @@ window.submitReview = async function() {
   btn.disabled = true;
 
   try {
-    // Upload review images if any
-    let imageUrls = [];
-    const fileInput = document.getElementById('reviewImages');
-    if (fileInput && fileInput.files.length > 0) {
-      const fd = new FormData();
-      fd.append('asset_type', 'review-image');
-      fd.append('target_user_id', contractorUserId);
-      Array.from(fileInput.files).slice(0, 4).forEach((f, i) => fd.append(`file_${i}`, f));
-      const { data: { session: sess } } = await narrowSupabase.auth.getSession();
-      const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/upload-profile-asset', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${sess.access_token}`,
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
-        },
-        body: fd,
-      });
-      const data = await res.json();
-      if (res.ok && data.urls) imageUrls = data.urls;
-    }
-
-    const reviewData = {
+    const { error } = await narrowSupabase
+      .from('contractor_reviews')
+      .insert({
         contractor_user_id: contractorUserId,
         reviewer_user_id:   currentSession.user.id,
         reviewer_name:      currentSession.user.user_metadata?.full_name ||
@@ -713,12 +627,7 @@ window.submitReview = async function() {
         rating:             currentRating,
         review_text:        text,
         created_at:         new Date().toISOString(),
-    };
-    if (imageUrls.length > 0) reviewData.review_images = imageUrls;
-
-    const { error } = await narrowSupabase
-      .from('contractor_reviews')
-      .insert(reviewData);
+      });
 
     if (error) throw error;
 
@@ -762,23 +671,6 @@ function waitForClient(tries) {
     setTimeout(() => waitForClient(tries + 1).then(resolve).catch(reject), 100);
   });
 }
-
-window.toggleSaveContractor = async function() {
-  const name = contractorProfile?.company || contractorProfile?.company_name || 'Contractor';
-  const result = await toggleFavorite('contractor', contractorUserId, name, {});
-  const btn = document.getElementById('saveContractorBtn');
-  if (result === true) {
-    btn.innerHTML = '<span>❤️</span> Saved';
-    btn.style.background = 'rgba(45,106,79,0.06)';
-    btn.style.borderColor = 'var(--green)';
-    btn.style.color = 'var(--green)';
-  } else if (result === false) {
-    btn.innerHTML = '<span>🤍</span> Save';
-    btn.style.background = '';
-    btn.style.borderColor = '';
-    btn.style.color = '';
-  }
-};
 
 loadProfile();
 </script>
