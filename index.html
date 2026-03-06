@@ -40,7 +40,7 @@
           <div class="nav__find-dropdown">
             <a href="lenders.html"><span class="nav__find-dropdown__icon">💰</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Lenders</span><span class="nav__find-dropdown__desc">Find mortgage partners</span></span></a>
             <a href="find-architect.html"><span class="nav__find-dropdown__icon">📐</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Architects</span><span class="nav__find-dropdown__desc">Search by location &amp; style</span></span></a>
-            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Bid your plans locally</span></span></a>
+            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Get quotes from local builders</span></span></a>
           </div>
         </div>
       </li>
@@ -78,8 +78,11 @@
           <span style="color:rgba(255,255,255,0.6);font-size:0.85rem;display:flex;align-items:center;gap:6px">🔒 Verified professionals</span>
           <span style="color:rgba(255,255,255,0.6);font-size:0.85rem;display:flex;align-items:center;gap:6px">⭐ Rated &amp; reviewed</span>
         </div>
-        <div style="margin-top:24px">
-          <a href="marketplace.html" style="color:var(--amber);font-size:0.9rem;font-weight:600;text-decoration:none">📐 The Shouse Plan — $695 — Browse the marketplace →</a>
+        <div style="display:flex;gap:16px;margin-top:20px;flex-wrap:wrap;align-items:center">
+          <span class="social-proof" style="background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.85)"><span class="social-proof__dot" style="background:rgba(255,255,255,0.85)"></span> Homebuilders across the U.S. are using Narrow</span>
+        </div>
+        <div style="margin-top:20px">
+          <a href="marketplace.html" style="color:var(--amber);font-size:0.9rem;font-weight:600;text-decoration:none">📐 Browse Home Designs — The Shouse Plan $695 →</a>
         </div>
       </div>
     </div>
@@ -219,8 +222,8 @@
       <div class="journey-step">
         <div class="journey-step__dot">6</div>
         <div class="journey-step__content">
-          <h4>Bid Plans</h4>
-          <p>Get bids from 3+ vetted contractors.</p>
+          <h4>Get Quotes</h4>
+          <p>Get quotes from 3+ vetted contractors near you.</p>
         </div>
       </div>
       <div class="journey-step">
@@ -534,6 +537,49 @@
   </div>
 </section>
 
+<!-- ── WELCOME BANNER (first-time visitors) ──── -->
+<div class="welcome-banner" id="welcomeBanner">
+  <span class="welcome-banner__icon">👋</span>
+  <div class="welcome-banner__text">
+    <p class="welcome-banner__title">New to building? You're in the right place.</p>
+    <p class="welcome-banner__desc">We'll walk you through every step — no experience needed. <a href="#" onclick="startJourney();return false;">Take the quick questionnaire →</a></p>
+  </div>
+  <button class="welcome-banner__close" onclick="dismissWelcome()" aria-label="Dismiss">✕</button>
+</div>
+
+<!-- ── HELP WIDGET (Talk to Narrow) ────────── -->
+<div class="help-widget" id="helpWidget">
+  <div class="help-panel" id="helpPanel">
+    <div class="help-panel__header">
+      <h4>Not sure where to start?</h4>
+      <p>We're real people, and we're here to help.</p>
+    </div>
+    <div class="help-panel__body">
+      <a href="#" onclick="startJourney();document.getElementById('helpPanel').classList.remove('open');return false;" class="help-panel__link">
+        <div class="help-panel__link-icon">📋</div>
+        <div><div class="help-panel__link-text">Take the Questionnaire</div><div class="help-panel__link-sub">4 quick questions to build your path</div></div>
+      </a>
+      <a href="#contact" class="help-panel__link" onclick="document.getElementById('helpPanel').classList.remove('open')">
+        <div class="help-panel__link-icon">✉️</div>
+        <div><div class="help-panel__link-text">Send Us a Message</div><div class="help-panel__link-sub">We typically respond within a few hours</div></div>
+      </a>
+      <a href="marketplace.html" class="help-panel__link">
+        <div class="help-panel__link-icon">🏠</div>
+        <div><div class="help-panel__link-text">Browse Home Designs</div><div class="help-panel__link-sub">Explore plans from real architects</div></div>
+      </a>
+      <a href="#how-it-works" class="help-panel__link" onclick="document.getElementById('helpPanel').classList.remove('open')">
+        <div class="help-panel__link-icon">🗺️</div>
+        <div><div class="help-panel__link-text">See How It Works</div><div class="help-panel__link-sub">The 7-step journey, explained simply</div></div>
+      </a>
+    </div>
+  </div>
+  <div class="help-widget__tooltip" id="helpTooltip">
+    <p>Need help? We're here.</p>
+    <span>Talk to the Narrow team</span>
+  </div>
+  <button class="help-widget__btn" onclick="toggleHelpPanel()" aria-label="Get help">💬</button>
+</div>
+
 <footer class="footer">
   <div class="container">
     <div class="footer__grid">
@@ -642,6 +688,44 @@ function toggleAccordion(btn) {
     console.log('Coverage stats not yet available');
   }
 })();
+</script>
+<script>
+// ── Welcome banner (one-time, dismissible) ──
+(function() {
+  var dismissed = false;
+  try { dismissed = sessionStorage.getItem('narrow_welcome_dismissed') === '1'; } catch(e) {}
+  var banner = document.getElementById('welcomeBanner');
+  if (banner && dismissed) { banner.style.display = 'none'; }
+})();
+function dismissWelcome() {
+  var b = document.getElementById('welcomeBanner');
+  if (b) { b.style.opacity = '0'; b.style.transform = 'translateX(-50%) translateY(20px)'; setTimeout(function(){ b.style.display = 'none'; }, 400); }
+  try { sessionStorage.setItem('narrow_welcome_dismissed', '1'); } catch(e) {}
+}
+
+// ── Help widget ──
+function toggleHelpPanel() {
+  var panel = document.getElementById('helpPanel');
+  var tooltip = document.getElementById('helpTooltip');
+  if (panel) { panel.classList.toggle('open'); }
+  if (tooltip) { tooltip.style.display = 'none'; }
+}
+// Show tooltip briefly after 4 seconds then hide
+setTimeout(function() {
+  var tt = document.getElementById('helpTooltip');
+  if (tt) {
+    tt.classList.add('help-widget__tooltip--show');
+    setTimeout(function(){ tt.classList.remove('help-widget__tooltip--show'); }, 4000);
+  }
+}, 4000);
+// Close help panel if clicking outside
+document.addEventListener('click', function(e) {
+  var widget = document.getElementById('helpWidget');
+  var panel = document.getElementById('helpPanel');
+  if (panel && panel.classList.contains('open') && widget && !widget.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
 </script>
 </body>
 </html>

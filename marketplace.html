@@ -29,7 +29,7 @@
           <div class="nav__find-dropdown">
             <a href="lenders.html"><span class="nav__find-dropdown__icon">💰</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Lenders</span><span class="nav__find-dropdown__desc">Find mortgage partners</span></span></a>
             <a href="find-architect.html"><span class="nav__find-dropdown__icon">📐</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Architects</span><span class="nav__find-dropdown__desc">Search by location &amp; style</span></span></a>
-            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Bid your plans locally</span></span></a>
+            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Get quotes from local builders</span></span></a>
           </div>
         </div>
       </li>
@@ -50,12 +50,16 @@
   <div class="hero-overlay" style="position:absolute;inset:0;background:rgba(18,40,80,0.62);z-index:1"></div>
   <div class="container hero__content" style="position:relative;z-index:2">
     <span class="hero__eyebrow">Step 4 of Your Journey</span>
-    <h1>Plan<br><span style="color:var(--amber)">Marketplace</span></h1>
-    <p>Browse verified home plans from licensed architects. Each plan is their business — priced by them, sold through Narrow. Purchase securely and customize if needed.</p>
+    <h1>Browse<br><span style="color:var(--amber)">Home Designs</span></h1>
+    <p class="friendly-subtitle">Your Plan Marketplace</p>
+    <p>Browse verified home plans from licensed architects. Each plan is their work — priced by them, sold through Narrow. Purchase securely and customize to make it yours.</p>
     <div style="display:flex;gap:24px;margin-top:28px;flex-wrap:wrap">
       <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;display:flex;align-items:center;gap:6px">✅ Verified architects</span>
-      <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;display:flex;align-items:center;gap:6px">📐 More plans coming soon</span>
+      <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;display:flex;align-items:center;gap:6px">📐 New designs added regularly</span>
       <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;display:flex;align-items:center;gap:6px">💳 Secure purchase</span>
+    </div>
+    <div style="margin-top:16px">
+      <span class="social-proof" style="background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.85)"><span class="social-proof__dot" style="background:rgba(255,255,255,0.85)"></span> Real architects. Real plans. Built for real families.</span>
     </div>
   </div>
 </section>
@@ -76,8 +80,8 @@
     <!-- Customization callout -->
     <div style="margin-top:60px;background:linear-gradient(135deg,rgba(27,58,107,0.06),rgba(45,106,79,0.06));border:1px solid rgba(27,58,107,0.12);border-radius:var(--radius-md);padding:40px;text-align:center">
       <span class="section-label">Step 5</span>
-      <h2 style="margin-bottom:12px">Need to customize a plan?</h2>
-      <p style="max-width:500px;margin:0 auto 28px">After purchasing, the architect can modify your plan — layout changes, regional code adaptation, and permit-ready drawings. Don't settle for 90% right when you can make it 100% yours.</p>
+      <h2 style="margin-bottom:12px">Want to make a plan yours?</h2>
+      <p style="max-width:500px;margin:0 auto 28px">After purchasing, your architect can tweak anything — room sizes, layouts, even adjustments for your local building codes. You don't have to settle for "close enough."</p>
       <a href="index.html#how-it-works" class="btn btn-outline">Learn About Customization</a>
     </div>
 
@@ -389,6 +393,38 @@ document.addEventListener('DOMContentLoaded', async function() {
       </div>`;
   }
 });
+</script>
+<!-- Help Widget -->
+<div class="help-widget" id="helpWidget">
+  <div class="help-panel" id="helpPanel">
+    <div class="help-panel__header">
+      <h4>Not sure where to start?</h4>
+      <p>We're real people, and we're here to help.</p>
+    </div>
+    <div class="help-panel__body">
+      <a href="index.html" class="help-panel__link">
+        <div class="help-panel__link-icon">🏠</div>
+        <div><div class="help-panel__link-text">Back to Home</div><div class="help-panel__link-sub">See the full A-to-Z journey</div></div>
+      </a>
+      <a href="index.html#contact" class="help-panel__link">
+        <div class="help-panel__link-icon">✉️</div>
+        <div><div class="help-panel__link-text">Send Us a Message</div><div class="help-panel__link-sub">We typically respond within a few hours</div></div>
+      </a>
+      <a href="marketplace.html" class="help-panel__link">
+        <div class="help-panel__link-icon">📐</div>
+        <div><div class="help-panel__link-text">Browse Home Designs</div><div class="help-panel__link-sub">Explore plans from real architects</div></div>
+      </a>
+    </div>
+  </div>
+  <div class="help-widget__tooltip" id="helpTooltip">
+    <p>Need help? We're here.</p>
+    <span>Talk to the Narrow team</span>
+  </div>
+  <button class="help-widget__btn" onclick="toggleHelpPanel()" aria-label="Get help">💬</button>
+</div>
+<script>
+function toggleHelpPanel(){var p=document.getElementById("helpPanel");var t=document.getElementById("helpTooltip");if(p)p.classList.toggle("open");if(t)t.style.display="none";}
+document.addEventListener("click",function(e){var w=document.getElementById("helpWidget");var p=document.getElementById("helpPanel");if(p&&p.classList.contains("open")&&w&&!w.contains(e.target))p.classList.remove("open");});
 </script>
 </body>
 </html>

@@ -107,7 +107,7 @@
           <div class="nav__find-dropdown">
             <a href="lenders.html"><span class="nav__find-dropdown__icon">💰</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Lenders</span><span class="nav__find-dropdown__desc">Find mortgage partners</span></span></a>
             <a href="find-architect.html"><span class="nav__find-dropdown__icon">📐</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Architects</span><span class="nav__find-dropdown__desc">Search by location &amp; style</span></span></a>
-            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Bid your plans locally</span></span></a>
+            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Get quotes from local builders</span></span></a>
           </div>
         </div>
       </li>
@@ -553,6 +553,38 @@ function extractState(displayName) {
   }
   return null;
 }
+</script>
+<!-- Help Widget -->
+<div class="help-widget" id="helpWidget">
+  <div class="help-panel" id="helpPanel">
+    <div class="help-panel__header">
+      <h4>Not sure where to start?</h4>
+      <p>We're real people, and we're here to help.</p>
+    </div>
+    <div class="help-panel__body">
+      <a href="index.html" class="help-panel__link">
+        <div class="help-panel__link-icon">🏠</div>
+        <div><div class="help-panel__link-text">Back to Home</div><div class="help-panel__link-sub">See the full A-to-Z journey</div></div>
+      </a>
+      <a href="index.html#contact" class="help-panel__link">
+        <div class="help-panel__link-icon">✉️</div>
+        <div><div class="help-panel__link-text">Send Us a Message</div><div class="help-panel__link-sub">We typically respond within a few hours</div></div>
+      </a>
+      <a href="marketplace.html" class="help-panel__link">
+        <div class="help-panel__link-icon">📐</div>
+        <div><div class="help-panel__link-text">Browse Home Designs</div><div class="help-panel__link-sub">Explore plans from real architects</div></div>
+      </a>
+    </div>
+  </div>
+  <div class="help-widget__tooltip" id="helpTooltip">
+    <p>Need help? We're here.</p>
+    <span>Talk to the Narrow team</span>
+  </div>
+  <button class="help-widget__btn" onclick="toggleHelpPanel()" aria-label="Get help">💬</button>
+</div>
+<script>
+function toggleHelpPanel(){var p=document.getElementById("helpPanel");var t=document.getElementById("helpTooltip");if(p)p.classList.toggle("open");if(t)t.style.display="none";}
+document.addEventListener("click",function(e){var w=document.getElementById("helpWidget");var p=document.getElementById("helpPanel");if(p&&p.classList.contains("open")&&w&&!w.contains(e.target))p.classList.remove("open");});
 </script>
 </body>
 </html>

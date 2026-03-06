@@ -242,7 +242,7 @@
           <div class="nav__find-dropdown">
             <a href="lenders.html"><span class="nav__find-dropdown__icon">💰</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Lenders</span><span class="nav__find-dropdown__desc">Find mortgage partners</span></span></a>
             <a href="find-architect.html"><span class="nav__find-dropdown__icon">📐</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Architects</span><span class="nav__find-dropdown__desc">Search by location &amp; style</span></span></a>
-            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Bid your plans locally</span></span></a>
+            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Get quotes from local builders</span></span></a>
           </div>
         </div>
       </li>
@@ -329,8 +329,18 @@
       <!-- About Tab -->
       <div class="tab-panel" id="tab-about">
         <div style="max-width:720px">
+          <!-- Why I do this — humanizing quote -->
+          <div id="profileQuoteBlock" style="display:none;margin-bottom:24px">
+            <div class="profile-quote">
+              <span class="profile-quote__label">Why I design homes</span>
+              <span id="profileQuoteText"></span>
+            </div>
+          </div>
           <div class="dash-panel" style="margin-bottom:24px">
-            <h3 style="margin-bottom:16px">About the Firm</h3>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+              <h3 style="margin:0">About the Firm</h3>
+              <span class="profile-families" id="profileFamilies" style="display:none">🏡 <span id="familiesCount"></span> families helped through Narrow</span>
+            </div>
             <p id="profileBio" style="line-height:1.8"></p>
           </div>
           <div class="dash-panel" style="margin-bottom:24px">
@@ -522,6 +532,26 @@ function renderProfile(profile, plans, reviews) {
   // About tab
   document.getElementById('profileBio').textContent =
     profile.bio || 'No description provided yet.';
+
+  // Humanizing quote (if architect has provided one)
+  if (profile.why_i_design || profile.tagline) {
+    var quoteBlock = document.getElementById('profileQuoteBlock');
+    var quoteText = document.getElementById('profileQuoteText');
+    if (quoteBlock && quoteText) {
+      quoteText.textContent = profile.why_i_design || profile.tagline;
+      quoteBlock.style.display = 'block';
+    }
+  }
+
+  // Families helped social proof
+  if (reviews.length > 0) {
+    var familiesEl = document.getElementById('profileFamilies');
+    var countEl = document.getElementById('familiesCount');
+    if (familiesEl && countEl) {
+      countEl.textContent = reviews.length;
+      familiesEl.style.display = 'inline-flex';
+    }
+  }
 
   const specialties = (profile.specialties || '').split(',').map(s => s.trim()).filter(Boolean);
   document.getElementById('profileSpecialties').innerHTML = specialties.length
