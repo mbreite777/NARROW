@@ -257,6 +257,28 @@
   <section class="section" style="padding-top:48px">
     <div class="container" style="max-width:900px">
 
+      <!-- Upgrade to Pro Banner (free contractors only) -->
+      <div id="upgradeProBanner" style="display:none;background:linear-gradient(135deg,var(--navy),var(--navy-dark));border-radius:var(--radius-lg);padding:32px;margin-bottom:32px;color:white">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px">
+          <div>
+            <h3 style="color:white;margin:0 0 6px">Upgrade to Pro</h3>
+            <p style="margin:0;color:rgba(255,255,255,0.7);font-size:0.9rem">Go live in the builder directory, access project leads, submit bids, and manage your pipeline.</p>
+          </div>
+          <button id="upgradeProBtn" class="btn btn-primary btn-lg" onclick="upgradeToContractorPro()" style="white-space:nowrap">
+            Upgrade to Pro — $99/mo
+          </button>
+        </div>
+      </div>
+
+      <!-- Pro Status Badge (Pro contractors only) -->
+      <div id="proStatusBadge" style="display:none;background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:32px;align-items:center;gap:12px">
+        <span style="font-size:1.2rem">✅</span>
+        <div>
+          <p style="font-weight:700;color:var(--green);margin:0;font-size:0.9rem">Pro Contractor</p>
+          <p style="font-size:0.82rem;color:var(--gray);margin:0">Your profile is live in the directory. Builders can find you and send bid requests.</p>
+        </div>
+      </div>
+
       <!-- Public Profile Editor -->
       <div class="dash-panel">
         <div class="dash-panel__header">
@@ -368,6 +390,35 @@
         <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">Active and past client engagements will appear here.</p>
       </div>
 
+      <!-- Project Pipeline (Pro only) -->
+      <div id="contractorPipeline" style="display:none" class="dash-panel">
+        <div class="dash-panel__header">
+          <h3>📊 Project Pipeline</h3>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;overflow-x:auto;padding:16px 0">
+          <div>
+            <h4 style="color:var(--gray);font-size:0.75rem;text-transform:uppercase;margin-bottom:12px;font-weight:700">New Lead</h4>
+            <div id="pipeNewLead"><p style="font-size:0.8rem;color:var(--gray);text-align:center;padding:20px 0">—</p></div>
+          </div>
+          <div>
+            <h4 style="color:var(--navy);font-size:0.75rem;text-transform:uppercase;margin-bottom:12px;font-weight:700">Invited to Bid</h4>
+            <div id="pipeInvited"><p style="font-size:0.8rem;color:var(--gray);text-align:center;padding:20px 0">—</p></div>
+          </div>
+          <div>
+            <h4 style="color:var(--amber-dark);font-size:0.75rem;text-transform:uppercase;margin-bottom:12px;font-weight:700">Bid Submitted</h4>
+            <div id="pipeBidSubmitted"><p style="font-size:0.8rem;color:var(--gray);text-align:center;padding:20px 0">—</p></div>
+          </div>
+          <div>
+            <h4 style="color:var(--charcoal);font-size:0.75rem;text-transform:uppercase;margin-bottom:12px;font-weight:700">Negotiation</h4>
+            <div id="pipeNegotiation"><p style="font-size:0.8rem;color:var(--gray);text-align:center;padding:20px 0">—</p></div>
+          </div>
+          <div>
+            <h4 style="color:var(--green);font-size:0.75rem;text-transform:uppercase;margin-bottom:12px;font-weight:700">Project Won</h4>
+            <div id="pipeWon"><p style="font-size:0.8rem;color:var(--gray);text-align:center;padding:20px 0">—</p></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 </div>
@@ -477,6 +528,7 @@ async function initDashboard() {
       document.getElementById('contractorDash').style.display = 'block';
       document.getElementById('contGreeting').textContent = `Welcome back, ${firstName}!`;
       await loadContractorProfile();
+      await initContractorDash();
     } else {
       // Homebuilder
       document.getElementById('homebuilderDash').style.display = 'block';
@@ -1972,6 +2024,84 @@ const _scParams = new URLSearchParams(window.location.search);
 if (_scParams.get('stripe_return') === '1' || _scParams.get('stripe_refresh') === '1') {
   window.history.replaceState({}, '', window.location.pathname);
 }
+
+// ═══════════════════════════════════════════
+// CONTRACTOR PRO — Dashboard gating & pipeline
+// ═══════════════════════════════════════════
+async function initContractorDash() {
+  if (!userSession) return;
+
+  const isPro = await isContractorPro(userSession.user.id);
+
+  const upgradeBanner = document.getElementById('upgradeProBanner');
+  const proBadge = document.getElementById('proStatusBadge');
+  const pipeline = document.getElementById('contractorPipeline');
+
+  if (isPro) {
+    if (upgradeBanner) upgradeBanner.style.display = 'none';
+    if (proBadge) proBadge.style.display = 'flex';
+    if (pipeline) pipeline.style.display = 'block';
+    loadPipeline();
+  } else {
+    if (upgradeBanner) upgradeBanner.style.display = 'block';
+    if (proBadge) proBadge.style.display = 'none';
+    if (pipeline) pipeline.style.display = 'none';
+  }
+}
+
+async function loadPipeline() {
+  if (!narrowSupabase || !userSession) return;
+
+  const { data, error } = await narrowSupabase
+    .from('contractor_pipeline')
+    .select('*, builder_projects(*)')
+    .eq('contractor_id', userSession.user.id)
+    .order('updated_at', { ascending: false });
+
+  if (error || !data) return;
+
+  const cols = {
+    'new_lead': document.getElementById('pipeNewLead'),
+    'invited_to_bid': document.getElementById('pipeInvited'),
+    'bid_submitted': document.getElementById('pipeBidSubmitted'),
+    'negotiation': document.getElementById('pipeNegotiation'),
+    'project_won': document.getElementById('pipeWon'),
+  };
+
+  Object.values(cols).forEach(el => { if (el) el.innerHTML = ''; });
+
+  if (data.length === 0) {
+    Object.values(cols).forEach(el => {
+      if (el) el.innerHTML = '<p style="font-size:0.8rem;color:var(--gray);text-align:center;padding:20px 0">—</p>';
+    });
+    return;
+  }
+
+  data.forEach(item => {
+    const project = item.builder_projects;
+    if (!project || !cols[item.pipeline_status]) return;
+
+    cols[item.pipeline_status].innerHTML += `
+      <div style="background:white;border:1px solid var(--cream-dark);border-radius:8px;padding:14px;margin-bottom:8px">
+        <p style="font-weight:700;color:var(--navy);margin:0 0 4px;font-size:0.9rem">${project.project_name || 'Untitled'}</p>
+        <p style="font-size:0.8rem;color:var(--gray);margin:0 0 4px">📍 ${project.build_location || 'Location TBD'}</p>
+        <p style="font-size:0.8rem;color:var(--gray);margin:0">💰 ${project.estimated_budget || 'Budget TBD'}</p>
+      </div>`;
+  });
+}
+
+// Handle subscription success redirect
+(function handleSubscriptionReturn() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('subscription') === 'success') {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;top:24px;right:24px;background:#2D6A4F;color:white;padding:16px 24px;border-radius:8px;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
+    toast.textContent = '✅ Pro subscription activated!';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+    window.history.replaceState({}, '', 'dashboard.html');
+  }
+})();
 
 waitForSupabase(initDashboard);
 </script>

@@ -6,6 +6,65 @@ const narrowSupabase = window.supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM'
 );
 
+// ── CONTRACTOR SUBSCRIPTION GATING ──────────────────────
+// Check if a contractor has an active Pro subscription
+async function isContractorPro(userId) {
+  if (!narrowSupabase) return false;
+  const { data, error } = await narrowSupabase
+    .from('subscriptions')
+    .select('tier, status')
+    .eq('user_id', userId)
+    .eq('role', 'contractor')
+    .eq('status', 'active')
+    .single();
+
+  if (error || !data) return false;
+  return data.tier === 'pro';
+}
+
+// Trigger the upgrade to Pro checkout flow
+async function upgradeToContractorPro() {
+  const { data: { session } } = await narrowSupabase.auth.getSession();
+  if (!session) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const btn = document.getElementById('upgradeProBtn');
+  if (btn) {
+    btn.textContent = 'Redirecting to checkout…';
+    btn.disabled = true;
+  }
+
+  try {
+    const res = await fetch(
+      'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/create-subscription',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ tier: 'contractor_pro' }),
+      }
+    );
+
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'No checkout URL returned');
+    }
+  } catch (err) {
+    console.error('Upgrade error:', err);
+    if (btn) {
+      btn.textContent = 'Upgrade to Pro — $99/mo';
+      btn.disabled = false;
+    }
+    alert('Something went wrong. Please try again.');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // ── Find Professionals dropdown HTML generator ──
