@@ -484,11 +484,12 @@ const STEPS = [
   },
   {
     title: 'Bid Your Plans',
-    desc: 'Find vetted contractors in your area and request competitive bids on your plans.',
+    desc: 'Create a project, invite contractors, and compare bids — all through Narrow.',
     icon: '🔨',
     actions: [
-      { label: '→ Find a Contractor', href: 'contractors.html', style: 'primary' },
-      { label: '→ Bid Portal', onclick: 'openBidPortal()', style: 'amber' }
+      { label: '→ Create Project', onclick: 'openCreateProject()', style: 'primary' },
+      { label: '→ My Projects', onclick: 'openMyProjects()', style: 'amber' },
+      { label: '→ Find a Contractor', href: 'contractors.html', style: 'outline' }
     ]
   },
   {
@@ -2024,6 +2025,479 @@ const _scParams = new URLSearchParams(window.location.search);
 if (_scParams.get('stripe_return') === '1' || _scParams.get('stripe_refresh') === '1') {
   window.history.replaceState({}, '', window.location.pathname);
 }
+
+// ═══════════════════════════════════════════
+// BUILDER — Project Creation & Bid Management
+// ═══════════════════════════════════════════
+
+window.openCreateProject = function() {
+  const overlay = document.createElement('div');
+  overlay.className = 'plan-modal-overlay';
+  overlay.onclick = function(e) { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
+
+  overlay.innerHTML = `
+    <div class="plan-modal" style="max-width:560px">
+      <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
+      <div style="padding:40px">
+        <h2 style="margin-bottom:6px">Create a Project</h2>
+        <p style="font-size:0.9rem;color:var(--gray);margin-bottom:24px">Fill in your build details. Contractors will see this when you invite them to bid.</p>
+
+        <div class="form-group">
+          <label>Project Name *</label>
+          <input type="text" id="projName" placeholder="e.g. Smith Family Custom Home">
+        </div>
+        <div class="form-group">
+          <label>Build Location (City, State) *</label>
+          <input type="text" id="projLocation" placeholder="e.g. Austin, TX">
+        </div>
+        <div class="form-group">
+          <label>Square Footage</label>
+          <input type="number" id="projSqft" placeholder="e.g. 2400">
+        </div>
+        <div class="form-group">
+          <label>Estimated Budget</label>
+          <select id="projBudget" style="width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem;background:white">
+            <option value="">Select range…</option>
+            <option>$200,000 – $300,000</option>
+            <option>$300,000 – $500,000</option>
+            <option>$500,000 – $750,000</option>
+            <option>$750,000 – $1,000,000</option>
+            <option>$1,000,000+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Build Timeline</label>
+          <select id="projTimeline" style="width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem;background:white">
+            <option value="">Select…</option>
+            <option>Ready now</option>
+            <option>1–3 months</option>
+            <option>3–6 months</option>
+            <option>6–12 months</option>
+            <option>12+ months</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" id="createProjBtn" onclick="submitBuilderProject()">Create Project →</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+};
+
+async function submitBuilderProject() {
+  if (!userSession) return;
+  const name = document.getElementById('projName').value.trim();
+  const location = document.getElementById('projLocation').value.trim();
+  if (!name || !location) { alert('Project name and location are required.'); return; }
+
+  const btn = document.getElementById('createProjBtn');
+  btn.textContent = 'Creating…';
+  btn.disabled = true;
+
+  // Geocode the location
+  let buildLat = null, buildLng = null;
+  try {
+    const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1`);
+    const geoData = await geoRes.json();
+    if (geoData.length > 0) {
+      buildLat = parseFloat(geoData[0].lat);
+      buildLng = parseFloat(geoData[0].lon);
+    }
+  } catch(e) { console.warn('Geocode failed:', e); }
+
+  const { data, error } = await narrowSupabase
+    .from('builder_projects')
+    .insert({
+      builder_id: userSession.user.id,
+      project_name: name,
+      build_location: location,
+      build_lat: buildLat,
+      build_lng: buildLng,
+      square_footage: parseInt(document.getElementById('projSqft').value) || null,
+      estimated_budget: document.getElementById('projBudget').value || null,
+      build_timeline: document.getElementById('projTimeline').value || null,
+      status: 'seeking_bids',
+    })
+    .select()
+    .single();
+
+  if (error) {
+    alert('Error creating project: ' + error.message);
+    btn.textContent = 'Create Project →';
+    btn.disabled = false;
+    return;
+  }
+
+  // Close modal and open invite contractors
+  document.querySelector('.plan-modal-overlay').remove();
+  document.body.style.overflow = '';
+  openInviteContractors(data);
+}
+
+async function openInviteContractors(project) {
+  const overlay = document.createElement('div');
+  overlay.className = 'plan-modal-overlay';
+  overlay.onclick = function(e) { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
+
+  overlay.innerHTML = `
+    <div class="plan-modal" style="max-width:640px">
+      <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
+      <div style="padding:40px">
+        <h2 style="margin-bottom:6px">Invite Contractors to Bid</h2>
+        <p style="font-size:0.9rem;color:var(--gray);margin-bottom:4px"><strong>${project.project_name}</strong> — ${project.build_location}</p>
+        <p style="font-size:0.85rem;color:var(--gray);margin-bottom:20px">Select Pro contractors in your area. They'll be notified and can submit bids through Narrow.</p>
+
+        <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center">
+          <input type="text" id="inviteFilter" placeholder="Filter by company or area…" style="flex:1;padding:10px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.9rem" oninput="filterInviteContractors()">
+          <span id="inviteCount" style="font-size:0.82rem;color:var(--navy);font-weight:700;white-space:nowrap">0 selected</span>
+        </div>
+
+        <div id="inviteContractorList" style="max-height:320px;overflow-y:auto;display:grid;gap:10px;margin-bottom:24px">
+          <p style="color:var(--gray);text-align:center;padding:32px 0;font-size:0.9rem">Loading contractors…</p>
+        </div>
+
+        <div style="display:flex;gap:12px">
+          <button class="btn btn-outline" style="flex:1;justify-content:center" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">Skip for Now</button>
+          <button class="btn btn-primary" style="flex:2;justify-content:center" id="sendInvitesBtn" onclick="sendInvitations('${project.id}')">Send Invitations →</button>
+        </div>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+
+  // Load contractors near the project
+  let allContractors = [];
+  const selectedIds = new Set();
+
+  try {
+    const radius = 100; // default 100 miles
+    const { data, error } = await narrowSupabase.rpc('search_contractors', {
+      search_lat: project.build_lat || 0,
+      search_lng: project.build_lng || 0,
+      search_radius_miles: radius,
+      budget_filter: null,
+      build_type_filter: null,
+      min_rating: 0
+    });
+
+    allContractors = data || [];
+  } catch(e) {
+    console.error('Contractor search error:', e);
+  }
+
+  function renderContractors(filter) {
+    const list = document.getElementById('inviteContractorList');
+    const filtered = filter
+      ? allContractors.filter(c => (c.company_name || '').toLowerCase().includes(filter) || (c.service_area || '').toLowerCase().includes(filter))
+      : allContractors;
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<p style="color:var(--gray);text-align:center;padding:32px 0;font-size:0.9rem">No contractors found in this area.</p>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(c => `
+      <div class="contractor-invite-row" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:${selectedIds.has(c.user_id) ? 'rgba(45,106,79,0.08)' : 'var(--cream)'};border-radius:8px;cursor:pointer;border:1.5px solid ${selectedIds.has(c.user_id) ? 'var(--green)' : 'transparent'};transition:all 0.15s"
+           onclick="toggleInvite('${c.user_id}')">
+        <span style="font-size:1.2rem">${selectedIds.has(c.user_id) ? '✅' : '⬜'}</span>
+        <div style="flex:1;min-width:0">
+          <p style="font-weight:600;color:var(--navy);margin:0;font-size:0.9rem">${c.company_name || 'Contractor'}</p>
+          <p style="font-size:0.8rem;color:var(--gray);margin:0">${c.service_area || ''} ${c.distance_miles ? '· ' + c.distance_miles.toFixed(0) + ' mi' : ''}</p>
+        </div>
+        ${c.rating > 0 ? `<span style="color:var(--amber);font-weight:700;font-size:0.85rem">★ ${c.rating.toFixed(1)}</span>` : ''}
+      </div>
+    `).join('');
+  }
+
+  window.toggleInvite = function(userId) {
+    if (selectedIds.has(userId)) selectedIds.delete(userId);
+    else selectedIds.add(userId);
+    document.getElementById('inviteCount').textContent = selectedIds.size + ' selected';
+    renderContractors(document.getElementById('inviteFilter').value.toLowerCase().trim());
+  };
+
+  window.filterInviteContractors = function() {
+    renderContractors(document.getElementById('inviteFilter').value.toLowerCase().trim());
+  };
+
+  window.sendInvitations = async function(projectId) {
+    if (selectedIds.size === 0) { alert('Select at least one contractor.'); return; }
+
+    const btn = document.getElementById('sendInvitesBtn');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    const invitations = Array.from(selectedIds).map(contractorId => ({
+      project_id: projectId,
+      contractor_id: contractorId,
+      invited_by: userSession.user.id,
+      status: 'pending',
+    }));
+
+    const { error } = await narrowSupabase.from('project_invitations').insert(invitations);
+    if (error) {
+      alert('Error sending invitations: ' + error.message);
+      btn.textContent = 'Send Invitations →';
+      btn.disabled = false;
+      return;
+    }
+
+    // Create pipeline entries for invited contractors
+    const pipelineEntries = Array.from(selectedIds).map(contractorId => ({
+      contractor_id: contractorId,
+      project_id: projectId,
+      pipeline_status: 'invited_to_bid',
+    }));
+    await narrowSupabase.from('contractor_pipeline').insert(pipelineEntries);
+
+    // Send notifications to each contractor
+    const project = allContractors.length > 0 ? document.querySelector('.plan-modal h2 + p strong')?.textContent : 'a project';
+    const notifications = Array.from(selectedIds).map(contractorId => ({
+      user_id: contractorId,
+      type: 'bid_invitation',
+      title: 'New Bid Invitation',
+      message: `You've been invited to bid on ${project}`,
+      link: 'dashboard.html',
+    }));
+    await narrowSupabase.from('notifications').insert(notifications);
+
+    overlay.querySelector('.plan-modal div[style*="padding:40px"]').innerHTML = `
+      <div style="text-align:center;padding:32px 0">
+        <span style="font-size:3rem">✅</span>
+        <h2 style="margin:16px 0 8px">Invitations Sent!</h2>
+        <p style="color:var(--gray);font-size:0.9rem;margin-bottom:24px">${selectedIds.size} contractor${selectedIds.size > 1 ? 's' : ''} have been invited to bid. You'll be notified when bids come in.</p>
+        <button class="btn btn-primary" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">Done</button>
+      </div>`;
+  };
+
+  renderContractors();
+}
+
+// ── My Projects & Bid Comparison ─────────────────────
+window.openMyProjects = async function() {
+  if (!userSession) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'plan-modal-overlay';
+  overlay.onclick = function(e) { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
+
+  overlay.innerHTML = `
+    <div class="plan-modal" style="max-width:700px">
+      <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
+      <div style="padding:40px" id="myProjectsContent">
+        <h2 style="margin-bottom:20px">My Projects</h2>
+        <p style="color:var(--gray);text-align:center;padding:32px 0">Loading…</p>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+
+  // Load projects
+  const { data: projects, error } = await narrowSupabase
+    .from('builder_projects')
+    .select('*, contractor_bids(count), project_invitations(count)')
+    .eq('builder_id', userSession.user.id)
+    .order('created_at', { ascending: false });
+
+  const content = document.getElementById('myProjectsContent');
+
+  if (error || !projects || projects.length === 0) {
+    content.innerHTML = `
+      <h2 style="margin-bottom:20px">My Projects</h2>
+      <div style="text-align:center;padding:32px 0">
+        <p style="color:var(--gray);margin-bottom:16px">You haven't created any projects yet.</p>
+        <button class="btn btn-primary" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow='';openCreateProject()">Create Your First Project →</button>
+      </div>`;
+    return;
+  }
+
+  content.innerHTML = `
+    <h2 style="margin-bottom:20px">My Projects</h2>
+    <div style="display:grid;gap:12px">
+      ${projects.map(p => `
+        <div style="background:var(--cream);border-radius:10px;padding:20px;cursor:pointer;border:1.5px solid transparent;transition:border-color 0.15s"
+             onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='transparent'"
+             onclick="viewProjectBids('${p.id}')">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div>
+              <p style="font-weight:700;color:var(--navy);margin:0;font-size:1rem">${p.project_name}</p>
+              <p style="font-size:0.85rem;color:var(--gray);margin:4px 0 0">📍 ${p.build_location || 'Location TBD'} ${p.estimated_budget ? '· 💰 ' + p.estimated_budget : ''}</p>
+            </div>
+            <span style="font-size:0.75rem;font-weight:700;padding:4px 10px;border-radius:99px;background:${p.status === 'seeking_bids' ? 'rgba(232,168,56,0.15);color:var(--amber-dark)' : p.status === 'contractor_selected' ? 'rgba(45,106,79,0.1);color:var(--green)' : 'var(--cream-dark);color:var(--gray)'}">${p.status.replace(/_/g, ' ')}</span>
+          </div>
+          <div style="display:flex;gap:16px;font-size:0.82rem;color:var(--gray)">
+            <span>📨 ${p.project_invitations?.[0]?.count || 0} invited</span>
+            <span>📋 ${p.contractor_bids?.[0]?.count || 0} bids</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+};
+
+window.viewProjectBids = async function(projectId) {
+  // Close my projects modal if open
+  const existingOverlay = document.querySelector('.plan-modal-overlay');
+  if (existingOverlay) { existingOverlay.remove(); document.body.style.overflow = ''; }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'plan-modal-overlay';
+  overlay.onclick = function(e) { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
+
+  overlay.innerHTML = `
+    <div class="plan-modal" style="max-width:800px">
+      <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
+      <div style="padding:40px" id="bidCompareContent">
+        <p style="color:var(--gray);text-align:center;padding:32px 0">Loading bids…</p>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+
+  // Load project + bids + invitations
+  const { data: project } = await narrowSupabase
+    .from('builder_projects')
+    .select('*')
+    .eq('id', projectId)
+    .single();
+
+  const { data: bids } = await narrowSupabase
+    .from('contractor_bids')
+    .select('*, contractor_profiles!contractor_bids_contractor_id_fkey(company_name, service_area, rating, experience_years)')
+    .eq('project_id', projectId)
+    .order('submitted_at', { ascending: true });
+
+  const { data: invitations } = await narrowSupabase
+    .from('project_invitations')
+    .select('*, contractor_profiles!project_invitations_contractor_id_fkey(company_name)')
+    .eq('project_id', projectId);
+
+  const content = document.getElementById('bidCompareContent');
+
+  const pendingInvites = (invitations || []).filter(i => i.status === 'pending' || i.status === 'viewed');
+
+  content.innerHTML = `
+    <div style="margin-bottom:24px">
+      <h2 style="margin:0 0 4px">${project?.project_name || 'Project'}</h2>
+      <p style="font-size:0.9rem;color:var(--gray);margin:0">📍 ${project?.build_location || ''} ${project?.estimated_budget ? '· 💰 ' + project.estimated_budget : ''} ${project?.build_timeline ? '· 🗓 ' + project.build_timeline : ''}</p>
+    </div>
+
+    ${bids && bids.length > 0 ? `
+      <h3 style="margin-bottom:12px;font-size:0.95rem">Bids Received (${bids.length})</h3>
+      <div style="display:grid;gap:12px;margin-bottom:24px">
+        ${bids.map(b => {
+          const cp = b.contractor_profiles;
+          return `
+          <div style="background:white;border:1.5px solid var(--cream-dark);border-radius:10px;padding:20px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+              <div>
+                <p style="font-weight:700;color:var(--navy);margin:0">${cp?.company_name || 'Contractor'}</p>
+                <p style="font-size:0.82rem;color:var(--gray);margin:2px 0 0">${cp?.service_area || ''} ${cp?.experience_years ? '· ' + cp.experience_years + ' yrs exp' : ''} ${cp?.rating > 0 ? '· ★ ' + cp.rating.toFixed(1) : ''}</p>
+              </div>
+              <span style="font-size:0.75rem;font-weight:700;padding:4px 10px;border-radius:99px;background:${b.status === 'accepted' ? 'rgba(45,106,79,0.1);color:var(--green)' : b.status === 'rejected' ? 'rgba(220,38,38,0.1);color:#DC2626' : 'rgba(232,168,56,0.15);color:var(--amber-dark)'}">${b.status}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+              <div style="background:var(--cream);border-radius:8px;padding:12px">
+                <p style="font-size:0.75rem;color:var(--gray);margin:0;text-transform:uppercase;font-weight:700">Estimated Cost</p>
+                <p style="font-size:1.1rem;font-weight:700;color:var(--navy);margin:4px 0 0">${b.estimated_cost ? '$' + Number(b.estimated_cost).toLocaleString() : 'Not specified'}</p>
+              </div>
+              <div style="background:var(--cream);border-radius:8px;padding:12px">
+                <p style="font-size:0.75rem;color:var(--gray);margin:0;text-transform:uppercase;font-weight:700">Timeline</p>
+                <p style="font-size:1.1rem;font-weight:700;color:var(--navy);margin:4px 0 0">${b.estimated_timeline || 'Not specified'}</p>
+              </div>
+            </div>
+            ${b.notes ? `<p style="font-size:0.88rem;color:var(--charcoal);margin:0 0 12px;padding:12px;background:var(--cream);border-radius:8px">${b.notes}</p>` : ''}
+            ${b.status === 'submitted' || b.status === 'under_review' ? `
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-green" style="padding:8px 16px;font-size:0.82rem" onclick="acceptBid('${b.id}','${projectId}','${b.contractor_id}')">Accept Bid</button>
+                <button class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem" onclick="rejectBid('${b.id}')">Decline</button>
+              </div>
+            ` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    ` : '<p style="color:var(--gray);margin-bottom:24px">No bids received yet.</p>'}
+
+    ${pendingInvites.length > 0 ? `
+      <h3 style="margin-bottom:8px;font-size:0.95rem">Awaiting Response (${pendingInvites.length})</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+        ${pendingInvites.map(i => `
+          <span style="font-size:0.82rem;padding:6px 12px;background:var(--cream);border-radius:99px;color:var(--gray)">${i.contractor_profiles?.company_name || 'Contractor'} — ${i.status}</span>
+        `).join('')}
+      </div>
+    ` : ''}
+
+    <button class="btn btn-outline" style="margin-top:8px" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow='';openMyProjects()">← Back to Projects</button>
+  `;
+};
+
+window.acceptBid = async function(bidId, projectId, contractorId) {
+  if (!confirm('Accept this bid? Other bids will be declined.')) return;
+
+  // Accept this bid
+  await narrowSupabase.from('contractor_bids')
+    .update({ status: 'accepted', updated_at: new Date().toISOString() })
+    .eq('id', bidId);
+
+  // Reject all other bids on this project
+  await narrowSupabase.from('contractor_bids')
+    .update({ status: 'rejected', updated_at: new Date().toISOString() })
+    .eq('project_id', projectId)
+    .neq('id', bidId);
+
+  // Update project status
+  await narrowSupabase.from('builder_projects')
+    .update({ status: 'contractor_selected', updated_at: new Date().toISOString() })
+    .eq('id', projectId);
+
+  // Update pipeline for winning contractor
+  await narrowSupabase.from('contractor_pipeline')
+    .update({ pipeline_status: 'project_won', updated_at: new Date().toISOString() })
+    .eq('project_id', projectId)
+    .eq('contractor_id', contractorId);
+
+  // Update pipeline for losing contractors
+  await narrowSupabase.from('contractor_pipeline')
+    .update({ pipeline_status: 'project_lost', updated_at: new Date().toISOString() })
+    .eq('project_id', projectId)
+    .neq('contractor_id', contractorId);
+
+  // Notify winning contractor
+  await narrowSupabase.from('notifications').insert({
+    user_id: contractorId,
+    type: 'bid_accepted',
+    title: 'Bid Accepted!',
+    message: 'Your bid has been accepted. Check your pipeline for details.',
+    link: 'dashboard.html',
+  });
+
+  // Refresh view
+  viewProjectBids(projectId);
+};
+
+window.rejectBid = async function(bidId) {
+  if (!confirm('Decline this bid?')) return;
+
+  await narrowSupabase.from('contractor_bids')
+    .update({ status: 'rejected', updated_at: new Date().toISOString() })
+    .eq('id', bidId);
+
+  // Find the project to refresh
+  const { data } = await narrowSupabase.from('contractor_bids').select('project_id').eq('id', bidId).single();
+  if (data) viewProjectBids(data.project_id);
+};
+
+// Handle deep link to specific project bids
+(function handleBidDeepLink() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('view') === 'bids' && urlParams.get('project')) {
+    setTimeout(() => viewProjectBids(urlParams.get('project')), 1000);
+    window.history.replaceState({}, '', 'dashboard.html');
+  }
+})();
 
 // ═══════════════════════════════════════════
 // CONTRACTOR PRO — Dashboard gating & pipeline
