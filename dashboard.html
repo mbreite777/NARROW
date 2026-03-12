@@ -30,6 +30,19 @@
       <li><a href="marketplace.html" class="nav__link">Plan Marketplace</a></li>
       <li><a href="professionals.html" class="nav__link">For Professionals</a></li>
     </ul>
+    <div id="notifBellWrap" style="display:none;position:relative;margin-right:8px">
+      <button onclick="toggleNotifDropdown()" style="background:none;border:none;cursor:pointer;font-size:1.2rem;position:relative;padding:8px">
+        🔔
+        <span id="notifBadge" style="display:none;position:absolute;top:2px;right:2px;background:#DC2626;color:white;font-size:0.6rem;font-weight:700;width:18px;height:18px;border-radius:50%;align-items:center;justify-content:center">0</span>
+      </button>
+      <div id="notifDropdown" style="display:none;position:absolute;top:100%;right:0;width:340px;max-height:400px;overflow-y:auto;background:white;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.15);z-index:999;border:1px solid var(--cream-dark)">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--cream-dark);display:flex;justify-content:space-between;align-items:center">
+          <p style="font-weight:700;color:var(--navy);margin:0;font-size:0.9rem">Notifications</p>
+          <button onclick="markAllNotificationsRead()" style="background:none;border:none;color:var(--navy);font-size:0.78rem;cursor:pointer;font-weight:600">Mark all read</button>
+        </div>
+        <div id="notifList" style="padding:8px"></div>
+      </div>
+    </div>
     <div id="nav-auth" class="nav__auth"></div>
     <button class="nav__hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
@@ -537,7 +550,12 @@ async function initDashboard() {
       await loadBuilds();
       // Load purchased plans in the background
       loadMyPlans(session.user.email);
+      // Load featured lenders for Step 2
+      loadFeaturedLenders();
     }
+
+    // Notifications for all roles
+    initNotifications();
   } catch (err) {
     console.error('Dashboard init error:', err);
   }
@@ -2024,6 +2042,139 @@ window.startStripeConnect = async function() {
 const _scParams = new URLSearchParams(window.location.search);
 if (_scParams.get('stripe_return') === '1' || _scParams.get('stripe_refresh') === '1') {
   window.history.replaceState({}, '', window.location.pathname);
+}
+
+// ═══════════════════════════════════════════
+// NOTIFICATIONS — Bell & Dropdown
+// ═══════════════════════════════════════════
+async function initNotifications() {
+  if (!userSession) return;
+  document.getElementById('notifBellWrap').style.display = 'block';
+  await loadNotifications();
+  // Poll for new notifications every 60 seconds
+  setInterval(loadNotifications, 60000);
+}
+
+async function loadNotifications() {
+  if (!narrowSupabase || !userSession) return;
+
+  const { data: notifications, count } = await narrowSupabase
+    .from('notifications')
+    .select('*', { count: 'exact', head: false })
+    .eq('user_id', userSession.user.id)
+    .eq('read', false)
+    .order('created_at', { ascending: false })
+    .limit(15);
+
+  const badge = document.getElementById('notifBadge');
+  if (count > 0) {
+    badge.textContent = count > 9 ? '9+' : count;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+
+  // Also load recent (including read) for the dropdown
+  const { data: allNotifs } = await narrowSupabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', userSession.user.id)
+    .order('created_at', { ascending: false })
+    .limit(15);
+
+  const list = document.getElementById('notifList');
+  if (!allNotifs || allNotifs.length === 0) {
+    list.innerHTML = '<p style="color:var(--gray);text-align:center;padding:24px 16px;font-size:0.85rem">No notifications yet.</p>';
+    return;
+  }
+
+  list.innerHTML = allNotifs.map(n => `
+    <div style="padding:10px 12px;border-radius:8px;cursor:pointer;background:${n.read ? 'transparent' : 'rgba(27,58,107,0.04)'};transition:background 0.15s"
+         onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='${n.read ? 'transparent' : 'rgba(27,58,107,0.04)'}'"
+         onclick="handleNotifClick('${n.id}','${n.link || ''}')">
+      <p style="font-weight:${n.read ? '400' : '600'};color:var(--navy);margin:0;font-size:0.85rem">${n.title}</p>
+      <p style="font-size:0.78rem;color:var(--gray);margin:2px 0 0">${n.message || ''}</p>
+      <p style="font-size:0.7rem;color:var(--gray);margin:4px 0 0">${timeAgo(n.created_at)}</p>
+    </div>
+  `).join('');
+}
+
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  const days = Math.floor(hrs / 24);
+  return days + 'd ago';
+}
+
+window.toggleNotifDropdown = function() {
+  const dd = document.getElementById('notifDropdown');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+};
+
+window.handleNotifClick = async function(notifId, link) {
+  // Mark as read
+  await narrowSupabase.from('notifications')
+    .update({ read: true })
+    .eq('id', notifId);
+  loadNotifications();
+  document.getElementById('notifDropdown').style.display = 'none';
+  if (link) window.location.href = link;
+};
+
+window.markAllNotificationsRead = async function() {
+  await narrowSupabase.from('notifications')
+    .update({ read: true })
+    .eq('user_id', userSession.user.id)
+    .eq('read', false);
+  loadNotifications();
+};
+
+// Close notification dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('notifBellWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('notifDropdown').style.display = 'none';
+  }
+});
+
+// ═══════════════════════════════════════════
+// FEATURED LENDERS — Dynamic loading for lenders.html and dashboard Step 2
+// ═══════════════════════════════════════════
+async function loadFeaturedLenders() {
+  if (!narrowSupabase) return;
+
+  const { data: lenders, error } = await narrowSupabase
+    .from('lender_profiles')
+    .select('*')
+    .eq('subscription_status', 'active')
+    .eq('is_featured', true)
+    .order('company_name', { ascending: true });
+
+  if (error || !lenders || lenders.length === 0) return;
+
+  // Inject into lenders.html grid if we're on that page
+  const lenderGrid = document.querySelector('.grid-3');
+  if (lenderGrid && window.location.pathname.includes('lenders')) {
+    lenderGrid.innerHTML = lenders.map(l => `
+      <div class="dash-panel" style="text-align:center;padding:32px 28px">
+        ${l.logo_url
+          ? `<img src="${l.logo_url}" alt="${l.company_name}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block">`
+          : `<div style="width:64px;height:64px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.5rem">🏦</div>`
+        }
+        <h3 style="font-size:1.05rem;margin-bottom:6px">${l.company_name}</h3>
+        ${l.bio ? `<p style="font-size:0.85rem;color:var(--gray);margin-bottom:12px">${l.bio}</p>` : ''}
+        ${l.loan_types && l.loan_types.length > 0 ? `<p style="font-size:0.78rem;color:var(--navy);margin-bottom:12px">${l.loan_types.join(' · ')}</p>` : ''}
+        ${l.application_url
+          ? `<a href="${l.application_url}" target="_blank" class="btn btn-primary" style="padding:10px 20px;font-size:0.85rem">Apply Now →</a>`
+          : `<span style="font-size:0.78rem;color:var(--green);font-weight:600">✓ Featured Partner</span>`
+        }
+      </div>
+    `).join('');
+  }
 }
 
 // ═══════════════════════════════════════════

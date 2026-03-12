@@ -193,5 +193,40 @@
 function toggleHelpPanel(){var p=document.getElementById("helpPanel");var t=document.getElementById("helpTooltip");if(p)p.classList.toggle("open");if(t)t.style.display="none";}
 document.addEventListener("click",function(e){var w=document.getElementById("helpWidget");var p=document.getElementById("helpPanel");if(p&&p.classList.contains("open")&&w&&!w.contains(e.target))p.classList.remove("open");});
 </script>
+<script>
+// Load featured lenders dynamically from database
+document.addEventListener('DOMContentLoaded', async function() {
+  if (typeof narrowSupabase === 'undefined') return;
+
+  const { data: lenders, error } = await narrowSupabase
+    .from('lender_profiles')
+    .select('*')
+    .eq('subscription_status', 'active')
+    .eq('is_featured', true)
+    .order('company_name', { ascending: true });
+
+  if (error || !lenders || lenders.length === 0) return;
+
+  const grid = document.querySelector('.grid-3');
+  if (!grid) return;
+
+  grid.innerHTML = lenders.map(l => `
+    <div class="dash-panel" style="text-align:center;padding:32px 28px">
+      ${l.logo_url
+        ? '<img src="' + l.logo_url + '" alt="' + l.company_name + '" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block">'
+        : '<div style="width:64px;height:64px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.5rem">🏦</div>'
+      }
+      <h3 style="font-size:1.05rem;margin-bottom:6px">${l.company_name}</h3>
+      ${l.bio ? '<p style="font-size:0.85rem;color:var(--gray);margin-bottom:12px">' + l.bio + '</p>' : ''}
+      ${l.loan_types && l.loan_types.length > 0 ? '<p style="font-size:0.78rem;color:var(--navy);margin-bottom:12px">' + l.loan_types.join(' · ') + '</p>' : ''}
+      ${l.regions_served && l.regions_served.length > 0 ? '<p style="font-size:0.75rem;color:var(--gray);margin-bottom:12px">Serves: ' + l.regions_served.join(', ') + '</p>' : ''}
+      ${l.application_url
+        ? '<a href="' + l.application_url + '" target="_blank" class="btn btn-primary" style="padding:10px 20px;font-size:0.85rem">Apply Now →</a>'
+        : '<span style="font-size:0.78rem;color:var(--green);font-weight:600">✓ Featured Partner</span>'
+      }
+    </div>
+  `).join('');
+});
+</script>
 </body>
 </html>
