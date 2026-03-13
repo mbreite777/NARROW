@@ -306,7 +306,7 @@ Deno.serve(async (req) => {
     const resendKey   = Deno.env.get('RESEND_API_KEY') ?? '';
     const notifyEmail = Deno.env.get('NOTIFY_EMAIL') ?? 'info@buildnarrow.com';
 
-    await fetch('https://api.resend.com/emails', {
+    if (resendKey) await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${resendKey}`,

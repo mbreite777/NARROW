@@ -50,6 +50,18 @@ Deno.serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
+    // Enforce role — only the correct role can subscribe to each tier
+    const userRole = user.user_metadata?.role || 'homebuilder';
+    const tierRequiresRole: Record<string, string> = {
+      'contractor_pro': 'contractor',
+      'lender_annual':  'lender',
+    };
+    const requiredRole = tierRequiresRole[tier];
+    if (requiredRole && userRole !== requiredRole) {
+      return new Response(JSON.stringify({ error: `This subscription is only available to ${requiredRole}s.` }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') ?? '', {
       apiVersion: '2023-10-16',
     });

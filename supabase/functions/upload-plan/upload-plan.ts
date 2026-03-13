@@ -189,6 +189,10 @@ Deno.serve(async (req) => {
     // ── Parse price to cents for Stripe ──
     const priceClean = price.replace(/[^0-9.]/g, '');
     const priceCents = Math.round(parseFloat(priceClean) * 100) || 0;
+    if (!priceCents || priceCents <= 0) {
+      return new Response(JSON.stringify({ error: 'Price must be a valid number greater than zero.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
 
     // ── Insert into plans table ──
     const { error: insertError } = await supabase.from('plans').insert({

@@ -38,6 +38,13 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Role check — only architects can connect a Stripe account
+    if ((user.user_metadata?.role || 'homebuilder') !== 'architect') {
+      return new Response(JSON.stringify({ error: 'Only architects can connect a Stripe account.' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Use service role client for DB queries
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
