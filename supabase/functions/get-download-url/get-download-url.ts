@@ -135,12 +135,14 @@ Deno.serve(async (req) => {
       .single();
 
     // Also allow lookup by stripe_session_id for immediate post-purchase flow
+    // Must still verify the session belongs to this user via email
     let validPurchase = purchase;
     if (!validPurchase && stripe_session_id) {
       const { data: sessionPurchase } = await supabase
         .from('purchases')
         .select('id, plan_id, plan_name, r2_key, download_url, stripe_session_id')
         .eq('stripe_session_id', stripe_session_id)
+        .eq('buyer_email', user.email)
         .single();
       validPurchase = sessionPurchase;
     }
