@@ -22,6 +22,10 @@
   .accordion__body { padding:0 18px; }
   .accordion.open .accordion__body { padding:0 18px 18px; }
 }
+/* Dual-path responsive */
+@media(max-width:700px) {
+  .dual-path-grid { grid-template-columns:1fr !important; }
+}
 </style>
 </head>
 <body>
@@ -119,6 +123,39 @@
   </div>
 </div>
 
+<!-- ── DUAL PATH — Browse or Design ───────── -->
+<section class="section" style="padding:72px 0">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:48px">
+      <span class="section-label">Two Ways to Your Dream Home</span>
+      <h2>Choose your path</h2>
+      <p style="max-width:540px;margin:12px auto 0">Whether you want to browse ready-made plans or design something completely custom — Narrow has you covered.</p>
+    </div>
+
+    <div class="dual-path-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:900px;margin:0 auto">
+
+      <!-- Browse Plans Card -->
+      <div style="position:relative;border:2px solid var(--cream-dark);border-radius:16px;padding:48px 36px 40px;text-align:center;background:var(--white);transition:all 0.3s ease;overflow:hidden" onmouseover="this.style.borderColor='var(--amber)';this.style.boxShadow='0 12px 40px rgba(232,168,56,0.15)'" onmouseout="this.style.borderColor='var(--cream-dark)';this.style.boxShadow='none'">
+        <div style="width:72px;height:72px;border-radius:16px;background:rgba(232,168,56,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:2rem">📐</div>
+        <h3 style="color:var(--navy);margin:0 0 12px;font-size:1.35rem">Browse Plans</h3>
+        <p style="color:var(--gray);font-size:0.95rem;margin:0 0 28px;line-height:1.6">Explore stock home designs from real architects. Find the layout you love, purchase instantly, and customize later.</p>
+        <a href="marketplace.html" class="btn btn-primary" style="width:100%;padding:14px 24px;font-size:1rem">Browse the Marketplace →</a>
+        <p style="font-size:0.8rem;color:var(--gray);margin:16px 0 0">Plans starting at $695</p>
+      </div>
+
+      <!-- Design Custom Card -->
+      <div style="position:relative;border:2px solid var(--cream-dark);border-radius:16px;padding:48px 36px 40px;text-align:center;background:var(--white);transition:all 0.3s ease;overflow:hidden" onmouseover="this.style.borderColor='var(--green)';this.style.boxShadow='0 12px 40px rgba(45,106,79,0.15)'" onmouseout="this.style.borderColor='var(--cream-dark)';this.style.boxShadow='none'">
+        <div style="width:72px;height:72px;border-radius:16px;background:rgba(45,106,79,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:2rem">🏡</div>
+        <h3 style="color:var(--navy);margin:0 0 12px;font-size:1.35rem">Design Your Own</h3>
+        <p style="color:var(--gray);font-size:0.95rem;margin:0 0 28px;line-height:1.6">Want something completely custom? Connect directly with a licensed architect who will design your dream home from scratch.</p>
+        <a href="find-architect.html" class="btn btn-green" style="width:100%;padding:14px 24px;font-size:1rem;background:var(--green);color:white;border-color:var(--green)">Find an Architect →</a>
+        <p style="font-size:0.8rem;color:var(--gray);margin:16px 0 0">Pricing set by each architect</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- ── PROBLEM / SOLUTION ─────────────────── -->
 <section class="section">
   <div class="container">
@@ -209,7 +246,7 @@
         <div class="journey-step__dot">4</div>
         <div class="journey-step__content">
           <h4>Find Plans</h4>
-          <p>Browse architect plans in the marketplace.</p>
+          <p>Browse stock plans or connect with an architect for custom design.</p>
         </div>
       </div>
       <div class="journey-step">
