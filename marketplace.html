@@ -367,29 +367,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   } catch(err) {
     console.error('Failed to load plans:', err);
-    // Fallback to hardcoded Shouse Plan if Supabase fails
-    countEl.innerHTML = '<strong>1 plan</strong> available — more architect plans coming soon';
+    countEl.innerHTML = 'Plans coming soon — check back shortly';
     grid.innerHTML = `
-      <div class="plan-card" onclick="openPlanDetail({planId:'breite_shouse',name:'The Shouse Plan',architect:'Breite Design',beds:'3',baths:'2',sqft:'2,400',stories:'1 story',price:'$695',style:'Modern Shouse',stars:'★★★★★',reviews:'',emoji:'🏠',gradient:'linear-gradient(135deg,#1B3A6B,#2D6A4F)'})">
-        <div class="plan-card__img" style="background:linear-gradient(135deg,#1B3A6B,#2D6A4F)">
-          <span class="plan-card__badge">Featured</span>
-          <div style="text-align:center"><span style="font-size:2.5rem">🏠</span><br><span>Plan preview</span></div>
-        </div>
-        <div class="plan-card__body">
-          <h3 class="plan-card__title">The Shouse Plan</h3>
-          <p class="plan-card__arch">✓ Verified · Breite Design</p>
-          <div class="plan-card__specs">
-            <span class="plan-card__spec">🛏️ 3 bed</span>
-            <span class="plan-card__spec">🚿 2 bath</span>
-            <span class="plan-card__spec">📐 2,400 sq ft</span>
-            <span class="plan-card__spec">🏗️ 1 story</span>
-          </div>
-          <div style="margin-bottom:10px"><span class="stars">★★★★★</span></div>
-          <div class="plan-card__footer">
-            <span class="plan-card__price">$695</span>
-            <span class="btn btn-primary plan-card__btn">View Plan</span>
-          </div>
-        </div>
+      <div style="text-align:center;padding:64px 24px;grid-column:1/-1">
+        <div style="font-size:3rem;margin-bottom:16px">📐</div>
+        <h3 style="color:var(--navy);margin-bottom:8px">No plans available yet</h3>
+        <p style="color:var(--gray);max-width:400px;margin:0 auto">Architects are uploading plans now. Check back soon or browse our architect directory to commission a custom design.</p>
+        <a href="find-architect.html" class="btn btn-outline" style="margin-top:24px">Find an Architect →</a>
       </div>`;
   }
 });
