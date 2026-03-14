@@ -229,16 +229,37 @@
           <label>Bio / Description</label>
           <textarea id="archBio" rows="3" placeholder="Tell homebuilders about your firm..." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
         </div>
+
+        <!-- Logo Upload -->
+        <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--cream-dark)">
+          <label style="font-weight:600;color:var(--charcoal);display:block;margin-bottom:12px">Company Logo / Headshot</label>
+          <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+            <div id="archLogoPreview" style="width:80px;height:80px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;border:2px solid var(--cream-dark);flex-shrink:0">📐</div>
+            <div>
+              <input type="file" id="archLogoInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadArchLogo(this)">
+              <button class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem" onclick="document.getElementById('archLogoInput').click()">Upload Logo →</button>
+              <p style="font-size:0.75rem;color:var(--gray);margin:6px 0 0">JPG, PNG, or WebP — max 5MB. Shown on your profile and plan cards.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Portfolio Images -->
+        <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--cream-dark)">
+          <label style="font-weight:600;color:var(--charcoal);display:block;margin-bottom:12px">Portfolio Images <span style="font-size:0.78rem;color:var(--gray);font-weight:400">(up to 12 — shown on your profile page)</span></label>
+          <div id="archPortfolioGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-bottom:12px"></div>
+          <input type="file" id="archPortfolioInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="uploadArchPortfolio(this)">
+          <button class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem" onclick="document.getElementById('archPortfolioInput').click()">+ Add Portfolio Images</button>
+        </div>
       </div>
 
       <!-- Plan Library -->
       <div class="dash-panel">
         <div class="dash-panel__header">
           <h3>📋 Plan Library</h3>
-          <button class="btn btn-green" style="padding:8px 16px;font-size:0.82rem" onclick="showUploadPlan()">+ Upload Plan</button>
+          <button class="btn btn-green" style="padding:8px 16px;font-size:0.82rem" onclick="showAddPlan()">+ Add New Plan</button>
         </div>
         <div id="archPlanList">
-          <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">Your uploaded plans will appear here. Click "Upload Plan" to add your first listing.</p>
+          <p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">Loading your plans...</p>
         </div>
       </div>
 
@@ -539,6 +560,8 @@ async function initDashboard() {
       document.getElementById('archGreeting').textContent = `Welcome back, ${firstName}!`;
       await loadArchitectProfile();
       loadStripeConnectStatus();
+      loadArchPlans();
+      loadArchLogoPreview();
     } else if (role === 'contractor') {
       document.getElementById('contractorDash').style.display = 'block';
       document.getElementById('contGreeting').textContent = `Welcome back, ${firstName}!`;
@@ -1354,71 +1377,200 @@ window.saveArchProfile = async function() {
   }
 };
 
-window.showUploadPlan = function() {
+// ═══════════════════════════════════════════
+// ARCHITECT — Logo & Portfolio Uploads
+// ═══════════════════════════════════════════
+async function loadArchLogoPreview() {
+  if (!narrowSupabase || !userSession) return;
+  const { data } = await narrowSupabase.from('architect_profiles').select('logo_url').eq('user_id', userSession.user.id).single();
+  if (data && data.logo_url) {
+    document.getElementById('archLogoPreview').innerHTML = `<img src="${data.logo_url}" style="width:100%;height:100%;object-fit:cover">`;
+  }
+}
+
+window.uploadArchLogo = async function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const allowed = ['image/jpeg','image/png','image/webp'];
+  if (!allowed.includes(file.type)) { alert('Only JPG, PNG, or WebP images.'); return; }
+  if (file.size > 5 * 1024 * 1024) { alert('Max 5MB.'); return; }
+
+  const { data: { session } } = await narrowSupabase.auth.getSession();
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('asset_type', 'logo');
+
+  try {
+    const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/upload-profile-asset', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${session.access_token}`, 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM' },
+      body: fd,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    document.getElementById('archLogoPreview').innerHTML = `<img src="${data.url}" style="width:100%;height:100%;object-fit:cover">`;
+    alert('Logo uploaded!');
+  } catch(err) {
+    console.error('Logo upload error:', err);
+    alert('Upload failed: ' + err.message);
+  }
+};
+
+window.uploadArchPortfolio = async function(input) {
+  const files = Array.from(input.files).slice(0, 12);
+  if (!files.length) return;
+
+  const { data: { session } } = await narrowSupabase.auth.getSession();
+  const fd = new FormData();
+  fd.append('asset_type', 'portfolio');
+  files.forEach((f, i) => fd.append(`file_${i}`, f));
+
+  try {
+    const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/upload-profile-asset', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${session.access_token}`, 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM' },
+      body: fd,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    const grid = document.getElementById('archPortfolioGrid');
+    data.urls.forEach(url => {
+      grid.innerHTML += `<div style="aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--cream-dark)"><img src="${url}" style="width:100%;height:100%;object-fit:cover"></div>`;
+    });
+    alert(`${data.count} image(s) uploaded!`);
+  } catch(err) {
+    console.error('Portfolio upload error:', err);
+    alert('Upload failed: ' + err.message);
+  }
+};
+
+// ═══════════════════════════════════════════
+// ARCHITECT — Plan Library (load existing plans)
+// ═══════════════════════════════════════════
+async function loadArchPlans() {
+  if (!narrowSupabase || !userSession) return;
+  const { data: plans, error } = await narrowSupabase
+    .from('plans')
+    .select('*')
+    .eq('user_id', userSession.user.id)
+    .order('created_at', { ascending: false });
+
+  const list = document.getElementById('archPlanList');
+  if (!list) return;
+
+  if (error || !plans || plans.length === 0) {
+    list.innerHTML = `<p style="color:var(--gray);font-size:0.9rem;text-align:center;padding:32px 0">No plans yet. Click "+ Add New Plan" to create your first listing.</p>`;
+    return;
+  }
+
+  list.innerHTML = plans.map(p => {
+    const img = (p.images && p.images.length > 0) ? p.images[0].url : '';
+    const statusColor = p.status === 'active' ? 'var(--green)' : p.status === 'pending' ? 'var(--amber-dark)' : 'var(--gray)';
+    const statusLabel = p.status === 'active' ? '✅ Live' : p.status === 'pending' ? '⏳ Pending Review' : p.status;
+    return `
+      <div style="display:flex;gap:20px;padding:20px;border:1px solid var(--cream-dark);border-radius:12px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+        <div style="width:100px;height:80px;border-radius:8px;overflow:hidden;background:var(--cream);flex-shrink:0;display:flex;align-items:center;justify-content:center">
+          ${img ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover">` : '<span style="font-size:2rem">📐</span>'}
+        </div>
+        <div style="flex:1;min-width:200px">
+          <p style="font-weight:700;color:var(--navy);margin:0 0 4px;font-size:1.05rem">${p.name}</p>
+          <p style="font-size:0.85rem;color:var(--gray);margin:0 0 6px">${p.beds || '—'} bed · ${p.baths || '—'} bath · ${p.sqft || '—'} sq ft · ${p.stories || '—'}</p>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span style="font-weight:700;color:var(--navy);font-size:1.1rem">${p.price || '—'}</span>
+            <span style="font-size:0.78rem;font-weight:600;color:${statusColor}">${statusLabel}</span>
+            <span style="font-size:0.78rem;color:var(--gray)">${p.images ? p.images.length : 0} image(s)</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// ARCHITECT — Add New Plan (full form)
+// ═══════════════════════════════════════════
+window.showAddPlan = function() {
   const overlay = document.createElement('div');
   overlay.className = 'plan-modal-overlay';
   overlay.onclick = e => { if (e.target === overlay) { overlay.remove(); document.body.style.overflow = ''; } };
 
   overlay.innerHTML = `
-    <div class="plan-modal" style="max-width:580px">
+    <div class="plan-modal" style="max-width:640px;max-height:90vh;overflow-y:auto">
       <button class="plan-modal__close" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">✕</button>
       <div style="padding:40px">
-        <h2 style="margin-bottom:6px">📐 Upload Plan Image</h2>
-        <p style="font-size:0.9rem;color:var(--gray);margin-bottom:8px">Images are scanned for content quality and published immediately.</p>
-        <div style="background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.3);border-radius:8px;padding:12px 16px;margin-bottom:24px;font-size:0.82rem;color:#166534">
-          ✅ <strong>Instant publish:</strong> Your image goes live as soon as it passes our content scan. No review wait.
-        </div>
+        <h2 style="margin-bottom:6px">📐 Add New Plan</h2>
+        <p style="font-size:0.9rem;color:var(--gray);margin-bottom:24px">Upload your plan details, images, and PDF file. Plans are reviewed before going live.</p>
 
-        <div class="form-group">
-          <label>Plan Name *</label>
-          <input type="text" id="upPlanName" placeholder="e.g. The Shouse Plan">
-        </div>
-
-        <div class="form-group">
-          <label>Plan Folder Slug *</label>
-          <input type="text" id="upPlanSlug" placeholder="e.g. shouse-plan">
-          <p style="font-size:0.75rem;color:var(--gray);margin:4px 0 0">Lowercase, hyphens only — used in the file path</p>
-        </div>
-
-        <div class="form-group">
-          <label>Image Type *</label>
-          <select id="upImageLabel" style="width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem;background:white">
-            <option value="render-front">Front Rendering</option>
-            <option value="floorplan">Floor Plan</option>
-            <option value="elevation-front">Front Elevation</option>
-            <option value="elevation-rear">Rear Elevation</option>
-            <option value="elevation-side">Side Elevation</option>
-            <option value="render-rear">Rear Rendering</option>
-            <option value="detail">Detail / Other</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Image File * <span style="font-size:0.78rem;color:var(--gray);font-weight:400">(JPG, PNG or WebP — max 10MB)</span></label>
-          <div id="upDropZone" style="border:2px dashed var(--gray-light);border-radius:var(--radius-md);padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:#fafafa" onclick="document.getElementById('upFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--navy)'" ondragleave="this.style.borderColor='var(--gray-light)'" ondrop="handleUpDrop(event)">
-            <div style="font-size:2rem;margin-bottom:8px">🖼️</div>
-            <p style="font-weight:600;color:var(--navy);margin:0 0 4px">Click to select or drag & drop</p>
-            <p style="font-size:0.8rem;color:var(--gray);margin:0">JPG, PNG, WebP — max 10MB</p>
+        <div class="grid-2" style="gap:16px">
+          <div class="form-group">
+            <label>Plan Name *</label>
+            <input type="text" id="npName" placeholder="e.g. The Shouse Plan">
           </div>
-          <input type="file" id="upFileInput" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="handleUpFileSelect(this)">
+          <div class="form-group">
+            <label>Plan Slug *</label>
+            <input type="text" id="npSlug" placeholder="e.g. shouse-plan">
+            <p style="font-size:0.72rem;color:var(--gray);margin:4px 0 0">Lowercase, hyphens only</p>
+          </div>
+          <div class="form-group">
+            <label>Price * <span style="font-size:0.78rem;color:var(--gray);font-weight:400">(e.g. $695)</span></label>
+            <input type="text" id="npPrice" placeholder="$695">
+          </div>
+          <div class="form-group">
+            <label>Style</label>
+            <input type="text" id="npStyle" placeholder="Modern, Farmhouse, etc.">
+          </div>
+          <div class="form-group">
+            <label>Bedrooms</label>
+            <input type="text" id="npBeds" placeholder="3">
+          </div>
+          <div class="form-group">
+            <label>Bathrooms</label>
+            <input type="text" id="npBaths" placeholder="2">
+          </div>
+          <div class="form-group">
+            <label>Square Footage</label>
+            <input type="text" id="npSqft" placeholder="2,400">
+          </div>
+          <div class="form-group">
+            <label>Stories</label>
+            <input type="text" id="npStories" placeholder="1 story">
+          </div>
         </div>
 
-        <!-- Preview -->
-        <div id="upPreviewWrap" style="display:none;margin-bottom:20px">
-          <img id="upPreview" style="width:100%;max-height:220px;object-fit:cover;border-radius:var(--radius-md);border:1px solid var(--cream-dark)">
-          <p id="upPreviewName" style="font-size:0.8rem;color:var(--gray);margin:6px 0 0;text-align:center"></p>
+        <div class="form-group" style="margin-top:16px">
+          <label>Description</label>
+          <textarea id="npDesc" rows="3" placeholder="Tell homebuilders about this plan..." style="resize:vertical;width:100%;padding:12px 16px;border:1.5px solid var(--gray-light);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.95rem"></textarea>
         </div>
 
-        <!-- Progress bar -->
-        <div id="upProgressWrap" style="display:none;margin-bottom:20px">
+        <!-- PDF Upload -->
+        <div class="form-group" style="margin-top:20px">
+          <label>Plan File (PDF) * <span style="font-size:0.78rem;color:var(--gray);font-weight:400">— max 50MB</span></label>
+          <div id="npPdfZone" style="border:2px dashed var(--gray-light);border-radius:var(--radius-md);padding:24px;text-align:center;cursor:pointer;background:#fafafa" onclick="document.getElementById('npPdfInput').click()">
+            <div style="font-size:1.5rem;margin-bottom:6px">📄</div>
+            <p style="font-weight:600;color:var(--navy);margin:0;font-size:0.9rem">Click to select PDF</p>
+          </div>
+          <input type="file" id="npPdfInput" accept="application/pdf" style="display:none" onchange="npPdfSelected(this)">
+          <p id="npPdfName" style="font-size:0.8rem;color:var(--green);margin:6px 0 0;display:none"></p>
+        </div>
+
+        <!-- Image Uploads -->
+        <div class="form-group" style="margin-top:20px">
+          <label>Plan Images <span style="font-size:0.78rem;color:var(--gray);font-weight:400">— up to 5 images (JPG, PNG, WebP — max 10MB each)</span></label>
+          <div id="npImgGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:12px"></div>
+          <input type="file" id="npImgInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="npImgsSelected(this)">
+          <button type="button" class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem" onclick="document.getElementById('npImgInput').click()">+ Add Images</button>
+          <div id="npImgLabels" style="margin-top:12px"></div>
+        </div>
+
+        <!-- Progress -->
+        <div id="npProgress" style="display:none;margin:20px 0">
           <div style="height:6px;background:var(--cream-dark);border-radius:99px;overflow:hidden">
-            <div id="upProgressBar" style="height:100%;background:linear-gradient(90deg,var(--navy),var(--green));border-radius:99px;width:0%;transition:width 0.3s"></div>
+            <div id="npProgressBar" style="height:100%;background:linear-gradient(90deg,var(--navy),var(--green));border-radius:99px;width:0%;transition:width 0.3s"></div>
           </div>
-          <p id="upProgressLabel" style="font-size:0.8rem;color:var(--gray);margin:6px 0 0;text-align:center">Uploading…</p>
+          <p id="npProgressLabel" style="font-size:0.8rem;color:var(--gray);margin:6px 0 0;text-align:center"></p>
         </div>
 
-        <button id="upSubmitBtn" class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitPlanImage()">Publish Image →</button>
-        <p style="font-size:0.75rem;color:var(--gray);text-align:center;margin-top:10px">Images are scanned by Google Vision AI for content quality before publishing.</p>
+        <button id="npSubmitBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px" onclick="submitNewPlan()">Submit Plan for Review →</button>
+        <p style="font-size:0.75rem;color:var(--gray);text-align:center;margin-top:10px">Plans are reviewed before going live. Images are scanned by Google Vision AI.</p>
       </div>
     </div>
   `;
@@ -1426,113 +1578,142 @@ window.showUploadPlan = function() {
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
 
-  let selectedFile = null;
+  // Track selected files
+  let npPdfFile = null;
+  let npImgFiles = [];
+  const labelOptions = ['render-front','floorplan','elevation-front','elevation-rear','elevation-side','render-rear','detail'];
+  const labelNames = ['Front Rendering','Floor Plan','Front Elevation','Rear Elevation','Side Elevation','Rear Rendering','Detail / Other'];
 
-  window.handleUpFileSelect = function(input) {
-    const file = input.files[0];
-    if (!file) return;
-    previewUpFile(file);
+  window.npPdfSelected = function(input) {
+    const f = input.files[0];
+    if (!f) return;
+    if (f.type !== 'application/pdf') { alert('Must be a PDF.'); return; }
+    if (f.size > 50 * 1024 * 1024) { alert('Max 50MB.'); return; }
+    npPdfFile = f;
+    const nameEl = document.getElementById('npPdfName');
+    nameEl.textContent = `✓ ${f.name} (${(f.size / 1024 / 1024).toFixed(1)}MB)`;
+    nameEl.style.display = 'block';
+    document.getElementById('npPdfZone').style.borderColor = 'var(--green)';
   };
 
-  window.handleUpDrop = function(e) {
-    e.preventDefault();
-    overlay.querySelector('#upDropZone').style.borderColor = 'var(--gray-light)';
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-    previewUpFile(file);
+  window.npImgsSelected = function(input) {
+    const newFiles = Array.from(input.files);
+    npImgFiles = npImgFiles.concat(newFiles).slice(0, 5);
+    const grid = document.getElementById('npImgGrid');
+    const labels = document.getElementById('npImgLabels');
+    grid.innerHTML = '';
+    labels.innerHTML = '';
+    npImgFiles.forEach((f, i) => {
+      const url = URL.createObjectURL(f);
+      grid.innerHTML += `<div style="aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--cream-dark);position:relative">
+        <img src="${url}" style="width:100%;height:100%;object-fit:cover">
+        <button onclick="npRemoveImg(${i})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:0.7rem">✕</button>
+      </div>`;
+      labels.innerHTML += `<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+        <span style="font-size:0.8rem;color:var(--charcoal);min-width:80px">${f.name.substring(0,20)}</span>
+        <select id="npImgLabel_${i}" style="flex:1;padding:6px 10px;border:1px solid var(--gray-light);border-radius:6px;font-size:0.8rem">
+          ${labelOptions.map((v,j) => `<option value="${v}" ${i === j ? 'selected' : ''}>${labelNames[j]}</option>`).join('')}
+        </select>
+      </div>`;
+    });
   };
 
-  function previewUpFile(file) {
-    const allowed = ['image/jpeg','image/jpg','image/png','image/webp'];
-    if (!allowed.includes(file.type)) {
-      alert('Please upload a JPG, PNG, or WebP image.');
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      alert('File is too large. Maximum size is 10MB.');
-      return;
-    }
-    selectedFile = file;
-    const reader = new FileReader();
-    reader.onload = e => {
-      overlay.querySelector('#upPreview').src = e.target.result;
-      overlay.querySelector('#upPreviewName').textContent = `${file.name} — ${(file.size / 1024 / 1024).toFixed(2)}MB`;
-      overlay.querySelector('#upPreviewWrap').style.display = 'block';
-      overlay.querySelector('#upDropZone').style.borderColor = 'var(--green)';
-    };
-    reader.readAsDataURL(file);
-  }
+  window.npRemoveImg = function(idx) {
+    npImgFiles.splice(idx, 1);
+    // Re-render
+    const fakeInput = { files: [] };
+    const tmp = npImgFiles.slice();
+    npImgFiles = [];
+    tmp.forEach(f => npImgFiles.push(f));
+    const grid = document.getElementById('npImgGrid');
+    const labels = document.getElementById('npImgLabels');
+    grid.innerHTML = '';
+    labels.innerHTML = '';
+    npImgFiles.forEach((f, i) => {
+      const url = URL.createObjectURL(f);
+      grid.innerHTML += `<div style="aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--cream-dark);position:relative">
+        <img src="${url}" style="width:100%;height:100%;object-fit:cover">
+        <button onclick="npRemoveImg(${i})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:0.7rem">✕</button>
+      </div>`;
+      labels.innerHTML += `<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+        <span style="font-size:0.8rem;color:var(--charcoal);min-width:80px">${f.name.substring(0,20)}</span>
+        <select id="npImgLabel_${i}" style="flex:1;padding:6px 10px;border:1px solid var(--gray-light);border-radius:6px;font-size:0.8rem">
+          ${labelOptions.map((v,j) => `<option value="${v}" ${i === j ? 'selected' : ''}>${labelNames[j]}</option>`).join('')}
+        </select>
+      </div>`;
+    });
+  };
 
-  window.submitPlanImage = async function() {
-    const planName   = overlay.querySelector('#upPlanName').value.trim();
-    const planSlug   = overlay.querySelector('#upPlanSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
-    const imageLabel = overlay.querySelector('#upImageLabel').value;
+  window.submitNewPlan = async function() {
+    const name = overlay.querySelector('#npName').value.trim();
+    const slug = overlay.querySelector('#npSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+    const price = overlay.querySelector('#npPrice').value.trim();
 
-    if (!planName)    { alert('Please enter the plan name.'); return; }
-    if (!planSlug)    { alert('Please enter the plan folder slug (e.g. shouse-plan).'); return; }
-    if (!selectedFile) { alert('Please select an image file.'); return; }
+    if (!name) { alert('Plan name is required.'); return; }
+    if (!slug) { alert('Plan slug is required.'); return; }
+    if (!price) { alert('Price is required.'); return; }
+    if (!npPdfFile) { alert('Please upload a PDF file.'); return; }
 
-    const btn = overlay.querySelector('#upSubmitBtn');
+    const btn = overlay.querySelector('#npSubmitBtn');
     btn.disabled = true;
-    btn.textContent = 'Scanning & uploading…';
-    overlay.querySelector('#upProgressWrap').style.display = 'block';
-    overlay.querySelector('#upProgressBar').style.width = '20%';
-    overlay.querySelector('#upProgressLabel').textContent = 'Scanning image with Google Vision AI…';
+    btn.textContent = 'Uploading…';
+    overlay.querySelector('#npProgress').style.display = 'block';
+    overlay.querySelector('#npProgressBar').style.width = '10%';
+    overlay.querySelector('#npProgressLabel').textContent = 'Preparing upload…';
 
     const fd = new FormData();
-    fd.append('file', selectedFile);
-    fd.append('plan_name', planName);
-    fd.append('plan_slug', planSlug);
-    fd.append('image_label', imageLabel);
+    fd.append('plan_name', name);
+    fd.append('plan_slug', slug);
+    fd.append('price', price);
+    fd.append('beds', overlay.querySelector('#npBeds').value.trim());
+    fd.append('baths', overlay.querySelector('#npBaths').value.trim());
+    fd.append('sqft', overlay.querySelector('#npSqft').value.trim());
+    fd.append('stories', overlay.querySelector('#npStories').value.trim());
+    fd.append('style', overlay.querySelector('#npStyle').value.trim());
+    fd.append('description', overlay.querySelector('#npDesc').value.trim());
+    fd.append('pdf', npPdfFile);
+
+    npImgFiles.forEach((f, i) => {
+      fd.append(`image_${i}`, f);
+      const labelSel = document.getElementById(`npImgLabel_${i}`);
+      fd.append(`image_label_${i}`, labelSel ? labelSel.value : `image-${i+1}`);
+    });
 
     const { data: { session } } = await narrowSupabase.auth.getSession();
 
     try {
-      overlay.querySelector('#upProgressBar').style.width = '50%';
-      overlay.querySelector('#upProgressLabel').textContent = 'Uploading to Narrow…';
+      overlay.querySelector('#npProgressBar').style.width = '40%';
+      overlay.querySelector('#npProgressLabel').textContent = 'Uploading PDF and images…';
 
-      const res = await fetch(
-        'https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/upload-plan-image',
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
-          },
-          body: fd,
-        }
-      );
+      const res = await fetch('https://okalotfqhmwiyckhvcmk.supabase.co/functions/v1/upload-plan', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rYWxvdGZxaG13aXlja2h2Y21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzAxMTUsImV4cCI6MjA4NzI0NjExNX0.xTtqUl4k8VmvupmPblkLyPvtyp7JoyM2e4N88VI6tbM',
+        },
+        body: fd,
+      });
 
-      overlay.querySelector('#upProgressBar').style.width = '100%';
+      overlay.querySelector('#npProgressBar').style.width = '100%';
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.error || 'Upload failed');
 
-      overlay.querySelector('#upProgressLabel').textContent = '✓ Published!';
-      overlay.querySelector('#upProgressBar').style.background = 'var(--green)';
-      btn.textContent = '✓ Published!';
+      overlay.querySelector('#npProgressLabel').textContent = '✓ Plan submitted!';
+      overlay.querySelector('#npProgressBar').style.background = 'var(--green)';
+      btn.textContent = '✓ Submitted!';
       btn.style.background = 'var(--green)';
 
       setTimeout(() => {
-        overlay.innerHTML = `
-          <div class="plan-modal" style="max-width:480px">
-            <div style="padding:48px;text-align:center">
-              <div style="font-size:3rem;margin-bottom:16px">✅</div>
-              <h2 style="margin-bottom:12px">Image Published!</h2>
-              <p style="color:var(--gray);margin-bottom:8px"><strong>${planName} — ${imageLabel}</strong> is now live.</p>
-              <p style="font-size:0.85rem;color:var(--gray);margin-bottom:16px">Your image passed content scanning and has been published to the marketplace.</p>
-              ${data.public_url ? `<p style="font-size:0.8rem;color:var(--gray);margin-bottom:24px;font-family:monospace;background:var(--cream);padding:10px;border-radius:6px;word-break:break-all">${data.public_url}</p>` : ''}
-              <button class="btn btn-primary" onclick="this.closest('.plan-modal-overlay').remove();document.body.style.overflow=''">Done →</button>
-            </div>
-          </div>
-        `;
-      }, 800);
+        overlay.remove();
+        document.body.style.overflow = '';
+        loadArchPlans();
+      }, 1500);
 
     } catch(err) {
-      console.error('Upload error:', err);
-      overlay.querySelector('#upProgressBar').style.background = '#DC2626';
-      overlay.querySelector('#upProgressLabel').textContent = err.message || '✗ Upload failed — try again';
-      btn.textContent = 'Publish Image →';
+      console.error('Plan upload error:', err);
+      overlay.querySelector('#npProgressBar').style.background = '#DC2626';
+      overlay.querySelector('#npProgressLabel').textContent = err.message || 'Upload failed';
+      btn.textContent = 'Submit Plan for Review →';
       btn.style.background = '';
       btn.disabled = false;
     }
