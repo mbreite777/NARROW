@@ -197,34 +197,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileMenu = document.getElementById('mobileMenu');
     if (!mobileMenu) return;
 
-    const findProsHtml = `
-      <div class="mobile-find-pros">
-        <a href="#" onclick="this.parentElement.classList.toggle('open');return false;" style="display:flex;justify-content:space-between;align-items:center">
-          Find Professionals <span class="mobile-find-chevron" style="font-size:0.7rem;opacity:0.5">▼</span>
-        </a>
-        <div class="mobile-find-sub" style="display:none;padding-left:16px">
-          <a href="lenders.html" style="font-size:0.9rem;padding:10px 0;border-bottom:none">💰 Lenders</a>
-          <a href="find-architect.html" style="font-size:0.9rem;padding:10px 0;border-bottom:none">📐 Architects</a>
-          <a href="contractors.html" style="font-size:0.9rem;padding:10px 0;border-bottom:none">🏗️ Contractors</a>
-        </div>
-      </div>`;
-
     if (loggedIn) {
-      const showMarketplace = role === 'homebuilder' || !role;
-      const showProfessionals = role === 'architect' || role === 'contractor';
-
+      const showForPros = role && role !== 'homebuilder';
       mobileMenu.innerHTML = `
         <a href="index.html">Home</a>
-        ${findProsHtml}
+        <div class="mobile-find-pros">
+          <a href="#" onclick="this.parentElement.classList.toggle('open');return false;" style="display:flex;justify-content:space-between;align-items:center">
+            Find Professionals <span class="mobile-find-chevron" style="font-size:0.7rem;opacity:0.5">▼</span>
+          </a>
+          <div class="mobile-find-sub" style="display:none;padding-left:16px">
+            <a href="lenders.html" style="font-size:0.9rem;padding:10px 0;border-bottom:none">💰 Lenders</a>
+            <a href="find-architect.html" style="font-size:0.9rem;padding:10px 0;border-bottom:none">📐 Architects</a>
+            <a href="contractors.html" style="font-size:0.9rem;padding:10px 0;border-bottom:none">🏗️ Contractors</a>
+          </div>
+        </div>
         <a href="dashboard.html">${firstName}'s Dashboard</a>
-        ${showMarketplace ? '<a href="marketplace.html">Plan Marketplace</a>' : ''}
-        ${showProfessionals ? '<a href="professionals.html">For Professionals</a>' : ''}
+        ${role === 'homebuilder' ? '<a href="marketplace.html">Plan Marketplace</a>' : ''}
+        ${showForPros ? '<a href="professionals.html">For Professionals</a>' : ''}
         <a href="#" onclick="window.narrowSignOut();return false;" style="color:var(--amber)">Sign Out</a>
       `;
     } else {
       mobileMenu.innerHTML = `
         <a href="index.html">Home</a>
-        ${findProsHtml}
+        <div class="mobile-find-pros">
+          <a href="#" onclick="this.parentElement.classList.toggle('open');return false;" style="display:flex;justify-content:space-between;align-items:center">
+            Find Professionals <span class="mobile-find-chevron" style="font-size:0.7rem;opacity:0.5">▼</span>
+          </a>
+          <div class="mobile-find-sub" style="display:none;padding-left:16px">
+            <a href="lenders.html" style="font-size:0.9rem;padding:10px 0;border-bottom:none">💰 Lenders</a>
+            <a href="find-architect.html" style="font-size:0.9rem;padding:10px 0;border-bottom:none">📐 Architects</a>
+            <a href="contractors.html" style="font-size:0.9rem;padding:10px 0;border-bottom:none">🏗️ Contractors</a>
+          </div>
+        </div>
         <a href="marketplace.html">Plan Marketplace</a>
         <a href="professionals.html">For Professionals</a>
         <a href="login.html" style="color:var(--amber)">Login</a>
@@ -367,7 +371,6 @@ window.startJourney = async function() {
 
 // ── QUESTIONNAIRE MODAL ───────────────────────
 function openQuestionnaire(session) {
-  if (document.getElementById('journeyModal')) return;
   const modal = document.createElement('div');
   modal.id = 'journeyModal';
   modal.innerHTML = `
@@ -524,19 +527,11 @@ window.nextStep = function(from) {
   const step = document.getElementById(`q-step-${from}`);
   const next = document.getElementById(`q-step-${from + 1}`);
   if (!next) return;
-  // Validate an option was selected (steps 1–5 have q-options)
-  const options = step.querySelector('.q-options');
-  if (options && !options.querySelector('.q-option.selected')) {
-    options.style.outline = '2px solid #DC2626';
-    options.style.borderRadius = '10px';
-    setTimeout(() => { options.style.outline = ''; }, 1500);
-    return;
-  }
   step.classList.remove('active');
   next.classList.add('active');
   // Advance progress bar (6 steps total)
   const fill = document.getElementById('qProgressFill');
-  if (fill) fill.style.width = (from / 6 * 100) + '%';
+  if (fill) fill.style.width = ((from + 1) / 6 * 100) + '%';
 };
 
 window.submitQuestionnaire = async function() {
@@ -729,9 +724,7 @@ async function handleLandContact(e) {
       e.target.reset();
       setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.disabled = false; }, 4000);
     } else {
-      const errBody = await res.text().catch(() => 'No response body');
-      console.error(`Land contact form error: HTTP ${res.status}`, errBody);
-      throw new Error(`Server returned ${res.status}`);
+      throw new Error('Server error');
     }
   } catch (err) {
     btn.textContent = '✗ Failed — try again';
