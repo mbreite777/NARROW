@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For Production Builders — Narrow</title>
+  <meta name="description" content="Narrow is building the first architectural service subscription for regional production builders. Subscription-based plan licensing, architect support, and code-compliant designs — coming soon.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .coming-badge {
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(232,168,56,0.12);color:var(--amber-dark);
+      font-size:0.82rem;font-weight:600;
+      padding:6px 16px;border-radius:99px;
+      text-transform:uppercase;letter-spacing:0.04em;
+    }
+    .coming-badge::before {
+      content:'';display:block;width:8px;height:8px;
+      background:var(--amber);border-radius:50%;
+      animation:pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100%{opacity:1;transform:scale(1)}
+      50%{opacity:0.4;transform:scale(0.8)}
+    }
+    .value-card {
+      padding:32px;background:var(--white);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-sm);
+      border:1px solid rgba(27,58,107,0.06);
+      transition:box-shadow 0.25s,transform 0.25s;
+    }
+    .value-card:hover {
+      box-shadow:var(--shadow-md);transform:translateY(-2px);
+    }
+    .value-card__icon {
+      width:52px;height:52px;border-radius:var(--radius-md);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.5rem;margin-bottom:20px;
+    }
+    .compare-row {
+      display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;
+      border-radius:var(--radius-lg);overflow:hidden;
+      box-shadow:var(--shadow-md);
+    }
+    .compare-col {padding:32px 28px;}
+    .compare-col h4 {font-size:1rem;margin-bottom:16px;}
+    .compare-col ul {list-style:none;padding:0;}
+    .compare-col li {
+      font-size:0.88rem;padding:8px 0;
+      border-bottom:1px solid rgba(0,0,0,0.06);
+      display:flex;align-items:flex-start;gap:8px;
+    }
+    .compare-col li:last-child {border-bottom:none;}
+    .compare-col li span.icon {flex-shrink:0;font-size:0.85rem;}
+    @media(max-width:768px){
+      .compare-row{grid-template-columns:1fr;gap:0;}
+      .value-grid{grid-template-columns:1fr !important;}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">
+      <img src="Narrow Logo.png" alt="Narrow Logo" style="width:40px;height:40px;object-fit:contain">
+      <span class="nav__logo-text">Narrow</span>
+    </a>
+    <ul class="nav__links" id="nav-links">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li>
+        <div class="nav__find-wrap">
+          <button class="nav__find-btn" onclick="toggleFindPros(event)">Find Professionals <span class="nav__find-chevron">▾</span></button>
+          <div class="nav__find-dropdown">
+            <a href="lenders.html"><span class="nav__find-dropdown__icon">💰</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Lenders</span><span class="nav__find-dropdown__desc">Find mortgage partners</span></span></a>
+            <a href="find-architect.html"><span class="nav__find-dropdown__icon">📐</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">Architects</span><span class="nav__find-dropdown__desc">Search by location &amp; style</span></span></a>
+            <a href="contractors.html"><span class="nav__find-dropdown__icon">🏗️</span><span class="nav__find-dropdown__text"><span class="nav__find-dropdown__label">General Contractors</span><span class="nav__find-dropdown__desc">Bid your plans locally</span></span></a>
+          </div>
+        </div>
+      </li>
+      <li><a href="marketplace.html" class="nav__link">Plan Marketplace</a></li>
+      <li><a href="professionals.html" class="nav__link">For Professionals</a></li>
+    </ul>
+    <div id="nav-auth" class="nav__auth">
+      <a href="login.html" class="nav__signin">Login</a>
+    </div>
+    <button class="nav__hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div id="mobileMenu" class="nav__mobile-menu"></div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- HERO -->
+<!-- ══════════════════════════════════════════ -->
+<section class="hero" style="padding:160px 0 100px">
+  <div class="container hero__content" style="max-width:760px">
+    <span class="coming-badge">Coming Soon</span>
+    <h1 style="margin-top:20px">For<br><span style="color:var(--amber)">Production Builders</span></h1>
+    <p style="font-size:1.1rem;max-width:620px">Narrow is building the first subscription-based architectural licensing platform designed specifically for regional production builders. Professional plans, architect support, and code compliance — without the overhead of an in-house design team.</p>
+    <div style="display:flex;gap:16px;margin-top:32px;flex-wrap:wrap">
+      <a href="find-architect.html" class="btn btn-primary btn-lg">Browse Architects Now →</a>
+      <a href="#how-it-works" class="btn btn-outline btn-lg">See How It Works ↓</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- THE PROBLEM -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section section--cream">
+  <div class="container" style="max-width:800px;text-align:center">
+    <span class="section-label">The Gap in the Market</span>
+    <h2>You're too big for stock plans.<br>Too small for an in-house architect.</h2>
+    <p style="margin:20px auto 0;max-width:640px;font-size:1.05rem;color:var(--gray)">Regional builders constructing 10–200 homes per year face a difficult middle ground. Generic stock plans lack the support and code compliance you need. Custom architectural firms charge rates that eat into your margins. There hasn't been a professional-grade solution built for how you actually work — until now.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- HOW IT WORKS -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:56px">
+      <span class="section-label">How It Works</span>
+      <h2>Subscription-Based Plan Licensing</h2>
+      <p style="max-width:600px;margin:16px auto 0;color:var(--gray)">A new model that separates platform access from content licensing — giving you professional plans, ongoing architect support, and predictable costs.</p>
+    </div>
+
+    <div class="value-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px">
+      <!-- Card 1 -->
+      <div class="value-card">
+        <div class="value-card__icon" style="background:rgba(27,58,107,0.08)">🔑</div>
+        <h3 style="font-size:1.15rem;margin-bottom:10px">Subscribe to the Platform</h3>
+        <p style="font-size:0.9rem;color:var(--gray)">An annual subscription gives you access to Narrow's full library of production-ready architectural plans from verified, licensed architects. Browse, compare, and select plans designed for the way you build.</p>
+      </div>
+      <!-- Card 2 -->
+      <div class="value-card">
+        <div class="value-card__icon" style="background:rgba(45,106,79,0.08)">📐</div>
+        <h3 style="font-size:1.15rem;margin-bottom:10px">License Plans as You Need Them</h3>
+        <p style="font-size:0.9rem;color:var(--gray)">Pay a per-plan licensing fee to use any plan in your builds. Architects keep the vast majority of that fee — meaning you get access to serious talent with a real incentive to keep plans updated and production-ready.</p>
+      </div>
+      <!-- Card 3 -->
+      <div class="value-card">
+        <div class="value-card__icon" style="background:rgba(232,168,56,0.1)">🏗️</div>
+        <h3 style="font-size:1.15rem;margin-bottom:10px">Build with Architect Support</h3>
+        <p style="font-size:0.9rem;color:var(--gray)">Every licensed plan includes access to the original architect for modifications, local code adaptation, and buyer customizations. No more "dead files" — your plans stay alive with the professional who designed them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- ARCHITECT ON STANDBY -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section section--cream">
+  <div class="container">
+    <div class="grid-2" style="gap:64px;align-items:center">
+      <div>
+        <span class="section-label">Key Feature</span>
+        <h2>Architect on Standby</h2>
+        <p style="margin:20px 0;font-size:1.02rem">This is what sets Narrow apart from every stock plan marketplace. When you license a plan through Narrow, you're not just getting a file — you're getting a professional relationship with the architect who designed it.</p>
+
+        <div style="display:grid;gap:16px;margin-top:28px">
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:var(--white);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.3rem">✏️</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Modifications & customizations</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Buyer wants to flip the floor plan or add a bonus room? The original architect handles it — no guesswork, no third-party drafters.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:var(--white);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.3rem">📋</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Code compliance & permitting</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Plans are adapted for your local jurisdiction's building codes and requirements, so you go from plan to permit without delays.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:18px;background:var(--white);border-radius:10px;border-left:4px solid var(--green)">
+            <span style="font-size:1.3rem">💲</span>
+            <div>
+              <p style="color:var(--charcoal);font-weight:600;margin:0">Discounted professional rates</p>
+              <p style="font-size:0.85rem;margin:4px 0 0">Architect services through Narrow come at a fraction of custom firm costs. Professional-grade support at production-builder pricing.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="background:var(--white);border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-md);border:1px solid rgba(27,58,107,0.08)">
+          <h3 style="margin-bottom:12px;font-size:1.2rem">The Problem with Stock Plans</h3>
+          <p style="font-size:0.92rem;color:var(--gray);margin-bottom:24px">Traditional plan marketplaces sell you a file and walk away. Every site works the same way — download, figure it out, hire someone else to make it work.</p>
+          <div style="padding:20px;background:rgba(220,38,38,0.04);border-radius:var(--radius-md);margin-bottom:12px;border-left:4px solid #DC2626">
+            <p style="font-weight:600;color:var(--charcoal);margin:0 0 4px;font-size:0.95rem">❌ Dead file problem</p>
+            <p style="font-size:0.85rem;color:var(--gray);margin:0">You get a PDF or CAD file with no connection to the architect. Need a change? Start over with a local drafter who didn't design it.</p>
+          </div>
+          <div style="padding:20px;background:rgba(220,38,38,0.04);border-radius:var(--radius-md);margin-bottom:12px;border-left:4px solid #DC2626">
+            <p style="font-weight:600;color:var(--charcoal);margin:0 0 4px;font-size:0.95rem">❌ No code compliance</p>
+            <p style="font-size:0.85rem;color:var(--gray);margin:0">Stock plans are generic. They don't account for your local codes, wind loads, snow loads, or energy requirements.</p>
+          </div>
+          <div style="padding:20px;background:rgba(45,106,79,0.06);border-radius:var(--radius-md);border-left:4px solid var(--green)">
+            <p style="font-weight:600;color:var(--charcoal);margin:0 0 4px;font-size:0.95rem">✅ Narrow's approach</p>
+            <p style="font-size:0.85rem;color:var(--gray);margin:0">Licensed plans stay connected to the original architect. Modifications, code adaptation, and buyer customizations are handled by the person who designed it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- COMPARISON -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:48px">
+      <span class="section-label">Why Narrow</span>
+      <h2>How We Compare</h2>
+    </div>
+    <div class="compare-row">
+      <div class="compare-col" style="background:rgba(220,38,38,0.03)">
+        <h4 style="color:var(--gray)">Stock Plan Sites</h4>
+        <ul>
+          <li><span class="icon">❌</span> One-time file download</li>
+          <li><span class="icon">❌</span> No architect relationship</li>
+          <li><span class="icon">❌</span> No code compliance</li>
+          <li><span class="icon">❌</span> No modification support</li>
+          <li><span class="icon">❌</span> Per-plan pricing only</li>
+          <li><span class="icon">❌</span> Generic plans for everyone</li>
+        </ul>
+      </div>
+      <div class="compare-col" style="background:rgba(220,38,38,0.03)">
+        <h4 style="color:var(--gray)">Custom Firms</h4>
+        <ul>
+          <li><span class="icon">✅</span> Architect relationship</li>
+          <li><span class="icon">✅</span> Code-compliant designs</li>
+          <li><span class="icon">❌</span> Expensive per-project fees</li>
+          <li><span class="icon">❌</span> Slow turnaround</li>
+          <li><span class="icon">❌</span> Hard to scale</li>
+          <li><span class="icon">❌</span> No plan library to browse</li>
+        </ul>
+      </div>
+      <div class="compare-col" style="background:rgba(45,106,79,0.06);border:2px solid var(--green)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <h4 style="color:var(--green);margin:0">Narrow</h4>
+          <span style="background:var(--green);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:99px;text-transform:uppercase">Coming Soon</span>
+        </div>
+        <ul>
+          <li><span class="icon">✅</span> Subscription-based licensing</li>
+          <li><span class="icon">✅</span> Architect on Standby support</li>
+          <li><span class="icon">✅</span> Code adaptation included</li>
+          <li><span class="icon">✅</span> Modification support built in</li>
+          <li><span class="icon">✅</span> Predictable annual costs</li>
+          <li><span class="icon">✅</span> Production-ready plan library</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- WHO IT'S FOR -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section section--cream">
+  <div class="container" style="max-width:800px">
+    <div style="text-align:center;margin-bottom:48px">
+      <span class="section-label">Built For You</span>
+      <h2>Who This Is For</h2>
+    </div>
+    <div style="display:grid;gap:20px">
+      <div style="display:flex;gap:20px;align-items:flex-start;padding:24px;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-sm)">
+        <span style="font-size:1.5rem;flex-shrink:0">🏘️</span>
+        <div>
+          <p style="font-weight:600;color:var(--navy);margin:0 0 6px;font-size:1.05rem">Regional Production Builders</p>
+          <p style="font-size:0.9rem;color:var(--gray);margin:0">You build 10–200 homes a year. You need a library of proven, production-ready plans — not one-off custom designs. You want architect support without the overhead of hiring a full-time designer.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:20px;align-items:flex-start;padding:24px;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-sm)">
+        <span style="font-size:1.5rem;flex-shrink:0">📐</span>
+        <div>
+          <p style="font-weight:600;color:var(--navy);margin:0 0 6px;font-size:1.05rem">Builders Without In-House Design Teams</p>
+          <p style="font-size:0.9rem;color:var(--gray);margin:0">You don't have a staff architect and don't want to pay custom firm rates for every subdivision. Narrow gives you access to a network of architects whose plans are designed for production building.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:20px;align-items:flex-start;padding:24px;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-sm)">
+        <span style="font-size:1.5rem;flex-shrink:0">📊</span>
+        <div>
+          <p style="font-weight:600;color:var(--navy);margin:0 0 6px;font-size:1.05rem">Cost-Conscious Operators</p>
+          <p style="font-size:0.9rem;color:var(--gray);margin:0">By year two, your per-plan cost drops significantly because the subscription covers license renewals. The more you build, the more you save compared to traditional stock plans or custom architecture.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- COMING SOON CTA -->
+<!-- ══════════════════════════════════════════ -->
+<section style="background:linear-gradient(135deg,var(--navy-dark),var(--navy));padding:96px 0;text-align:center">
+  <div class="container" style="max-width:640px">
+    <span class="coming-badge" style="background:rgba(232,168,56,0.2)">Coming Soon</span>
+    <h2 class="text-white" style="margin-top:20px">The builder subscription is on the way.</h2>
+    <p style="color:rgba(255,255,255,0.7);margin:16px auto 12px;max-width:520px">We're finalizing the licensing model with our pilot builders and recruiting architects with production-ready plans. In the meantime, you can browse architects and plans on Narrow today.</p>
+    <p style="color:rgba(255,255,255,0.5);font-size:0.88rem;margin-bottom:36px">Individual homebuilders can use Narrow's full platform for free right now — the subscription model is designed specifically for production builders.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <a href="find-architect.html" class="btn btn-primary btn-lg">Browse Architects →</a>
+      <a href="marketplace.html" class="btn btn-secondary btn-lg">View Plan Marketplace</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- FAQ -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section">
+  <div class="container" style="max-width:760px">
+    <div style="text-align:center;margin-bottom:48px">
+      <h2>Questions About the Builder Subscription</h2>
+    </div>
+
+    <div style="display:grid;gap:12px">
+      <details style="background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);overflow:hidden">
+        <summary style="padding:20px 24px;cursor:pointer;font-weight:600;font-size:1rem;color:var(--charcoal)">Is this replacing the free homebuilder experience?</summary>
+        <div style="padding:0 24px 20px">
+          <p style="font-size:0.9rem;color:var(--gray)">No. The subscription-based licensing model is being built exclusively for regional production builders. If you're an individual building one or two homes, Narrow's full platform — including the plan marketplace, architect directory, contractor matching, and mortgage referrals — remains completely free.</p>
+        </div>
+      </details>
+
+      <details style="background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);overflow:hidden">
+        <summary style="padding:20px 24px;cursor:pointer;font-weight:600;font-size:1rem;color:var(--charcoal)">What does "Architect on Standby" actually mean?</summary>
+        <div style="padding:0 24px 20px">
+          <p style="font-size:0.9rem;color:var(--gray)">When you license a plan through Narrow, you have direct access to the original architect for modifications, buyer customizations, and local code adaptation. Instead of getting a dead file, you get an ongoing professional relationship — at a fraction of custom architecture costs.</p>
+        </div>
+      </details>
+
+      <details style="background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);overflow:hidden">
+        <summary style="padding:20px 24px;cursor:pointer;font-weight:600;font-size:1rem;color:var(--charcoal)">How is this different from buying stock plans?</summary>
+        <div style="padding:0 24px 20px">
+          <p style="font-size:0.9rem;color:var(--gray)">Stock plan marketplaces sell you a file with no ongoing support. Narrow's subscription model includes architect access, code compliance support, and plan modifications — all tied to your subscription. Plans are living documents with a professional behind them, not dead files.</p>
+        </div>
+      </details>
+
+      <details style="background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);overflow:hidden">
+        <summary style="padding:20px 24px;cursor:pointer;font-weight:600;font-size:1rem;color:var(--charcoal)">When will the builder subscription launch?</summary>
+        <div style="padding:0 24px 20px">
+          <p style="font-size:0.9rem;color:var(--gray)">We're currently working with a small group of pilot builders to validate the licensing model and recruiting architects with production-ready plans. In the meantime, you can browse our architect directory and plan marketplace today to see what's available.</p>
+        </div>
+      </details>
+
+      <details style="background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);overflow:hidden">
+        <summary style="padding:20px 24px;cursor:pointer;font-weight:600;font-size:1rem;color:var(--charcoal)">How do architects benefit from this model?</summary>
+        <div style="padding:0 24px 20px">
+          <p style="font-size:0.9rem;color:var(--gray)">Architects keep the vast majority of every licensing fee — creating passive income from plans they've already designed. They also gain ongoing paid work through the Architect on Standby service. It's designed to be a win for both sides of the marketplace.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- FOOTER -->
+<!-- ══════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a href="index.html" class="nav__logo" style="display:inline-flex">
+          <img src="Narrow Logo.png" alt="Narrow Logo" style="width:36px;height:36px;object-fit:contain">
+          <span class="nav__logo-text" style="margin-left:10px">Narrow</span>
+        </a>
+        <p>Build A to Z with Narrow.</p>
+      </div>
+      <div>
+        <p class="footer__heading">Platform</p>
+        <ul class="footer__links">
+          <li><a href="index.html#how-it-works">How It Works</a></li>
+          <li><a href="marketplace.html">Plan Marketplace</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer__heading">Company</p>
+        <ul class="footer__links">
+          <li><a href="index.html#about">About Us</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer__heading">For Professionals</p>
+        <ul class="footer__links">
+          <li><a href="professionals.html#architects">Architects</a></li>
+          <li><a href="professionals.html#contractors">Contractors</a></li>
+          <li><a href="professionals.html#mortgage">Mortgage Agents</a></li>
+          <li><a href="production-builders.html">Production Builders</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>&copy; 2026 Narrow. Breite Family. All rights reserved.</span>
+      <span style="display:flex;gap:16px;margin-top:8px">
+        <a href="terms.html" style="color:rgba(255,255,255,0.5);font-size:0.82rem">Terms of Service</a>
+        <a href="privacy.html" style="color:rgba(255,255,255,0.5);font-size:0.82rem">Privacy Policy</a>
+        <a href="mailto:info@buildnarrow.com" style="color:rgba(255,255,255,0.5);font-size:0.82rem">Contact</a>
+      </span>
+      <span class="footer__tagline">"Build A to Z with Narrow"</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="main.js"></script>
+</body>
+</html>
